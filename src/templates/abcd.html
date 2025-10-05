@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Raj Kori — Mechanical Engineer</title>
+  <meta name="description" content="Portfolio of Raj Kori — Mechanical Engineer at Eicher with 2+ years experience." />
+  <style>
+    :root{
+      --bg:#0f1724; --card:#e6e9f2; --text:#d6dae5; --muted:#9aa8bf; --accent:#ff6b00; --glass: rgba(255,255,255,0.04);
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    [data-theme='light']{ 
+      --bg:#f5f7fb; --card:#1a1a1a; --text:#2a2a2a; --muted:#5b6778; --accent:#0b66ff; --glass: rgba(0,0,0,0.04); 
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:var(--font-sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+
+    /* header */
+    header{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:14px 28px;z-index:100;background:linear-gradient(180deg, rgba(0,0,0,0.25), transparent);backdrop-filter: blur(6px)}
+    [data-theme='light'] header{background:linear-gradient(180deg, rgba(255,255,255,0.65), transparent)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent), #3b82f6);display:grid;place-items:center;color:white;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,0.25)}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:var(--text);text-decoration:none;padding:8px 12px;border-radius:8px;font-weight:600;transition:0.2s}
+    nav a:hover{background:var(--glass);color:var(--accent)}
+
+    .toggle{padding:6px 12px;border-radius:999px;background:transparent;border:1px solid var(--muted);cursor:pointer;color:var(--text)}
+    .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600;transition:0.3s}
+    .btn:hover{opacity:0.85}
+
+    main{margin-top:80px}
+    section{min-height:100vh;padding:80px 6vw;display:grid;align-items:center}
+
+    /* hero */
+    .hero{grid-template-columns: 1fr 420px;gap:48px}
+    .intro{max-width:720px}
+    h1{font-size:48px;margin:0 0 8px;color:var(--card)}
+    h2,h3{color:var(--card)}
+    .title-sub{font-size:18px;color:var(--muted);margin-bottom:18px}
+    .hero-p{line-height:1.6;color:var(--text);font-size:16px}
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), transparent);padding:18px;border-radius:14px;box-shadow:0 10px 40px rgba(2,6,23,0.5)}
+
+    /* right column profile */
+    .profile{display:flex;flex-direction:column;gap:12px;align-items:center}
+    .avatar{width:220px;height:220px;border-radius:50%;overflow:hidden;flex-shrink:0;background-image: url('https://media.licdn.com/dms/image/v2/D4D03AQEkbumzjhbLSA/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1685555095983?e=1761782400&v=beta&t=0NddEyCMN48-c3pZbDO9hryATMmYkWW2birYWlz3e5o');background-size:cover;background-position:center;border:6px solid rgba(255,255,255,0.08)}
+    .role{font-weight:700;color:var(--card)}
+    .meta{display:flex;gap:12px;flex-wrap:wrap}
+    .meta .pill{background:var(--glass);padding:8px 12px;border-radius:999px;font-weight:700;color:var(--text)}
+
+    /* parallax backgrounds */
+    .bg-panel{position:relative;overflow:hidden;border-radius:18px}
+    .bg-panel::before{content:'';position:absolute;inset:0;background-repeat:no-repeat;background-size:cover;background-position:center;opacity:0.14;filter:grayscale(10%)}
+    #about .bg-panel::before{background-image:url('https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3')}
+    #projects .bg-panel::before{background-image:url('https://images.unsplash.com/photo-1515165562835-c6a0d4f7d40b?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3')}
+    #experience .bg-panel::before{background-image:url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3')}
+    #contact .bg-panel::before{background-image:url('https://images.unsplash.com/photo-1496307042754-b4aa456c4a2d?q=80&w=1400&auto=format&fit=crop&ixlib=rb-4.0.3')}
+
+    /* sections */
+    .section-inner{display:grid;grid-template-columns: 1fr 420px;gap:32px;align-items:start}
+    .skills{display:flex;gap:10px;flex-wrap:wrap}
+    .skill{padding:10px 12px;border-radius:10px;background:var(--glass);font-weight:700;color:var(--text)}
+
+    .timeline{display:flex;flex-direction:column;gap:18px}
+    .timeline .item{display:flex;gap:14px;align-items:flex-start}
+    .dot{width:14px;height:14px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px}
+
+    /* project cards */
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+    .proj{padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.03), transparent);min-height:140px;display:flex;flex-direction:column;gap:8px}
+    .proj h3{margin:0;color:var(--card)}
+
+    footer{padding:36px 6vw;text-align:center;color:var(--muted)}
+
+    /* small screens */
+    @media (max-width:900px){
+      .hero,.section-inner{grid-template-columns:1fr}
+      .avatar{width:160px;height:160px}
+      h1{font-size:34px}
+    }
+
+    /* animations */
+    .fade-in {
+        opacity: 0;
+        transform: translateY(14px);
+        transition: all 700ms cubic-bezier(.2,.9,.25,1);
+        will-change: opacity, transform;
+    }
+    .reveal{opacity:1;transform:translateY(0)}
+
+    /* subtle floating gears */
+    .gear{position:absolute;opacity:0.08;filter:blur(0.4px);}
+    .gear.g1{width:420px;right:-60px;top:120px}
+    .gear.g2{width:300px;left:-80px;bottom:120px}
+    .gear svg{width:100%;height:100%}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">RK</div>
+      <div>
+        <div style="font-weight:700;color:var(--card)">Raj Kori</div>
+        <div style="font-size:12px;color:var(--muted)">Mechanical Engineer — Eicher</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+      <button id="themeToggle" class="toggle" title="Toggle dark / light">🌙</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="intro">
+        <div class="card bg-panel" style="padding:28px;border-radius:18px;position:relative;overflow:hidden">
+          <div class="fade-in" style="transition-delay:120ms">
+            <h1>Hi — I'm <span style="color:var(--accent)">Raj Kori</span></h1>
+            <div class="title-sub">Mechanical Engineer at <strong>Eicher</strong> · 2+ years experience</div>
+            <p class="hero-p">I design, analyze and improve heavy vehicle components with a focus on performance, durability and manufacturability. I enjoy turning complex problems into reliable solutions.</p>
+            <div style="margin-top:18px;display:flex;gap:12px">
+              <a class="btn" href="#contact">Hire / Contact</a>
+              <a class="btn" style="background:transparent;border:1px solid var(--accent);color:var(--accent)" href="#projects">View Projects</a>
+            </div>
+          </div>
+          <div class="gear g1" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="currentColor"><path d="M84 61v-6.7l6-2.2-6-10.4-6.8 1.8a29 29 0 0 0-4.3-2.5l-.2-7.5 7.4-6.3-6.8-10.7-8 3.6L60 3h-12l-1.8 12.7-8-3.6-6.8 10.7 7.4 6.3-.2 7.5a29 29 0 0 0-4.3 2.5L16 39 9.2 49.3 15 60 21 58v6.7l-6 2.2 6 10.4 6.8-1.8c1.3.8 2.6 1.6 4 2.2l.4 7.3-7.4 6.3 6.8 10.7 8-3.6L48 97h12l1.8-12.7 8 3.6 6.8-10.7-7.4-6.3.4-7.3a29 29 0 0 0 4-2.2L84 73l6-10.4-6-2.2z" /></svg>
+          </div>
+          <div class="gear g2" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="currentColor"><path d="M84 61v-6.7l6-2.2-6-10.4-6.8 1.8a29 29 0 0 0-4.3-2.5l-.2-7.5 7.4-6.3-6.8-10.7-8 3.6L60 3h-12l-1.8 12.7-8-3.6-6.8 10.7 7.4 6.3-.2 7.5a29 29 0 0 0-4.3 2.5L16 39 9.2 49.3 15 60 21 58v6.7l-6 2.2 6 10.4 6.8-1.8c1.3.8 2.6 1.6 4 2.2l.4 7.3-7.4 6.3 6.8 10.7 8-3.6L48 97h12l1.8-12.7 8 3.6 6.8-10.7-7.4-6.3.4-7.3a29 29 0 0 0 4-2.2L84 73l6-10.4-6-2.2z" /></svg>
+          </div>
+        </div>
+      </div>
+
+      <aside class="profile card fade-in" style="align-self:start">
+        <div class="avatar"></div>
+        <div style="text-align:center">
+          <div class="role">Mechanical Engineer</div>
+          <div style="font-size:14px;color:var(--muted);">Eicher Motors · 2+ years</div>
+        </div>
+        <div class="meta">
+          <div class="pill">Vehicle Dynamics</div>
+          <div class="pill">CAD · FEA</div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+      <div class="bg-panel card" style="padding:28px">
+        <div class="section-inner">
+          <div>
+            <h2>About</h2>
+            <p class="fade-in hero-p">I create robust mechanical designs for heavy vehicles—focusing on component longevity, ease of maintenance, and efficient manufacturing. My day-to-day work at Eicher involves detailed CAD modelling, FEA validation, and supplier collaboration to bring subsystems from concept to production.</p>
+            <h3 style="margin-top:18px">Skills</h3>
+            <div class="skills fade-in">
+              <div class="skill">SolidWorks / CATIA</div>
+              <div class="skill">ANSYS · Abaqus</div>
+              <div class="skill">GD&T · Tolerance Stack</div>
+              <div class="skill">Materials & Failure Analysis</div>
+              <div class="skill">Manufacturing Processes</div>
+              <div class="skill">Vehicle Systems</div>
+            </div>
+          </div>
+          <aside class="card" style="height:320px;display:flex;flex-direction:column;gap:10px;padding:20px">
+            <h3 style="margin:0">Quick facts</h3>
+            <div style="color:var(--muted);">Based in India · Open to remote consulting · Ready for new vehicle projects</div>
+            <div style="margin-top:auto;display:flex;gap:8px">
+              <a class="btn" href="#contact">Let's talk</a>
+              <a class="btn" style="background:transparent;border:1px solid var(--accent);color:var(--accent)" href="#">Download CV</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience">
+      <div class="bg-panel card" style="padding:28px">
+        <h2>Experience</h2>
+        <div class="timeline fade-in" style="margin-top:18px">
+          <div class="item">
+            <div class="dot"></div>
+            <div>
+              <div style="font-weight:800">Eicher Motors</div>
+              <div style="font-size:13px;color:var(--muted)">Mechanical Engineer · 2023 — Present</div>
+              <div style="margin-top:8px;color:var(--text)">Responsible for component design and validation of heavy vehicle subsystems including chassis brackets, suspension mounts and driveline components. Led FEA-driven redesigns improving fatigue life by up to 18%.</div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="dot"></div>
+            <div>
+              <div style="font-weight:800">Internship / Projects</div>
+              <div style="font-size:13px;color:var(--muted)">2019 — 2022</div>
+              <div style="margin-top:8px;color:var(--text)">Hands-on prototype builds, test rigs, and supplier coordination for fabricated brackets and welded assemblies.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects">
+      <div class="bg-panel card" style="padding:28px">
+        <h2>Selected Projects</h2>
+        <div class="projects-grid fade-in" style="margin-top:18px">
+          <article class="proj">
+            <h3>Suspension Bracket Redesign</h3>
+            <div style="font-size:13px;color:var(--muted)">FEA-led redesign reduced stress concentration and simplified welding. Achieved 12% mass reduction and longer fatigue life.</div>
+          </article>
+          <article class="proj">
+            <h3>Driveline Mount Optimization</h3>
+            <div style="font-size:13px;color:var(--muted)">Vibration dampening and compliance tuning reduced NVH at cruise speeds.</div>
+          </article>
+          <article class="proj">
+            <h3>Manufacturing-friendly Brackets</h3>
+            <div style="font-size:13px;color:var(--muted)">Design for manufacturability reduced welding and finishing time on the assembly line.</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+      <div class="bg-panel card" style="padding:28px">
+        <div class="section-inner">
+          <div>
+            <h2>Contact</h2>
+            <p style="color:var(--text)">Interested in collaborating or hiring Raj for a project? Send a quick message.</p>
+            <form id="contactForm" style="margin-top:18px;display:grid;gap:10px">
+              <input name="name" placeholder="Your name" style="padding:12px;border-radius:10px;border:1px solid var(--muted)" required />
+              <input name="email" placeholder="you@example.com" style="padding:12px;border-radius:10px;border:1px solid var(--muted)" required />
+              <textarea name="message" placeholder="Short message" rows="5" style="padding:12px;border-radius:10px;border:1px solid var(--muted)" required></textarea>
+              <button type="submit" class="btn">Send message</button>
+            </form>
+          </div>
+          <aside class="card">
+            <h3 style="margin-top:0">Get in touch</h3>
+            <div style="color:var(--muted);">Email: <strong style="color:var(--card)">raj.kori@example.com</strong></div>
+           
+            <div style="color:var(--muted);margin-top:6px">
+              Phone: <strong style="color:var(--card)">+91 98765 43210</strong>
+            </div>
+            <div style="color:var(--muted);margin-top:6px">
+              LinkedIn: <a href="https://linkedin.com/in/rajkori" target="_blank" style="color:var(--accent);text-decoration:none">linkedin.com/in/rajkori</a>
+            </div>
+            <div style="color:var(--muted);margin-top:6px">
+              GitHub: <a href="https://github.com/rajkori" target="_blank" style="color:var(--accent);text-decoration:none">github.com/rajkori</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div style="margin-bottom:12px">
+      <a href="#about" style="margin:0 10px;color:var(--muted);text-decoration:none">About</a> |
+      <a href="#experience" style="margin:0 10px;color:var(--muted);text-decoration:none">Experience</a> |
+      <a href="#projects" style="margin:0 10px;color:var(--muted);text-decoration:none">Projects</a> |
+      <a href="#contact" style="margin:0 10px;color:var(--muted);text-decoration:none">Contact</a>
+    </div>
+    <div style="font-size:14px">© 2025 Raj Kori · Built with 💡 passion & precision</div>
+  </footer>
+
+  <script>
+    // Theme Toggle
+    const toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('click', () => {
+      if(document.documentElement.getAttribute('data-theme') === 'light'){
+        document.documentElement.removeAttribute('data-theme');
+        toggle.textContent = "🌙";
+      } else {
+        document.documentElement.setAttribute('data-theme','light');
+        toggle.textContent = "☀️";
+      }
+    });
+
+    // Fade-in animation on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('reveal');
+        }
+      });
+    }, {threshold:0.15});
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Contact form fake handler (you can replace with backend later)
+    document.getElementById('contactForm').addEventListener('submit', e => {
+      e.preventDefault();
+      alert("✅ Thanks for reaching out! I’ll get back to you soon.");
+      e.target.reset();
+    });
+
+    // Hero fade-in on load
+    window.addEventListener("load", () => {
+      document.querySelectorAll(".fade-in").forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight * 0.85) {
+          setTimeout(() => el.classList.add("reveal"), 150);
+        }
+      });
+    });
+
+    // Floating gears animation
+    const g1 = document.querySelector(".gear.g1");
+    const g2 = document.querySelector(".gear.g2");
+    let t = 0;
+    function animateGears(){
+      t += 0.01;
+      g1.style.transform = `translateY(${Math.sin(t)*10}px) rotate(${t*20}deg)`;
+      g2.style.transform = `translateY(${Math.cos(t)*8}px) rotate(${-t*15}deg)`;
+      requestAnimationFrame(animateGears);
+    }
+    animateGears();
+  </script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Professional Portfolio — Your Name</title>
+  <meta name="description" content="A clean, responsive, accessible single-file portfolio template with animations, projects, and contact form." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%92%BB%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#98a0b3; --accent:#5eead4; --glass: rgba(255,255,255,0.04);
+      --radius:14px; --max-width:1100px; --gap:18px; color-scheme: dark;
+      --ff-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    [data-theme='light']{ --bg:#f7fbff; --card:#ffffff; --muted:#475569; --accent:#0ea5a4; --glass: rgba(15,23,42,0.04); color-scheme: light; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:var(--ff-sans); background:radial-gradient(1200px 600px at 10% 10%, rgba(94,234,212,0.04), transparent), var(--bg); color: #e6eef6; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      line-height:1.45; -webkit-font-feature-settings: "liga" 1;
+    }
+    .wrap{max-width:var(--max-width); margin:36px auto; padding:24px;}
+
+    /* NAV */
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);backdrop-filter:blur(6px);} 
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#60a5fa);display:grid;place-items:center;font-weight:700;color:#022;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    nav{display:flex;gap:14px;align-items:center}
+    nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:10px;font-weight:600}
+    nav a:hover, nav a:focus{color:var(--accent);outline:none}
+    .cta{padding:8px 12px;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#022;border-radius:10px;text-decoration:none;font-weight:700}
+
+    /* HERO */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:28px 6px}
+    .intro h1{font-size:clamp(1.6rem,3vw,2.6rem);margin:0 0 6px}
+    .intro p{color:var(--muted);margin:0 0 18px}
+    .skills{display:flex;flex-wrap:wrap;gap:8px}
+    .skill{background:var(--glass);padding:8px 10px;border-radius:10px;color:var(--muted);font-weight:600}
+    .profile-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:18px;border-radius:16px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    .avatar{width:100%;height:260px;border-radius:12px;object-fit:cover;background:linear-gradient(135deg,#24303b,#16324a);display:block}
+    .meta{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+
+    /* PROJECTS */
+    .section{margin-top:28px}
+    h2.section-title{margin:0 0 12px}
+    .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--gap)}
+    .card{background:var(--card);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;transition:transform .28s cubic-bezier(.2,.9,.3,1), box-shadow .28s;}
+    .card:focus-within, .card:hover{transform:translateY(-6px);box-shadow:0 16px 40px rgba(2,6,23,0.5)}
+    .thumb{height:140px;border-radius:8px;overflow:hidden;display:block}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .card h3{margin:0;font-size:1.05rem}
+    .card p{margin:0;color:var(--muted);font-size:.92rem}
+    .tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:6px 8px;border-radius:8px;font-weight:700;color:var(--muted)}
+
+    /* MODAL */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:28px;z-index:60}
+    .modal.open{display:flex}
+    .modal .panel{max-width:900px;width:100%;background:var(--card);border-radius:12px;padding:18px;box-shadow:0 30px 60px rgba(2,6,23,0.6)}
+    .modal .close{background:none;border:0;color:var(--muted);font-weight:700}
+
+    /* CONTACT */
+    form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    form input, form textarea{padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;resize:vertical}
+    form textarea{grid-column:1/ -1;min-height:120px}
+    .form-foot{display:flex;justify-content:space-between;align-items:center;grid-column:1/-1}
+    .btn{padding:10px 14px;border-radius:10px;border:0;font-weight:700;background:linear-gradient(90deg,var(--accent),#60a5fa);color:#022}
+
+    footer{margin-top:36px;color:var(--muted);font-size:.92rem;display:flex;justify-content:space-between;align-items:center}
+
+    /* small screens */
+    @media (max-width:880px){
+      .hero{grid-template-columns:1fr;}
+      .profile-card{order:-1}
+      form{grid-template-columns:1fr}
+    }
+
+    /* utility */
+    .muted{color:var(--muted)}
+    .center{text-align:center}
+
+    /* subtle reveal animations */
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .6s ease, transform .6s ease}
+    .reveal.show{opacity:1;transform:translateY(0)}
+
+    /* focus styles */
+    :focus{outline:2px solid transparent;box-shadow:0 0 0 4px rgba(94,234,212,0.12);border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header role="banner" aria-label="Top navigation">
+      <div class="brand">
+        <div class="logo" aria-hidden>YN</div>
+        <div>
+          <div style="font-weight:800">Your Name</div>
+          <div class="muted" style="font-size:.86rem">Frontend Engineer • Designer</div>
+        </div>
+      </div>
+      <nav role="navigation" aria-label="Main">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+        <button id="themeToggle" aria-pressed="false" title="Toggle theme" style="background:none;border:0;cursor:pointer">🌓</button>
+        <a class="cta" href="#contact">Hire me</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="about">
+        <div class="intro">
+          <p class="muted">Hi — I build delightful, accessible interfaces that scale.</p>
+          <h1 class="reveal">Elegant web experiences. Fast code. Thoughtful design.</h1>
+          <p class="muted">I design and build user interfaces, prototypes and design systems that help teams move quickly while shipping pixel-perfect products.</p>
+          <div class="skills">
+            <span class="skill">React</span>
+            <span class="skill">TypeScript</span>
+            <span class="skill">Design Systems</span>
+            <span class="skill">Accessibility</span>
+          </div>
+          <div style="margin-top:16px">
+            <a class="btn" href="#projects">See projects</a>
+          </div>
+        </div>
+        <aside class="profile-card" aria-labelledby="profile-name">
+          <img class="avatar" alt="abstract avatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><defs><linearGradient id='g' x1='0' x2='1' y1='0' y2='1'><stop offset='0' stop-color='%2307a6a5'/><stop offset='1' stop-color='%232d6fbf'/></linearGradient></defs><rect width='100%25' height='100%25' fill='url(%23g)'/><g fill='%23ffffff' opacity='0.06'><circle cx='200' cy='160' r='180'/><circle cx='900' cy='340' r='260'/></g><text x='50' y='420' font-size='48' fill='rgba(255,255,255,0.12)' font-family='Arial'>Your Portfolio</text></svg>" loading="lazy"/>
+          <div class="meta">
+            <div>
+              <div id="profile-name" style="font-weight:800">Your Name</div>
+              <div class="muted">San Francisco • Remote</div>
+            </div>
+            <div class="center">
+              <div style="font-weight:800">5+</div>
+              <div class="muted" style="font-size:.85rem">Years exp</div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section id="projects" class="section">
+        <h2 class="section-title">Selected projects</h2>
+        <div class="projects-grid" aria-live="polite">
+
+          <!-- Project card 1 -->
+          <article class="card reveal" tabindex="0" aria-labelledby="p1" data-project='{"title":"Design System","desc":"A scalable design system used across product lines.","image":"placeholder1"}'>
+            <a class="thumb" href="#" data-action="open" data-projectid="1" aria-label="Open project Design System">
+              <img alt="Project screenshot: Design system" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'><rect width='100%25' height='100%25' fill='%2314232b' /><g fill='%235eead4' opacity='0.08'><rect x='40' y='40' width='140' height='140' rx='18' /><rect x='220' y='40' width='520' height='120' rx='12'/></g><text x='40' y='360' font-size='24' fill='%23ffffff' opacity='0.9'>Design System — preview</text></svg>" loading="lazy"/>
+            </a>
+            <h3 id="p1">Design System</h3>
+            <p class="muted">Reusable component library, tokens, and documentation. Built for accessibility and theming.</p>
+            <div class="tags">
+              <span class="tag">React</span>
+              <span class="tag">Figma</span>
+            </div>
+          </article>
+
+          <!-- Project card 2 -->
+          <article class="card reveal" tabindex="0" aria-labelledby="p2" data-project='{"title":"Landing Page","desc":"High-converting marketing page with A/B tests.","image":"placeholder2"}'>
+            <a class="thumb" href="#" data-action="open" data-projectid="2" aria-label="Open project Landing Page">
+              <img alt="Project screenshot: Landing page" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'><rect width='100%25' height='100%25' fill='%230b1220' /><circle cx='150' cy='120' r='120' fill='%2360a5fa' opacity='0.08'/><text x='40' y='360' font-size='24' fill='%23fff'>Landing page — preview</text></svg>" loading="lazy"/>
+            </a>
+            <h3 id="p2">Landing Page</h3>
+            <p class="muted">Fast, accessible landing page with marketing analytics. 95+ Lighthouse scores.</p>
+            <div class="tags">
+              <span class="tag">Performance</span>
+              <span class="tag">A/B</span>
+            </div>
+          </article>
+
+          <!-- Project card 3 -->
+          <article class="card reveal" tabindex="0" aria-labelledby="p3" data-project='{"title":"Dashboard App","desc":"Operational dashboard with realtime data visualizations.","image":"placeholder3"}'>
+            <a class="thumb" href="#" data-action="open" data-projectid="3" aria-label="Open project Dashboard App">
+              <img alt="Project screenshot: Dashboard" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'><rect width='100%25' height='100%25' fill='%2315222a' /><rect x='40' y='60' width='220' height='120' fill='%235eead4' opacity='0.07'/><text x='40' y='380' font-size='24' fill='%23fff'>Dashboard — preview</text></svg>" loading="lazy"/>
+            </a>
+            <h3 id="p3">Dashboard App</h3>
+            <p class="muted">Realtime metrics, role-based access and optimized queries for mobile and desktop.</p>
+            <div class="tags">
+              <span class="tag">WebSocket</span>
+              <span class="tag">D3</span>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <section id="contact" class="section">
+        <h2 class="section-title">Contact</h2>
+        <p class="muted">I’m available for freelance or full-time opportunities. Let’s talk about your project.</p>
+        <form id="contactForm" novalidate>
+          <input type="text" id="name" name="name" placeholder="Full name" required />
+          <input type="email" id="email" name="email" placeholder="Email" required />
+          <input type="text" id="subject" name="subject" placeholder="Subject" required />
+          <textarea id="message" name="message" placeholder="Tell me about your project" required></textarea>
+          <div class="form-foot">
+            <div class="muted">Or email: <a href="mailto:hello@example.com">hello@example.com</a></div>
+            <button class="btn" type="submit">Send message</button>
+          </div>
+        </form>
+      </section>
+
+      <footer>
+        <div>© <span id="year"></span> Your Name</div>
+        <div class="muted">Built with ❤️ · Accessible · Fast</div>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Modal (project details) -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="panel" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 id="modalTitle">Project</h3>
+        <button class="close" id="modalClose" aria-label="Close project details">✕</button>
+      </div>
+      <div id="modalBody" style="margin-top:12px;color:var(--muted)"></div>
+    </div>
+  </div>
+
+  <script>
+    // Small utilities
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+    // Theme toggle with localStorage
+    const themeToggle = document.getElementById('themeToggle');
+    const root = document.documentElement;
+    const saved = localStorage.getItem('theme');
+    if(saved) root.setAttribute('data-theme', saved);
+    themeToggle.addEventListener('click', ()=>{
+      const next = root.getAttribute('data-theme') === 'light' ? '' : 'light';
+      root.setAttribute('data-theme', next);
+      themeToggle.setAttribute('aria-pressed', String(next === 'light'));
+      localStorage.setItem('theme', next);
+    });
+
+    // Simple reveal on scroll using IntersectionObserver
+    const reveals = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show') });
+    }, {threshold:0.12});
+    reveals.forEach(r=>io.observe(r));
+
+    // Modal logic
+    const modal = document.getElementById('modal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const modalClose = document.getElementById('modalClose');
+
+    function openModal(project){
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden','false');
+      modalTitle.textContent = project.title;
+      modalBody.innerHTML = `<p>${project.desc}</p><p style='margin-top:10px;color:var(--muted)'>This demo modal is client-side only — link to case study, repo and live demo can be added here.</p>`;
+      // trap focus (simple)
+      modalClose.focus();
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+    }
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+    // project open buttons
+    document.querySelectorAll('[data-action="open"]').forEach(el=>{
+      el.addEventListener('click', (ev)=>{
+        ev.preventDefault();
+        const card = el.closest('.card');
+        try{
+          const data = JSON.parse(card.dataset.project);
+          openModal(data);
+        }catch(e){ console.warn('missing project data') }
+      })
+    });
+
+    // Contact form: lightweight validation + simulated send
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', async (ev)=>{
+      ev.preventDefault();
+      const data = new FormData(form);
+      const name = data.get('name')?.trim();
+      const email = data.get('email')?.trim();
+      const message = data.get('message')?.trim();
+      if(!name||!email||!message){
+        alert('Please fill name, email and message.');
+        return;
+      }
+      // Basic email pattern
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!emailPattern.test(email)){ alert('Please provide a valid email.'); return; }
+
+      // simulate sending — replace this section with fetch to your API
+      const btn = form.querySelector('button');
+      btn.disabled = true; btn.textContent = 'Sending...';
+      await new Promise(r=>setTimeout(r, 900));
+      btn.textContent = 'Sent!';
+      setTimeout(()=>{ btn.disabled=false; btn.textContent='Send message'; form.reset(); }, 1200);
+      console.log('Would send payload:', Object.fromEntries(data.entries()));
+    });
+
+    // Fill year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Accessibility improvement: allow Enter on card to open modal
+    $$('.card').forEach(c=>{
+      c.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){
+        const el = c.querySelector('[data-action="open"]'); if(el) el.click();
+      }});
+    });
+
+    // Performance note: images are SVG placeholders; for real projects replace with optimized images (next-gen formats, responsive srcset)
+
+    // Small progressive enhancement: reduce motion
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if(mq.matches){ document.querySelectorAll('.reveal').forEach(n=>{ n.style.transition='none'; n.classList.add('show') }) }
+  </script>
+</body>
+</html>
