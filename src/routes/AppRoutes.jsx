@@ -42,14 +42,14 @@ const AppRoutes = () => {
           </PrivateRoute>
         }
       />
-      {/* <Route
+      <Route
         path="/chat/:chatId"
         element={
           <PrivateRoute>
-            <ChatPage />
+            <ChatLayout />
           </PrivateRoute>
         }
-      /> */}
+      />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
