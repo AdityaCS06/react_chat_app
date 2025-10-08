@@ -4,6 +4,7 @@ import PasswordInput from "../../components/forms/PasswordInput";
 import { loginUser } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const [formValues, setFormValues] = useState({
@@ -14,6 +15,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
     const { addToast } = useToast();
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setFormValues({ ...formValues, [e.target.name]: e.target.value });
@@ -34,6 +36,7 @@ const Login = () => {
             addToast("Logged in successfully!", "success");
             setFormValues({ email_or_username: "", password: "" });
             // TODO: navigate to dashboard
+            navigate("/");
         } catch (err) {
             //   const message = err.detail || "Invalid credentials";
             let message = "Invalid credentials";
