@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/layout/Navbar";
-import { getMyChats } from "../../api/chat";
+// import { getMyChats } from "../../api/chat";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
