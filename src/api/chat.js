@@ -19,6 +19,15 @@ export const getMyChats = async (token, limit = 50, offset = 0) => {
   return response.data; // → { total: number, chats: [...] }
 };
 
+export const getChatDetails = async (cuid, token) => {
+  const response = await axios.get(`${BASE_URL}/${cuid}`, authHeader(token));
+  return response.data;
+};
+
+
+
+
+
 // Get all users (with optional search)
 // export const getAllUsers = async (token, search = "", limit = 50, offset = 0) => {
 //   const params = new URLSearchParams();

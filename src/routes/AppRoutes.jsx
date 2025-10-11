@@ -9,7 +9,7 @@ import Dashboard from "../pages/Dashboard/Dashboard"; // New page
 import PrivateRoute from "./PrivateRoute";
 import CreateChat from "../pages/Chat/CreateChat";
 import ChatList from "../pages/Chat/ChatList";
-
+import ChatLayout from "../pages/Chat/ChatLayout";
 
 const AppRoutes = () => {
   return (
@@ -52,7 +52,7 @@ const AppRoutes = () => {
         path="/chats"
         element={
           <PrivateRoute>
-            <ChatList />
+            <ChatLayout />
           </PrivateRoute>
         }
       />
