@@ -1,55 +1,54 @@
 // src/pages/Chat/ChatInput.jsx
 import React, { useState } from "react";
-import { sendMessage } from "../../api/message";
 import { useAuth } from "../../context/AuthContext";
-import { useToast } from "../../components/ui/ToastContainer";
 
-const ChatInput = ({ chat, setMessages }) => {
-  const { token } = useAuth();
-  const { addToast } = useToast();
-  const [text, setText] = useState("");
-  const [sending, setSending] = useState(false);
+const ChatInput = ({ chat, socketRef, setMessages }) => {
+  const [message, setMessage] = useState("");
+  const { user } = useAuth(); // ✅ Get current user
 
-  const handleSend = async (e) => {
+  const handleSend = (e) => {
     e.preventDefault();
-    const trimmed = text.trim();
-    if (!trimmed || !chat?.cuid) return;
+    if (!message.trim() || !socketRef.current) return;
 
-    try {
-      setSending(true);
-      // Send message via API
-      const newMsg = await sendMessage(token, chat.cuid, trimmed, "text");
+    const payload = {
+      content: message.trim(),
+      message_type: "text",
+    };
 
-      // Optimistically update UI
-      setMessages((prev) => [...prev, newMsg]);
-      setText("");
-    } catch (err) {
-      console.error("Failed to send message:", err);
-      addToast("Failed to send message", "error");
-    } finally {
-      setSending(false);
-    }
+    // Optimistic UI update with actual sender_id
+    const tempMsg = {
+      muid: `temp-${Date.now()}`, // temporary unique ID
+      sender_id: user.public_id, // ✅ Correct sender ID
+      content: message.trim(),
+      message_type: "text",
+      created_at: new Date().toISOString(),
+      status: "sent", // optional for optimistic display
+    };
+
+    // Update messages immediately in UI
+    setMessages((prev) => [...prev, tempMsg]);
+
+    // Send message through WebSocket
+    socketRef.current.send(JSON.stringify(payload));
+
+    // Clear input field
+    setMessage("");
   };
 
   return (
-    <form
-      onSubmit={handleSend}
-      className="p-3 border-t bg-white flex gap-2 items-center"
-    >
+    <form onSubmit={handleSend} className="p-3 border-t bg-white flex gap-2">
       <input
         type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
         placeholder="Type a message..."
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        disabled={sending}
-        className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-blue-300 outline-none disabled:opacity-60"
+        className="flex-1 border rounded-xl px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300"
       />
       <button
         type="submit"
-        disabled={sending || !text.trim()}
-        className="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 active:scale-95 transition disabled:bg-blue-300"
+        className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
       >
-        {sending ? "Sending..." : "Send"}
+        Send
       </button>
     </form>
   );

@@ -1,8 +1,10 @@
+// src/pages/Chat/ChatWindow.jsx
 import React, { useEffect, useState, useRef } from "react";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../components/chat/MessageBubble";
 import { getMessages, updateMessageStatus } from "../../api/message";
+import { connectToChatSocket } from "../../api/socket";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
@@ -13,11 +15,12 @@ const ChatWindow = ({ chat }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-
-  const chatIdRef = useRef(null);
+  const socketRef = useRef(null);
   const scrollRef = useRef(null);
+  const chatIdRef = useRef(null);
   const isFetchingRef = useRef(false);
 
+  // --- Fetch messages ---
   const fetchMessages = async (replace = false, limit = 50, offset = 0) => {
     if (!chat?.cuid || isFetchingRef.current) return;
     isFetchingRef.current = true;
@@ -30,34 +33,53 @@ const ChatWindow = ({ chat }) => {
       );
       setHasMore(newMessages.length === limit);
     } catch (err) {
-      addToast("Failed to load chat messages", "error");
+      addToast("Failed to load messages", "error");
     } finally {
       isFetchingRef.current = false;
       setLoading(false);
     }
   };
 
+  // --- WebSocket setup ---
+  const setupWebSocket = () => {
+    if (!chat?.cuid || !token) return;
+    if (socketRef.current) socketRef.current.close();
+
+    socketRef.current = connectToChatSocket(chat.cuid, token, (data) => {
+      // Backend broadcasts a new message JSON
+      setMessages((prev) => [...prev, data]);
+    });
+  };
+
+  // --- Handle new chat selection ---
   useEffect(() => {
     if (!chat) return;
     if (chat.cuid !== chatIdRef.current) {
       chatIdRef.current = chat.cuid;
       setMessages([]);
       fetchMessages(true);
+      setupWebSocket();
     }
+    return () => {
+      if (socketRef.current) socketRef.current.close();
+    };
   }, [chat]);
 
+  // --- Scroll to bottom when new message ---
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages.length]);
 
+  // --- Infinite scroll ---
   const handleScroll = (e) => {
     if (e.target.scrollTop < 100 && hasMore && !loading) {
       fetchMessages(false, 50, messages.length);
     }
   };
 
+  // --- Mark messages as seen ---
   const markMessagesAsSeen = async () => {
     try {
       const unseen = messages.filter(
@@ -98,7 +120,7 @@ const ChatWindow = ({ chat }) => {
                 messages[idx - 1]?.sender_id !== msg.sender_id);
             return (
               <MessageBubble
-                key={msg.muid}
+                key={msg.muid || idx}
                 msg={msg}
                 isMine={isMine}
                 isGroup={chat.is_group}
@@ -110,7 +132,7 @@ const ChatWindow = ({ chat }) => {
         )}
       </div>
 
-      <ChatInput chat={chat} setMessages={setMessages} />
+      <ChatInput chat={chat} socketRef={socketRef} setMessages={setMessages} />
     </div>
   );
 };
