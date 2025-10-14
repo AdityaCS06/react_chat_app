@@ -41,10 +41,11 @@ const Dashboard = () => {
 
           <div className="flex flex-wrap justify-center gap-4">
             <button
-              onClick={() => {
-                if (firstChatId) navigate(`/chat/${firstChatId}`);
-                else alert("No chats available yet!");
-              }}
+              // onClick={() => {
+              //   if (firstChatId) navigate(`/chat/${firstChatId}`);
+              //   else alert("No chats available yet!");
+              // }}
+              onClick={() => navigate("/chats")}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-medium"
             >
               Open Chat

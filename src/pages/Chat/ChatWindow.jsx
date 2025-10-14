@@ -11,7 +11,6 @@ const ChatWindow = ({ chat }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Determine display name for header (group or direct)
   const chatDisplayName = useMemo(() => {
     if (!chat) return "";
     if (chat.is_group) return chat.name || "Unnamed Group";
@@ -21,14 +20,12 @@ const ChatWindow = ({ chat }) => {
     return other?.user?.username || "Unknown User";
   }, [chat, user]);
 
-  // ✅ Fetch messages for selected chat
   const fetchMessages = async () => {
     if (!chat?.cuid) return;
     try {
       const res = await getChatDetails(chat.cuid, token);
       setMessages(res?.messages || []);
-    } catch (err) {
-      console.error(err);
+    } catch {
       addToast("Failed to load chat details", "error");
     } finally {
       setLoading(false);
@@ -42,12 +39,12 @@ const ChatWindow = ({ chat }) => {
   }, [chat]);
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      {/* ✅ Chat Header */}
+    <div className="flex flex-col h-full bg-gray-100">
+      {/* Header */}
       <ChatHeader chatName={chatDisplayName} isGroup={chat?.is_group} />
 
-      {/* ✅ Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-100">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-5 py-4 bg-[url('/chat-bg-light.png')] bg-cover bg-center">
         {loading ? (
           <p className="text-center text-gray-400 mt-4">Loading messages...</p>
         ) : messages.length === 0 ? (
@@ -63,14 +60,14 @@ const ChatWindow = ({ chat }) => {
                 className={`mb-2 flex ${isMine ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[75%] p-3 rounded-2xl shadow-sm ${
+                  className={`max-w-[70%] px-4 py-2 rounded-2xl shadow-sm ${
                     isMine
                       ? "bg-blue-600 text-white rounded-br-none"
                       : "bg-white text-gray-800 rounded-bl-none"
                   }`}
                 >
-                  {msg.content}
-                  <div className="text-xs text-gray-400 mt-1 text-right">
+                  <div>{msg.content}</div>
+                  <div className="text-[11px] text-gray-300 mt-1 text-right">
                     {new Date(msg.created_at).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -83,7 +80,7 @@ const ChatWindow = ({ chat }) => {
         )}
       </div>
 
-      {/* ✅ Input Box */}
+      {/* Input */}
       <ChatInput chat={chat} setMessages={setMessages} />
     </div>
   );
