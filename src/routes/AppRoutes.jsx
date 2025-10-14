@@ -5,8 +5,11 @@ import Login from "../pages/Login/Login";
 import Profile from "../pages/Profile/Profile";
 import Dashboard from "../pages/Dashboard/Dashboard"; // New page
 // import ChatPage from "../pages/Chat/ChatPage"; // New
-import ChatLayout from "../pages/Chat/ChatLayout";
+// import ChatLayout from "../pages/Chat/ChatLayout";
 import PrivateRoute from "./PrivateRoute";
+import CreateChat from "../pages/Chat/CreateChat";
+import ChatList from "../pages/Chat/ChatList";
+import ChatLayout from "../pages/Chat/ChatLayout";
 
 const AppRoutes = () => {
   return (
@@ -34,7 +37,27 @@ const AppRoutes = () => {
         }
       />
 
+      {/* CHAT ROUTES */}
+
       <Route
+        path="/create-chat"
+        element={
+          <PrivateRoute>
+            <CreateChat />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/chats"
+        element={
+          <PrivateRoute>
+            <ChatLayout />
+          </PrivateRoute>
+        }
+      />
+
+      {/* <Route
         path="/chat"
         element={
           <PrivateRoute>
@@ -49,7 +72,7 @@ const AppRoutes = () => {
             <ChatLayout />
           </PrivateRoute>
         }
-      />
+      /> */}
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
