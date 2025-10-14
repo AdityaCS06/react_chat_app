@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const AUTH_BASE_URL = "http://localhost:8000/auth";
+const AUTH_BASE_URL = "https://chat-app-4ey4.onrender.com/auth";
 
 export const registerUser = async (userData) => {
   try {
