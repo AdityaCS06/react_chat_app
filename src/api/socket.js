@@ -1,6 +1,6 @@
 // src/api/socket.js
 export const connectToChatSocket = (chatId, token, onMessage) => {
-  const socketUrl = `ws://localhost:8000/ws/chat/${chatId}?token=${token}`;
+  const socketUrl = `ws://https://chat-app-4ey4.onrender.com/ws/chat/${chatId}?token=${token}`;
   const socket = new WebSocket(socketUrl);
 
   socket.onopen = () => console.log("✅ WebSocket connected:", chatId);

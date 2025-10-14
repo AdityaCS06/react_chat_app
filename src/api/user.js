@@ -1,7 +1,7 @@
 // src/api/user.js
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8000/chats"; // ✅ Correct as per your backend
+const BASE_URL = "https://chat-app-4ey4.onrender.com/chats"; // ✅ Correct as per your backend
 
 const authHeader = (token) => ({
   headers: { Authorization: `Bearer ${token}` },
