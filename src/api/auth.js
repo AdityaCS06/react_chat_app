@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const AUTH_BASE_URL = "https://chat-app-4ey4.onrender.com/auth";
+// const AUTH_BASE_URL = "http://localhost:8000/auth";
+const AUTH_BASE_URL = import.meta.env.VITE_API_BASE_URL + "/auth";
 
 export const registerUser = async (userData) => {
   try {
