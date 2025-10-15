@@ -1,7 +1,8 @@
 // src/api/message.js
 import axios from "axios";
 
-const BASE_URL = "https://chat-app-4ey4.onrender.com/chats"; // same router as your chats
+// const BASE_URL = "http://localhost:8000/chats"; // same router as your chats
+const BASE_URL = import.meta.env.VITE_API_BASE_URL + "/chats";
 
 const authHeader = (token) => ({
   headers: { Authorization: `Bearer ${token}` },
