@@ -1,6 +1,9 @@
 // src/api/socket.js
 export const connectToChatSocket = (chatId, token, onMessage) => {
-  const socketUrl = `ws://localhost:8000/ws/chat/${chatId}?token=${token}`;
+  // const socketUrl = `ws://localhost:8000/ws/chat/${chatId}?token=${token}`;
+  
+  const SOCKET_BASE_URL = import.meta.env.VITE_SOCKET_URL;
+  const socketUrl = `${SOCKET_BASE_URL}/chat/${chatId}?token=${token}`;
   const socket = new WebSocket(socketUrl);
 
   socket.onopen = () => console.log("✅ WebSocket connected:", chatId);
