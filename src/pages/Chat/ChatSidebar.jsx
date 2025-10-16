@@ -10,34 +10,33 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const fetchChats = async () => {
-    try {
-      const res = await getMyChats(token);
-      setChats(res?.chats || []);
-    } catch {
-      addToast("Failed to load chats", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const res = await getMyChats(token);
+        setChats(res?.chats || []);
+      } catch {
+        addToast("Failed to load chats", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchChats();
-  }, []);
+  }, [token]);
 
   const getChatDisplayName = (chat) => {
     if (chat.is_group) return chat.name || "Unnamed Group";
-    const other = chat.members.find(
-      (m) => m.user.public_id !== user.public_id
-    );
+    const other = chat.members.find((m) => m.user.public_id !== user.public_id);
     return other?.user?.username || "Unknown User";
   };
 
-  const filteredChats = useMemo(() => {
-    return chats.filter((chat) =>
-      getChatDisplayName(chat).toLowerCase().includes(search.toLowerCase())
-    );
-  }, [chats, search]);
+  const filteredChats = useMemo(
+    () =>
+      chats.filter((chat) =>
+        getChatDisplayName(chat).toLowerCase().includes(search.toLowerCase())
+      ),
+    [chats, search]
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -52,7 +51,7 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
         </button>
       </div>
 
-      {/* Search bar */}
+      {/* Search */}
       <div className="p-3 border-b bg-gray-50">
         <input
           type="text"
@@ -76,7 +75,7 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
               <div
                 key={chat.cuid}
                 onClick={() => onSelectChat(chat)}
-                className={`p-4 cursor-pointer border-b hover:bg-gray-100 transition-all ${
+                className={`p-4 cursor-pointer border-b hover:bg-gray-100 transition-all truncate ${
                   activeChat?.cuid === chat.cuid
                     ? "bg-blue-50 border-l-4 border-blue-600"
                     : ""
@@ -85,7 +84,7 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
                 <div className="font-medium text-gray-900 truncate text-sm">
                   {chatName}
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs text-gray-500 mt-1 truncate">
                   {chat.is_group
                     ? `${chat.members.length} members`
                     : "Direct chat"}

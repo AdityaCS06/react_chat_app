@@ -1,5 +1,4 @@
-// src/pages/Chat/ChatWindow.jsx
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../components/chat/MessageBubble";
@@ -17,88 +16,70 @@ const ChatWindow = ({ chat }) => {
   const [hasMore, setHasMore] = useState(true);
   const socketRef = useRef(null);
   const scrollRef = useRef(null);
-  const chatIdRef = useRef(null);
   const isFetchingRef = useRef(false);
 
-  // --- Fetch messages ---
-  const fetchMessages = async (replace = false, limit = 50, offset = 0) => {
-    if (!chat?.cuid || isFetchingRef.current) return;
-    isFetchingRef.current = true;
-    setLoading(true);
-    try {
-      const res = await getMessages(token, chat.cuid, limit, offset);
-      const newMessages = res.messages || [];
-      setMessages((prev) =>
-        replace ? newMessages : [...newMessages, ...prev]
-      );
-      setHasMore(newMessages.length === limit);
-    } catch (err) {
-      addToast("Failed to load messages", "error");
-    } finally {
-      isFetchingRef.current = false;
-      setLoading(false);
-    }
-  };
+  const fetchMessages = useCallback(
+    async (replace = false, limit = 50, offset = 0) => {
+      if (!chat?.cuid || isFetchingRef.current) return;
+      isFetchingRef.current = true;
+      setLoading(true);
+      try {
+        const res = await getMessages(token, chat.cuid, limit, offset);
+        const newMessages = res.messages || [];
+        setMessages((prev) => (replace ? newMessages : [...newMessages, ...prev]));
+        setHasMore(newMessages.length === limit);
+      } catch {
+        addToast("Failed to load messages", "error");
+      } finally {
+        isFetchingRef.current = false;
+        setLoading(false);
+      }
+    },
+    [chat?.cuid, token, addToast]
+  );
 
-  // --- WebSocket setup ---
-  const setupWebSocket = () => {
+  const setupWebSocket = useCallback(() => {
     if (!chat?.cuid || !token) return;
     if (socketRef.current) socketRef.current.close();
-
     socketRef.current = connectToChatSocket(chat.cuid, token, (data) => {
-      // Backend broadcasts a new message JSON
       setMessages((prev) => [...prev, data]);
     });
-  };
+  }, [chat?.cuid, token]);
 
-  // --- Handle new chat selection ---
   useEffect(() => {
     if (!chat) return;
-    if (chat.cuid !== chatIdRef.current) {
-      chatIdRef.current = chat.cuid;
-      setMessages([]);
-      fetchMessages(true);
-      setupWebSocket();
-    }
-    return () => {
-      if (socketRef.current) socketRef.current.close();
-    };
-  }, [chat]);
+    setMessages([]);
+    fetchMessages(true);
+    setupWebSocket();
+    return () => socketRef.current?.close();
+  }, [chat, fetchMessages, setupWebSocket]);
 
-  // --- Scroll to bottom when new message ---
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages.length]);
 
-  // --- Infinite scroll ---
   const handleScroll = (e) => {
     if (e.target.scrollTop < 100 && hasMore && !loading) {
       fetchMessages(false, 50, messages.length);
     }
   };
 
-  // --- Mark messages as seen ---
-  const markMessagesAsSeen = async () => {
+  const markMessagesAsSeen = useCallback(async () => {
     try {
-      const unseen = messages.filter(
-        (msg) => msg.sender_id !== user.public_id && msg.status !== "seen"
-      );
+      const unseen = messages.filter((msg) => msg.sender_id !== user.public_id && msg.status !== "seen");
       for (const msg of unseen) {
         await updateMessageStatus(token, chat.cuid, msg.muid, "seen");
       }
     } catch {}
-  };
+  }, [messages, user.public_id, token, chat.cuid]);
 
   useEffect(() => {
     if (!loading && messages.length > 0) markMessagesAsSeen();
-  }, [messages]);
+  }, [messages, loading, markMessagesAsSeen]);
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
-      <ChatHeader chat={chat} />
-
+      <ChatHeader chatName={chat.name || "Chat"} isGroup={chat.is_group} />
       <div
         ref={scrollRef}
         onScroll={handleScroll}
@@ -115,9 +96,7 @@ const ChatWindow = ({ chat }) => {
             const isMine = msg.sender_id === user.public_id;
             const showSender =
               chat.is_group &&
-              (!isMine ||
-                idx === 0 ||
-                messages[idx - 1]?.sender_id !== msg.sender_id);
+              (!isMine || idx === 0 || messages[idx - 1]?.sender_id !== msg.sender_id);
             return (
               <MessageBubble
                 key={msg.muid || idx}
@@ -131,7 +110,6 @@ const ChatWindow = ({ chat }) => {
           })
         )}
       </div>
-
       <ChatInput chat={chat} socketRef={socketRef} setMessages={setMessages} />
     </div>
   );

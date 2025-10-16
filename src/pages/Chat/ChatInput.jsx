@@ -1,42 +1,35 @@
-// src/pages/Chat/ChatInput.jsx
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 const ChatInput = ({ chat, socketRef, setMessages }) => {
   const [message, setMessage] = useState("");
-  const { user } = useAuth(); // ✅ Get current user
+  const { user } = useAuth();
 
   const handleSend = (e) => {
     e.preventDefault();
     if (!message.trim() || !socketRef.current) return;
 
-    const payload = {
-      content: message.trim(),
-      message_type: "text",
-    };
-
-    // Optimistic UI update with actual sender_id
     const tempMsg = {
-      muid: `temp-${Date.now()}`, // temporary unique ID
-      sender_id: user.public_id, // ✅ Correct sender ID
+      muid: `temp-${Date.now()}`,
+      sender_id: user.public_id,
       content: message.trim(),
       message_type: "text",
       created_at: new Date().toISOString(),
-      status: "sent", // optional for optimistic display
+      status: "sent",
     };
 
-    // Update messages immediately in UI
     setMessages((prev) => [...prev, tempMsg]);
 
-    // Send message through WebSocket
-    socketRef.current.send(JSON.stringify(payload));
+    socketRef.current.send(JSON.stringify({ content: message.trim(), message_type: "text" }));
 
-    // Clear input field
     setMessage("");
   };
 
   return (
-    <form onSubmit={handleSend} className="p-3 border-t bg-white flex gap-2">
+    <form
+      onSubmit={handleSend}
+      className="sticky bottom-0 p-3 border-t bg-white flex gap-2 z-10"
+    >
       <input
         type="text"
         value={message}
@@ -51,6 +44,7 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
         Send
       </button>
     </form>
+
   );
 };
 
