@@ -11,8 +11,6 @@ const ChatWindow = ({ chat }) => {
   const { token, user } = useAuth();
   const { addToast } = useToast();
 
-  console.log("CHAT WINDOW RECEIVED CHAT =", chat);
-
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -72,6 +70,7 @@ const ChatWindow = ({ chat }) => {
     return () => socketRef.current?.close();
   }, [chat, fetchMessages, setupWebSocket]);
 
+  // Scroll to bottom when messages change
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
@@ -88,8 +87,7 @@ const ChatWindow = ({ chat }) => {
   const markMessagesAsSeen = useCallback(async () => {
     try {
       const unseen = messages.filter(
-        (msg) =>
-          msg.sender_id !== user.public_id && msg.status !== "seen"
+        (msg) => msg.sender_id !== user.public_id && msg.status !== "seen"
       );
 
       for (const msg of unseen) {
@@ -105,13 +103,15 @@ const ChatWindow = ({ chat }) => {
   }, [messages, loading, markMessagesAsSeen]);
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-gray-50">
+    <div className="flex flex-col h-screen bg-gray-50 min-h-0">
+      {/* Header */}
       <ChatHeader chat={chat} currentUser={user} />
 
+      {/* Messages */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3"
+        className="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col-reverse"
       >
         {loading && messages.length === 0 && (
           <p className="text-center text-gray-400 text-sm">
@@ -119,25 +119,25 @@ const ChatWindow = ({ chat }) => {
           </p>
         )}
 
-        {/* ---- FIX APPLIED HERE ---- */}
-        {messages.map((msg) => (
-          <MessageBubble
-            key={msg.muid}
-            msg={msg}
-            isMine={msg.sender_id === user.public_id}
-            isGroup={chat?.is_group}
-            showSender={true}
-            senderName={msg.sender_name || msg.sender_username}
-          />
-        ))}
-        {/* --------------------------- */}
+        {messages
+          .slice()
+          .reverse()
+          .map((msg) => (
+            <MessageBubble
+              key={msg.muid}
+              msg={msg}
+              isMine={msg.sender_id === user.public_id}
+              isGroup={chat?.is_group}
+              showSender={true}
+              senderName={msg.sender_name || msg.sender_username}
+            />
+          ))}
       </div>
 
-      <ChatInput
-        chat={chat}
-        socketRef={socketRef}
-        setMessages={setMessages}
-      />
+      {/* Input always fixed at bottom */}
+      <div className="bg-white p-3">
+        <ChatInput chat={chat} socketRef={socketRef} setMessages={setMessages} />
+      </div>
     </div>
   );
 };
