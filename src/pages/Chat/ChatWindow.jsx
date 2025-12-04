@@ -11,8 +11,6 @@ const ChatWindow = ({ chat }) => {
   const { token, user } = useAuth();
   const { addToast } = useToast();
 
-  console.log("CHAT WINDOW RECEIVED CHAT =", chat);
-
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -21,24 +19,17 @@ const ChatWindow = ({ chat }) => {
   const scrollRef = useRef(null);
   const isFetchingRef = useRef(false);
 
-  // -------------------------
-  // FETCH MESSAGES
-  // -------------------------
   const fetchMessages = useCallback(
     async (replace = false, limit = 50, offset = 0) => {
       if (!chat?.cuid || isFetchingRef.current) return;
-
       isFetchingRef.current = true;
       setLoading(true);
-
       try {
         const res = await getMessages(token, chat.cuid, limit, offset);
         const newMessages = res.messages || [];
-
         setMessages((prev) =>
-          replace ? newMessages : [...newMessages, ...prev]
+          replace ? newMessages.reverse() : [...newMessages.reverse(), ...prev]
         );
-
         setHasMore(newMessages.length === limit);
       } catch (err) {
         addToast("Failed to load messages", "error");
@@ -52,11 +43,9 @@ const ChatWindow = ({ chat }) => {
 
   const setupWebSocket = useCallback(() => {
     if (!chat?.cuid || !token) return;
-
     if (socketRef.current) {
       socketRef.current.close();
     }
-
     socketRef.current = connectToChatSocket(chat.cuid, token, (data) => {
       setMessages((prev) => [...prev, data]);
     });
@@ -64,11 +53,9 @@ const ChatWindow = ({ chat }) => {
 
   useEffect(() => {
     if (!chat) return;
-
     setMessages([]);
     fetchMessages(true);
     setupWebSocket();
-
     return () => socketRef.current?.close();
   }, [chat, fetchMessages, setupWebSocket]);
 
@@ -88,10 +75,8 @@ const ChatWindow = ({ chat }) => {
   const markMessagesAsSeen = useCallback(async () => {
     try {
       const unseen = messages.filter(
-        (msg) =>
-          msg.sender_id !== user.public_id && msg.status !== "seen"
+        (msg) => msg.sender_id !== user.public_id && msg.status !== "seen"
       );
-
       for (const msg of unseen) {
         await updateMessageStatus(token, chat.cuid, msg.muid, "seen");
       }
@@ -114,12 +99,9 @@ const ChatWindow = ({ chat }) => {
         className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3"
       >
         {loading && messages.length === 0 && (
-          <p className="text-center text-gray-400 text-sm">
-            Loading messages...
-          </p>
+          <p className="text-center text-gray-400 text-sm">Loading messages...</p>
         )}
 
-        {/* ---- FIX APPLIED HERE ---- */}
         {messages.map((msg) => (
           <MessageBubble
             key={msg.muid}
@@ -130,14 +112,9 @@ const ChatWindow = ({ chat }) => {
             senderName={msg.sender_name || msg.sender_username}
           />
         ))}
-        {/* --------------------------- */}
       </div>
 
-      <ChatInput
-        chat={chat}
-        socketRef={socketRef}
-        setMessages={setMessages}
-      />
+      <ChatInput chat={chat} socketRef={socketRef} setMessages={setMessages} />
     </div>
   );
 };
