@@ -27,11 +27,12 @@ const ChatWindow = ({ chat }) => {
       try {
         const res = await getMessages(token, chat.cuid, limit, offset);
         const newMessages = res.messages || [];
+        const reversed = [...newMessages].reverse();
         setMessages((prev) =>
-          replace ? newMessages.reverse() : [...newMessages.reverse(), ...prev]
+          replace ? reversed : [...reversed, ...prev]
         );
         setHasMore(newMessages.length === limit);
-      } catch (err) {
+      } catch {
         addToast("Failed to load messages", "error");
       } finally {
         isFetchingRef.current = false;
@@ -77,9 +78,9 @@ const ChatWindow = ({ chat }) => {
       const unseen = messages.filter(
         (msg) => msg.sender_id !== user.public_id && msg.status !== "seen"
       );
-      for (const msg of unseen) {
-        await updateMessageStatus(token, chat.cuid, msg.muid, "seen");
-      }
+      await Promise.all(
+        unseen.map((msg) => updateMessageStatus(token, chat.cuid, msg.muid, "seen"))
+      );
     } catch {}
   }, [messages, user.public_id, token, chat?.cuid]);
 
@@ -99,7 +100,13 @@ const ChatWindow = ({ chat }) => {
         className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3"
       >
         {loading && messages.length === 0 && (
-          <p className="text-center text-gray-400 text-sm">Loading messages...</p>
+          <div className="animate-pulse space-y-3 p-4">
+            {[1,2,3].map((i) => (
+              <div key={i} className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}>
+                <div className={`h-10 ${i % 2 === 0 ? "w-48" : "w-36"} bg-gray-200 rounded-2xl`} />
+              </div>
+            ))}
+          </div>
         )}
 
         {messages.map((msg) => (

@@ -1,28 +1,38 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../components/ui/ToastContainer";
+import { sendMessage } from "../../api/message";
 
 const ChatInput = ({ chat, socketRef, setMessages }) => {
   const [message, setMessage] = useState("");
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const { addToast } = useToast();
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!message.trim() || !socketRef.current) return;
+    if (!message.trim()) return;
 
+    const content = message.trim();
     const tempMsg = {
       muid: `temp-${Date.now()}`,
       sender_id: user.public_id,
-      content: message.trim(),
+      content,
       message_type: "text",
       created_at: new Date().toISOString(),
       status: "sent",
     };
 
     setMessages((prev) => [...prev, tempMsg]);
-
-    socketRef.current.send(JSON.stringify({ content: message.trim(), message_type: "text" }));
-
     setMessage("");
+
+    const sent = socketRef.current?.send?.(JSON.stringify({ content, message_type: "text" }));
+    if (!sent) {
+      try {
+        await sendMessage(token, chat.cuid, content);
+      } catch {
+        addToast("Failed to send message", "error");
+      }
+    }
   };
 
   return (
@@ -35,6 +45,7 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
         value={message}
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Type a message..."
+        aria-label="Message input"
         className="flex-1 border rounded-xl px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300"
       />
       <button

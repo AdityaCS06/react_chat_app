@@ -10,8 +10,12 @@ const authHeader = (token) => ({
 
 // Create new chat
 export const createChat = async (chatData, token) => {
-  const response = await axios.post(`${BASE_URL}/create`, chatData, authHeader(token));
-  return response.data;
+  try {
+    const response = await axios.post(`${BASE_URL}/create`, chatData, authHeader(token));
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
 };
 
 export const getMyChats = async (token, limit = 50, offset = 0) => {

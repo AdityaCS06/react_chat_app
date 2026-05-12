@@ -22,7 +22,7 @@ const ChatHeader = ({ chat, currentUser }) => {
 
     if (others?.length > 0) {
       const user = others[0].user;
-      return user.username || user.username;
+      return user.username;
     }
 
     // If only 1 member (self)
@@ -54,7 +54,7 @@ const ChatHeader = ({ chat, currentUser }) => {
 
       </div>
 
-      <button className="text-gray-500 hover:text-gray-700 transition text-xl">
+      <button aria-label="Chat menu" className="text-gray-500 hover:text-gray-700 transition text-xl">
         ⋮
       </button>
 

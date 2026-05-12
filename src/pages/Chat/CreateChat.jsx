@@ -28,32 +28,32 @@ const CreateChat = () => {
   const handleRemoveUser = (id) => {
     setSelectedUsers(selectedUsers.filter((u) => u.id !== id));
   };
-const handleCreateChat = async () => {
-  if (selectedUsers.length === 0) {
-    addToast("Please select at least one user", "error");
-    return;
-  }
 
-  const members = selectedUsers.map((u) => u.public_id);
+  const handleCreateChat = async () => {
+    if (selectedUsers.length === 0) {
+      addToast("Please select at least one user", "error");
+      return;
+    }
 
-  const payload = {
-    name: isGroup ? chatName : null,
-    is_group: isGroup,
-    members,
+    const members = selectedUsers.map((u) => u.public_id);
+
+    const payload = {
+      name: isGroup ? chatName : null,
+      is_group: isGroup,
+      members,
+    };
+
+    try {
+      setLoading(true);
+      const res = await createChat(payload, token);
+      addToast("Chat created successfully!", "success");
+      navigate(`/chats/${res.cuid}`);
+    } catch {
+      addToast("Failed to create chat", "error");
+    } finally {
+      setLoading(false);
+    }
   };
-
-  try {
-    setLoading(true);
-    const res = await createChat(payload, token);
-    addToast("Chat created successfully!", "success");
-    navigate(`/chats/${res.cuid}`);
-  } catch (err) {
-    console.error(err);
-    addToast("Failed to create chat", "error");
-  } finally {
-    setLoading(false);
-  }
-};
 
 
   return (

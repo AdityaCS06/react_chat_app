@@ -1,28 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Navbar from "../../components/layout/Navbar";
-import { getMyChats } from "../../api/chat";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
-  const [chats, setChats] = useState([]);
-
-  useEffect(() => {
-    const fetchChats = async () => {
-      if (!token) return;
-      try {
-        const data = await getMyChats(token);
-        setChats(data.chats || []);
-      } catch (err) {
-        console.error("Failed to load chats", err);
-      }
-    };
-    fetchChats();
-  }, [token]);
-
-  const firstChatId = chats.length > 0 ? chats[0].id : null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">

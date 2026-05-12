@@ -47,6 +47,8 @@ const Navbar = () => {
     <div className="md:hidden flex items-center mr-4 sm:mr-6 lg:mr-10">
       <button
         onClick={() => setMenuOpen(!menuOpen)}
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={menuOpen}
         className="text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-600 p-2 rounded-md"
       >
         <svg

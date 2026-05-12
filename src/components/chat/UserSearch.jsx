@@ -15,13 +15,11 @@ const UserSearch = ({ onSelectUser, selectedUsers }) => {
         setUsers(
           data.filter(
             (u) =>
-              u.email !== user?.email &&
+              u.public_id !== user?.public_id &&
               !selectedUsers.some((s) => s.public_id === u.public_id)
           )
         );
-      } catch (err) {
-        console.error("Failed to load users", err);
-      }
+      } catch {} 
     };
     const timeout = setTimeout(fetchUsers, 400);
     return () => clearTimeout(timeout);
@@ -34,6 +32,7 @@ const UserSearch = ({ onSelectUser, selectedUsers }) => {
         placeholder="Search users..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        aria-label="Search users"
         className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-300"
       />
 

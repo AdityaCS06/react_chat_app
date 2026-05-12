@@ -2,29 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { getProfile } from "../../api/auth";
 import { useToast } from "../../components/ui/ToastContainer";
-
-// Helper to format timestamps like "2 days ago"
-const timeAgo = (date) => {
-  if (!date) return "N/A";
-  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-
-  let interval = seconds / 31536000;
-  if (interval > 1) return Math.floor(interval) + " years ago";
-
-  interval = seconds / 2592000;
-  if (interval > 1) return Math.floor(interval) + " months ago";
-
-  interval = seconds / 86400;
-  if (interval > 1) return Math.floor(interval) + " days ago";
-
-  interval = seconds / 3600;
-  if (interval > 1) return Math.floor(interval) + " hours ago";
-
-  interval = seconds / 60;
-  if (interval > 1) return Math.floor(interval) + " minutes ago";
-
-  return Math.floor(seconds) + " seconds ago";
-};
+import { timeAgo } from "../../utils/timeAgo";
 
 const Profile = () => {
   const { user, token, logout, setUser } = useAuth();

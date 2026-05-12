@@ -1,23 +1,54 @@
-// src/api/socket.js
+const MAX_RETRIES = 5;
+const BASE_DELAY = 1000;
+
 export const connectToChatSocket = (chatId, token, onMessage) => {
-  // const socketUrl = `ws://localhost:8000/ws/chat/${chatId}?token=${token}`;
-  
   const SOCKET_BASE_URL = import.meta.env.VITE_SOCKET_URL;
-  const socketUrl = `${SOCKET_BASE_URL}/chat/${chatId}?token=${token}`;
-  const socket = new WebSocket(socketUrl);
+  let socket = null;
+  let retries = 0;
+  let disconnected = false;
 
-  socket.onopen = () => console.log("✅ WebSocket connected:", chatId);
-  socket.onclose = () => console.log("❌ WebSocket closed:", chatId);
-  socket.onerror = (err) => console.error("⚠️ WebSocket error:", err);
+  const connect = () => {
+    const socketUrl = `${SOCKET_BASE_URL}/chat/${chatId}`;
+    socket = new WebSocket(socketUrl);
 
-  socket.onmessage = (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      onMessage?.(data);
-    } catch (e) {
-      console.error("Invalid WS message:", e);
-    }
+    socket.onopen = () => {
+      retries = 0;
+      socket.send(JSON.stringify({ type: "auth", token }));
+    };
+
+    socket.onclose = () => {
+      if (!disconnected && retries < MAX_RETRIES) {
+        const delay = BASE_DELAY * Math.pow(2, retries);
+        retries++;
+        setTimeout(connect, delay);
+      }
+    };
+
+    socket.onerror = () => {};
+
+    socket.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        onMessage?.(data);
+      } catch (e) {
+        console.error("Invalid WS message:", e);
+      }
+    };
   };
 
-  return socket;
+  connect();
+
+  return {
+    close: () => {
+      disconnected = true;
+      socket?.close();
+    },
+    send: (data) => {
+      if (socket?.readyState === WebSocket.OPEN) {
+        socket.send(data);
+        return true;
+      }
+      return false;
+    },
+  };
 };
