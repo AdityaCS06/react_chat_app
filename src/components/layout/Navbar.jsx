@@ -17,7 +17,7 @@ const Navbar = () => {
   <div className="flex justify-between items-center h-16">
     {/* Left side — Logo flush to left */}
     <div
-      onClick={() => navigate("/")}
+      onClick={() => navigate("/chats")}
       className="flex items-center gap-2 cursor-pointer select-none ml-4 sm:ml-6 lg:ml-10"
     >
       <img src={logo} alt="Convo Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
