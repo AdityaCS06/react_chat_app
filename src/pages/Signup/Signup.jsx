@@ -42,7 +42,7 @@ const Signup = () => {
       addToast(`User ${data.username} registered successfully!`, "success");
       login(data);
       setFormValues({ username: "", email: "", password: "", full_name: "" });
-      navigate("/chats");
+      navigate("/dashboard");
     } catch (err) {
       const message =
         err.detail?.message || err.detail || "Something went wrong. Try again!";
