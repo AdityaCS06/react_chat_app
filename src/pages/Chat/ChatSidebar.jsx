@@ -135,14 +135,14 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`relative flex-shrink-0 ${isActive ? "ring-2 ring-blue-500 ring-offset-2" : ""} rounded-full`}>
+                  <div className={`relative flex-shrink-0 ${isActive ? "ring-2 ring-blue-500 ring-offset-2" : ""} rounded-2xl`}>
                     <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300`}>
                       <span className="text-sm font-semibold text-white">
                         {getAvatarInitials(chatName)}
                       </span>
                     </div>
                     {!chat.is_group && (
-                      <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-white shadow-sm" />
+                      <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 rounded-full border-2 border-white shadow-sm" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
