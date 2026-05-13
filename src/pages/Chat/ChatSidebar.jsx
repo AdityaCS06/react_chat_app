@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { Plus, Search, MessageCircle, Users, User } from "lucide-react";
 import { getMyChats } from "../../api/chat";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
@@ -73,10 +74,8 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
             onClick={() => navigate("/create-chat")}
             className="relative px-4 py-2 text-sm font-medium text-white transition-all duration-300 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95"
           >
-            <span className="flex items-center gap-1">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
+            <span className="flex items-center gap-1.5">
+              <Plus size={16} />
               New Chat
             </span>
           </button>
@@ -90,9 +89,7 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
             aria-label="Search chats"
             className="w-full px-4 py-3 pl-11 bg-white/80 backdrop-blur-sm border-0 rounded-2xl text-sm text-slate-700 placeholder-slate-400 shadow-[inset_2px_2px_6px_rgba(0,0,0,0.05),inset_-2px_-2px_6px_rgba(255,255,255,0.8)] focus:shadow-[inset_2px_2px_6px_rgba(0,0,0,0.08),inset_-2px_-2px_6px_rgba(255,255,255,0.9),0_0_0_3px_rgba(99,102,241,0.2)] outline-none transition-all duration-300"
           />
-          <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
         </div>
       </div>
 
@@ -112,9 +109,7 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
         ) : filteredChats.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-center">
             <div className="w-16 h-16 mb-4 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center">
-              <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
+              <MessageCircle size={32} className="text-slate-400" />
             </div>
             <p className="text-slate-500 font-medium">No conversations yet</p>
             <p className="text-slate-400 text-sm mt-1">Start a new chat to begin messaging</p>
@@ -161,13 +156,9 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       {chat.is_group ? (
-                        <svg className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
+                        <Users size={14} className="text-slate-400 flex-shrink-0" />
                       ) : (
-                        <svg className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                        <User size={14} className="text-slate-400 flex-shrink-0" />
                       )}
                       <p className="text-xs text-slate-400 truncate">
                         {chat.is_group

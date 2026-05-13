@@ -7,7 +7,7 @@ import { connectToChatSocket } from "../../api/socket";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
-const ChatWindow = ({ chat }) => {
+const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onLogout }) => {
   const { token, user } = useAuth();
   const { addToast } = useToast();
 
@@ -92,7 +92,16 @@ const ChatWindow = ({ chat }) => {
 
   return (
     <div className="flex flex-col h-full min-h-0 bg-gradient-to-br from-slate-100 to-slate-50">
-      <ChatHeader chat={chat} currentUser={user} />
+      <ChatHeader
+        chat={chat}
+        currentUser={user}
+        onCloseChat={onCloseChat}
+        onDeleteChat={onDeleteChat}
+        onExitGroup={onExitGroup}
+        onAddMember={onAddMember}
+        onRemoveMember={onRemoveMember}
+        onLogout={onLogout}
+      />
 
       <div
         ref={scrollRef}
