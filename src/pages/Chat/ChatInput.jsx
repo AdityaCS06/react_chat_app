@@ -39,7 +39,7 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
   return (
     <form
       onSubmit={handleSend}
-      className="sticky bottom-0 p-4 bg-white/80 backdrop-blur-sm border-t border-slate-200/50"
+      className="sticky bottom-0 p-4 bg-white/70 backdrop-blur-xl border-t border-slate-200/40 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]"
     >
       <div className="flex items-center gap-3">
         <button type="button" aria-label="Attach" className="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all flex-shrink-0">
@@ -52,13 +52,13 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Write a message..."
             aria-label="Message input"
-            className="w-full px-4 py-3 pr-12 bg-slate-100/60 rounded-2xl text-sm text-slate-700 placeholder-slate-400 shadow-[inset_2px_2px_5px_rgba(0,0,0,0.04),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] focus:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.06),inset_-2px_-2px_5px_rgba(255,255,255,0.9),0_0_0_3px_rgba(99,102,241,0.2)] outline-none transition-all duration-300"
+            className="w-full px-5 py-3.5 bg-white/80 backdrop-blur-sm rounded-2xl text-sm text-slate-700 placeholder-slate-400 shadow-[inset_2px_2px_6px_rgba(0,0,0,0.04),inset_-2px_-2px_6px_rgba(255,255,255,0.9)] focus:shadow-[inset_2px_2px_8px_rgba(0,0,0,0.06),inset_-2px_-2px_8px_rgba(255,255,255,1),0_0_0_3px_rgba(99,102,241,0.2)] outline-none transition-all duration-300"
           />
         </div>
         <button
           type="submit"
           disabled={!message.trim()}
-          className="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 active:scale-95 flex-shrink-0"
+          className="p-3.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 active:scale-95 flex-shrink-0"
         >
           <Send size={20} />
         </button>

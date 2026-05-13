@@ -49,11 +49,11 @@ const ChatOptionsMenu = ({
         onClick?.();
         onClose();
       }}
-      className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-all duration-200 hover:bg-slate-100 active:scale-[0.98] ${
+      className={`w-full flex items-center gap-3 px-4 py-3.5 text-sm transition-all duration-200 hover:bg-slate-100 active:scale-[0.98] ${
         danger ? "text-red-500 hover:bg-red-50" : "text-slate-700"
       }`}
     >
-      <Icon size={18} className={danger ? "text-red-500" : "text-slate-500"} />
+      <Icon size={18} className={danger ? "text-red-500" : "text-slate-400"} />
       <span className="font-medium">{label}</span>
     </button>
   );
@@ -62,11 +62,11 @@ const ChatOptionsMenu = ({
 
   return createPortal(
     <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <div className="fixed inset-0 z-40 backdrop-blur-sm" onClick={onClose} />
       <div
         ref={menuRef}
-        className="fixed right-4 top-[72px] z-50 w-64 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200/50 overflow-hidden animate-scale-in"
-        style={{ animation: "scaleIn 0.15s ease-out forwards" }}
+        className="fixed right-4 top-[72px] z-50 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/40 overflow-hidden animate-scale-in"
+        style={{ animation: "scaleIn 0.2s ease-out forwards" }}
       >
         <div className="py-2">
           <MenuItem

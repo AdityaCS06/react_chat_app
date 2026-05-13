@@ -91,7 +91,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   }, [messages, loading, markMessagesAsSeen]);
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-gradient-to-br from-slate-100 to-slate-50">
+    <div className="flex flex-col h-full min-h-0 bg-gradient-to-br from-slate-100 via-white to-indigo-50">
       <ChatHeader
         chat={chat}
         currentUser={user}
@@ -106,7 +106,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4"
+        className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5"
       >
         {loading && messages.length === 0 && (
           <div className="space-y-4 p-4">

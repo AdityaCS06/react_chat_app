@@ -51,9 +51,9 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
   const avatarColor = getAvatarColor(displayName);
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200/50 bg-white/80 backdrop-blur-sm shadow-sm relative">
-      <div className="flex items-center gap-3">
-        <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-semibold shadow-md`}>
+    <div className="flex items-center justify-between px-6 py-4 bg-white/70 backdrop-blur-xl border-b border-slate-200/40 shadow-sm relative z-10">
+      <div className="flex items-center gap-4">
+        <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold shadow-lg`}>
           {getInitials(displayName)}
         </div>
 
@@ -62,34 +62,34 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
             {displayName}
           </h3>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             {chat.is_group ? (
               <>
-                <Users size={14} className="text-slate-400" />
-                <p className="text-xs text-slate-500">{chat.members?.length || 0} members</p>
+                <Users size={13} className="text-slate-400" />
+                <p className="text-xs text-slate-500 font-medium">{chat.members?.length || 0} members</p>
               </>
             ) : (
               <>
-                <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                <p className="text-xs text-slate-500">Active now</p>
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <p className="text-xs text-slate-500 font-medium">Active now</p>
               </>
             )}
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 relative">
+      <div className="flex items-center gap-1.5">
         <button
           aria-label="Search"
           onClick={() => setShowSearch(!showSearch)}
-          className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+          className="p-2.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all"
         >
           <Search size={20} />
         </button>
         <button
           aria-label="More options"
           onClick={() => setShowMenu(!showMenu)}
-          className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all"
+          className="p-2.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all"
         >
           <MoreVertical size={20} />
         </button>
