@@ -38,24 +38,35 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
   return (
     <form
       onSubmit={handleSend}
-      className="sticky bottom-0 p-3 border-t bg-white flex gap-2 z-10"
+      className="sticky bottom-0 p-4 bg-white/80 backdrop-blur-sm border-t border-slate-200/50"
     >
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type a message..."
-        aria-label="Message input"
-        className="flex-1 border rounded-xl px-3 py-2 focus:outline-none focus:ring focus:ring-blue-300"
-      />
-      <button
-        type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
-      >
-        Send
-      </button>
+      <div className="flex items-center gap-3">
+        <button type="button" aria-label="Attach" className="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all flex-shrink-0">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+          </svg>
+        </button>
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Write a message..."
+            aria-label="Message input"
+            className="w-full px-4 py-3 pr-12 bg-slate-100/60 rounded-2xl text-sm text-slate-700 placeholder-slate-400 shadow-[inset_2px_2px_5px_rgba(0,0,0,0.04),inset_-2px_-2px_5px_rgba(255,255,255,0.8)] focus:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.06),inset_-2px_-2px_5px_rgba(255,255,255,0.9),0_0_0_3px_rgba(99,102,241,0.2)] outline-none transition-all duration-300"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={!message.trim()}
+          className="p-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300 active:scale-95 flex-shrink-0"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </button>
+      </div>
     </form>
-
   );
 };
 

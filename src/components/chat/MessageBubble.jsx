@@ -9,33 +9,36 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName }) => {
   return (
     <div className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
       <div
-        className={`relative group max-w-[70%] px-3 py-2 rounded-2xl shadow-sm transition
-          ${
-            isMine
-              ? "bg-blue-600 text-white rounded-br-none"
-              : "bg-white text-gray-900 rounded-bl-none"
-          }`}
+        className={`relative group max-w-[75%] px-4 py-3 shadow-md transition-all duration-200 ${
+          isMine
+            ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl rounded-br-sm"
+            : "bg-white/90 backdrop-blur-sm text-slate-700 rounded-2xl rounded-bl-sm shadow-[2px_2px_8px_rgba(0,0,0,0.06)]"
+        }`}
       >
-        {/* Show sender name if group chat and not me */}
         {isGroup && showSender && !isMine && (
-          <div className="text-xs font-semibold text-gray-500 mb-1">
+          <div className={`text-xs font-semibold mb-1 ${isMine ? "text-blue-200" : "text-indigo-500"}`}>
             {senderName || "Unknown"}
           </div>
         )}
 
-        {/* Message text */}
-        <div className="break-words whitespace-pre-wrap">{msg.content}</div>
+        <div className="break-words whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
 
-        {/* Time + status */}
         <div
-          className={`text-[10px] mt-1 text-right ${
-            isMine ? "text-blue-100" : "text-gray-400"
+          className={`text-[10px] mt-1.5 flex items-center justify-end gap-1 ${
+            isMine ? "text-blue-100" : "text-slate-400"
           }`}
         >
-          {formatTime(msg.created_at)}
           {msg.status === "seen" && isMine && (
-            <span className="ml-1 text-[10px]">✓✓</span>
+            <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
+              <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+            </svg>
           )}
+          {msg.status === "sent" && isMine && (
+            <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
+              <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+            </svg>
+          )}
+          {formatTime(msg.created_at)}
         </div>
       </div>
     </div>
