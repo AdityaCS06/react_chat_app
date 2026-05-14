@@ -199,10 +199,10 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
         )}
       </div>
 
-      <div className="relative p-4 border-t border-slate-200/50 bg-white/50 backdrop-blur-sm" ref={dropdownRef}>
+      <div className="relative p-3 border-t border-slate-200/50 bg-white/50 backdrop-blur-sm" ref={dropdownRef}>
         <button
           onClick={() => setShowDropdown(!showDropdown)}
-          className="w-full flex items-center gap-3 hover:bg-white/60 p-2 -m-2 rounded-xl transition-all duration-300"
+          className="w-full flex items-center gap-3 hover:bg-white/60 p-1.5 -m-1.5 rounded-xl transition-all duration-300"
         >
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md">
             {user?.username?.charAt(0).toUpperCase() || "U"}
@@ -214,19 +214,19 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
         </button>
 
         {showDropdown && (
-          <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-2xl shadow-xl border border-slate-200/50 overflow-hidden">
+          <div className="absolute bottom-full left-2 right-2 mb-2 bg-white rounded-xl shadow-lg border border-slate-200/50 overflow-hidden z-50">
             <button
               onClick={() => { navigate("/profile"); setShowDropdown(false); }}
-              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-600 hover:bg-slate-50 transition-all"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-50 transition-all"
             >
-              <User size={18} className="text-slate-400" />
+              <User size={16} className="text-slate-400" />
               Profile
             </button>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-all"
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-all"
             >
-              <LogOut size={18} />
+              <LogOut size={16} />
               Logout
             </button>
           </div>
