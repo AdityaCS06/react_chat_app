@@ -17,7 +17,7 @@ const UserSearch = ({ onSelectUser, selectedUsers }) => {
           data.filter(
             (u) =>
               u.public_id !== user?.public_id &&
-              !selectedUsers.some((s) => s.public_id === u.public_id)
+              !selectedUsers.some((s) => s.public_id === u.public_id || s.id === u.public_id)
           )
         );
       } catch {}

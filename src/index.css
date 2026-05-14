@@ -1,19 +1,14 @@
 @import "tailwindcss";
 
-/* @keyframes slide-in {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
+/* Hide all scrollbars globally */
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out forwards;
-} */
+*::-webkit-scrollbar {
+  display: none;
+}
 
 @keyframes slide-in {
   0% { transform: translateX(100%); opacity: 0; }
@@ -22,27 +17,4 @@
 
 .animate-slide-in {
   animation: slide-in 0.3s ease-out forwards;
-}
-
-/* Custom Scrollbar - Hide scrollbar space */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(203, 213, 225, 0.6) transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  width: 6px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: rgba(203, 213, 225, 0.5);
-  border-radius: 10px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(148, 163, 184, 0.6);
 }

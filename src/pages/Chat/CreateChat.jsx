@@ -18,16 +18,21 @@ const CreateChat = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const handleRemoveUser = (id) => {
+    setSelectedUsers(selectedUsers.filter((u) => (u.id || u.public_id) !== id));
+  };
+
   const handleSelectUser = (user) => {
     if (isGroup || selectedUsers.length === 0) {
+      const exists = selectedUsers.some((u) => u.public_id === user.public_id);
+      if (exists) {
+        addToast("User already selected", "warning");
+        return;
+      }
       setSelectedUsers([...selectedUsers, user]);
     } else {
       addToast("Only one user allowed in 1:1 chat", "warning");
     }
-  };
-
-  const handleRemoveUser = (id) => {
-    setSelectedUsers(selectedUsers.filter((u) => (u.id || u.public_id) !== id));
   };
 
   const handleCreateChat = async () => {

@@ -1,6 +1,6 @@
 // src/components/chat/SelectedUserList.jsx
 import React from "react";
-import { X, User } from "lucide-react";
+import { X } from "lucide-react";
 
 const SelectedUserList = ({ users, onRemove }) => {
   if (!users.length) return null;
@@ -43,7 +43,7 @@ const SelectedUserList = ({ users, onRemove }) => {
             </div>
             <span className="text-xs font-medium">{u.full_name || u.username}</span>
             <button
-              onClick={() => onRemove(u.id)}
+              onClick={() => onRemove(u.id || u.public_id)}
               className="p-0.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all duration-200"
             >
               <X size={14} />
