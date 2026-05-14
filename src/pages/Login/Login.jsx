@@ -38,7 +38,7 @@ const Login = () => {
       login(data);
       addToast("Logged in successfully!", "success");
       setFormValues({ email_or_username: "", password: "" });
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       let message = "Invalid credentials";
       if (err.detail) {

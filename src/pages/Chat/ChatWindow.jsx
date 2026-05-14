@@ -7,7 +7,7 @@ import { connectToChatSocket } from "../../api/socket";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
-const ChatWindow = ({ chat }) => {
+const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onLogout }) => {
   const { token, user } = useAuth();
   const { addToast } = useToast();
 
@@ -27,11 +27,12 @@ const ChatWindow = ({ chat }) => {
       try {
         const res = await getMessages(token, chat.cuid, limit, offset);
         const newMessages = res.messages || [];
+        const reversed = [...newMessages].reverse();
         setMessages((prev) =>
-          replace ? newMessages.reverse() : [...newMessages.reverse(), ...prev]
+          replace ? reversed : [...reversed, ...prev]
         );
         setHasMore(newMessages.length === limit);
-      } catch (err) {
+      } catch {
         addToast("Failed to load messages", "error");
       } finally {
         isFetchingRef.current = false;
@@ -77,9 +78,9 @@ const ChatWindow = ({ chat }) => {
       const unseen = messages.filter(
         (msg) => msg.sender_id !== user.public_id && msg.status !== "seen"
       );
-      for (const msg of unseen) {
-        await updateMessageStatus(token, chat.cuid, msg.muid, "seen");
-      }
+      await Promise.all(
+        unseen.map((msg) => updateMessageStatus(token, chat.cuid, msg.muid, "seen"))
+      );
     } catch {}
   }, [messages, user.public_id, token, chat?.cuid]);
 
@@ -90,16 +91,31 @@ const ChatWindow = ({ chat }) => {
   }, [messages, loading, markMessagesAsSeen]);
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-gray-50">
-      <ChatHeader chat={chat} currentUser={user} />
+    <div className="flex flex-col h-full min-h-0 bg-gradient-to-br from-slate-100 via-white to-indigo-50">
+      <ChatHeader
+        chat={chat}
+        currentUser={user}
+        onCloseChat={onCloseChat}
+        onDeleteChat={onDeleteChat}
+        onExitGroup={onExitGroup}
+        onAddMember={onAddMember}
+        onRemoveMember={onRemoveMember}
+        onLogout={onLogout}
+      />
 
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3"
+        className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5"
       >
         {loading && messages.length === 0 && (
-          <p className="text-center text-gray-400 text-sm">Loading messages...</p>
+          <div className="space-y-4 p-4">
+            {[1,2,3].map((i) => (
+              <div key={i} className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}>
+                <div className={`h-14 ${i % 2 === 0 ? "w-56" : "w-44"} bg-white/60 rounded-2xl shadow-sm animate-pulse`} />
+              </div>
+            ))}
+          </div>
         )}
 
         {messages.map((msg) => (

@@ -31,7 +31,6 @@ export const sendMessage = async (token, chatId, content, messageType = "text") 
 
     return response.data; // MessageResponse
   } catch (error) {
-    console.error("Error sending message:", error);
     throw error.response?.data || error;
   }
 };
@@ -45,9 +44,8 @@ export const getMessages = async (token, chatId, limit = 50, offset = 0) => {
         ...authHeader(token),
       }
     );
-    return response.data; // { total, messages: [...] }
+    return response.data;
   } catch (error) {
-    console.error("Error fetching messages:", error);
     throw error.response?.data || error;
   }
 };
@@ -61,7 +59,7 @@ export const updateMessageStatus = async (
   try {
     const res = await axios.post(
       `${BASE_URL}/${chatId}/messages/${messageId}/status`,
-      null, // FastAPI expects query param 'status'
+      null,
       {
         params: { status },
         ...authHeader(token),
@@ -69,7 +67,6 @@ export const updateMessageStatus = async (
     );
     return res.data;
   } catch (error) {
-    console.error("Error updating message status:", error);
     throw error.response?.data || error;
   }
 };
