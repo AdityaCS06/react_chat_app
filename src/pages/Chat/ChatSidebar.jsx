@@ -1,17 +1,19 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, MessageCircle, Users, User } from "lucide-react";
+import { Plus, Search, MessageCircle, Users, User, LogOut } from "lucide-react";
 import { getMyChats } from "../../api/chat";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
 const ChatSidebar = ({ onSelectChat, activeChat }) => {
   const navigate = useNavigate();
-  const { token, user } = useAuth();
+  const { token, user, logout } = useAuth();
   const { addToast } = useToast();
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -26,6 +28,21 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
     };
     fetchChats();
   }, [token]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const getChatDisplayName = (chat) => {
     if (chat.is_group) return chat.name || "Unnamed Group";
@@ -179,6 +196,40 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
               </div>
             );
           })
+        )}
+      </div>
+
+      <div className="relative p-4 border-t border-slate-200/50 bg-white/50 backdrop-blur-sm" ref={dropdownRef}>
+        <button
+          onClick={() => setShowDropdown(!showDropdown)}
+          className="w-full flex items-center gap-3 hover:bg-white/60 p-2 -m-2 rounded-xl transition-all duration-300"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md">
+            {user?.username?.charAt(0).toUpperCase() || "U"}
+          </div>
+          <div className="flex-1 min-w-0 text-left">
+            <p className="font-semibold text-sm text-slate-700 truncate">{user?.username}</p>
+            <p className="text-xs text-slate-400">My Account</p>
+          </div>
+        </button>
+
+        {showDropdown && (
+          <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-2xl shadow-xl border border-slate-200/50 overflow-hidden">
+            <button
+              onClick={() => { navigate("/profile"); setShowDropdown(false); }}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-600 hover:bg-slate-50 transition-all"
+            >
+              <User size={18} className="text-slate-400" />
+              Profile
+            </button>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-all"
+            >
+              <LogOut size={18} />
+              Logout
+            </button>
+          </div>
         )}
       </div>
     </div>
