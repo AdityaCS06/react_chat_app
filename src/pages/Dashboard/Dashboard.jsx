@@ -87,7 +87,7 @@ const Dashboard = () => {
                 }
                 title="New Chat"
                 subtitle="Start a new conversation"
-                onClick={() => navigate("/chats")}
+                onClick={() => navigate("/create-chat")}
                 colorClass="bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-200"
               />
             </div>

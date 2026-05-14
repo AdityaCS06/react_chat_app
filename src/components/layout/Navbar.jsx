@@ -66,7 +66,7 @@ const Navbar = () => {
                           <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
                             <User size={16} className="text-slate-500" />
                           </div>
-                          Your Profile
+                          Profile
                         </button>
                         <button
                           onClick={handleLogout}
@@ -75,7 +75,7 @@ const Navbar = () => {
                           <div className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
                             <LogOut size={16} />
                           </div>
-                          Sign out
+                          Logout
                         </button>
                       </div>
                     </div>
