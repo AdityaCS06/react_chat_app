@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Search, MoreVertical, Users } from "lucide-react";
 import ChatOptionsMenu from "../../components/chat/ChatOptionsMenu";
 
-const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onLogout }) => {
+const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
 
@@ -107,7 +107,6 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
           onExitGroup={onExitGroup}
           onAddMember={onAddMember}
           onRemoveMember={onRemoveMember}
-          onLogout={onLogout}
         />
       </div>
     </div>

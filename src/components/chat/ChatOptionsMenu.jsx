@@ -10,7 +10,6 @@ import {
   DoorOpen,
   Trash2,
   X,
-  LogOut,
 } from "lucide-react";
 
 const ChatOptionsMenu = ({
@@ -23,7 +22,6 @@ const ChatOptionsMenu = ({
   onExitGroup,
   onAddMember,
   onRemoveMember,
-  onLogout,
 }) => {
   const menuRef = useRef(null);
 
@@ -124,15 +122,6 @@ const ChatOptionsMenu = ({
             icon={X}
             label="Close chat"
             onClick={onCloseChat}
-          />
-
-          <div className="h-px bg-slate-200/60 my-2" />
-
-          <MenuItem
-            icon={LogOut}
-            label="Logout"
-            onClick={onLogout}
-            danger
           />
         </div>
       </div>
