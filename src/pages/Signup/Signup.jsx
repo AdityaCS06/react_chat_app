@@ -53,7 +53,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen">
+    <div className="flex flex-col md:flex-row min-h-screen overflow-y-auto">
       {/* Left Side (Illustration) */}
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-blue-600 to-indigo-700 items-center justify-center text-white p-8">
         <div className="max-w-md text-center space-y-6">
@@ -72,8 +72,8 @@ const Signup = () => {
       </div>
 
       {/* Right Side (Signup Form) */}
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 px-6 py-10">
-        <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-8">
+      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 px-4 py-8 md:px-6 md:py-10">
+        <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-6 md:p-8">
           <h2 className="text-3xl font-semibold text-center text-gray-800 mb-4">
             Create Account
           </h2>
