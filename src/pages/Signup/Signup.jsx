@@ -72,8 +72,8 @@ const Signup = () => {
       </div>
 
       {/* Right Side (Signup Form) */}
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 px-4 py-8 md:px-6 md:py-10">
-        <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-6 md:p-8">
+      <div className="flex w-full md:w-1/2 items-start justify-center bg-gray-50 px-4 py-8 md:px-6 md:py-10 overflow-y-auto">
+        <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-6 md:p-8 mt-4 md:mt-0">
           <h2 className="text-3xl font-semibold text-center text-gray-800 mb-4">
             Create Account
           </h2>
