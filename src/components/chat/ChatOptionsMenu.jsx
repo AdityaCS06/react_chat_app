@@ -60,7 +60,7 @@ const ChatOptionsMenu = ({
 
   return createPortal(
     <>
-      <div className="fixed inset-0 z-40 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
         ref={menuRef}
         className="fixed right-4 top-[72px] z-50 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/40 overflow-hidden animate-scale-in"
