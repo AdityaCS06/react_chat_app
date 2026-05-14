@@ -28,8 +28,8 @@ const Landing = () => {
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <img src={logo} alt="Convo" className="w-8 h-8 sm:w-9 sm:h-9 object-contain" />
-            <span className="text-xl sm:text-2xl font-extrabold text-gray-800 tracking-tight">
+            <img src={logo} alt="Convo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+            <span className="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-tight font-[Poppins]">
               <span className="text-blue-600">Convo</span>
             </span>
           </div>

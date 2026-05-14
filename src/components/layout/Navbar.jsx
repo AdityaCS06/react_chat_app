@@ -22,21 +22,19 @@ const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-30">
-      <div className="bg-white/80 backdrop-blur-2xl border-b border-slate-200/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div
-              onClick={() => navigate("/dashboard")}
-              className="flex items-center gap-2 cursor-pointer select-none ml-4 sm:ml-6 lg:ml-10"
-            >
-              <img src={logo} alt="Convo Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-tight font-[Poppins]">
-                <span className="text-blue-600">Convo</span>
-              </h1>
-            </div>
+    <header className="bg-white shadow-md fixed top-0 left-0 w-full z-30">
+      <div className="flex justify-between items-center h-16">
+        <div
+          onClick={() => navigate("/dashboard")}
+          className="flex items-center gap-2 cursor-pointer select-none ml-4 sm:ml-6 lg:ml-10"
+        >
+          <img src={logo} alt="Convo Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-tight font-[Poppins]">
+            <span className="text-blue-600">Convo</span>
+          </h1>
+        </div>
 
-            <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 mr-4 sm:mr-6 lg:mr-10">
               {user && (
                 <div className="relative">
                   <button
@@ -85,9 +83,7 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-          </div>
         </div>
-      </div>
     </header>
   );
 };

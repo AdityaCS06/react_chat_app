@@ -76,9 +76,9 @@ const Profile = () => {
                     alt="Profile"
                     className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                   />
-                  <button className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full text-white flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors">
+<button className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full text-white flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.76-.9l.814-1.18A2 2 0 0111 7.94V13a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2h.93a2 2 0 001.76-.9l.814-1.18A2 2 0 019 5.06V7a2 2 0 01-2 2H3a2 2 0 01-2-2V9a2 2 0 012-2h.93a2 2 0 001.76-.9l.814-1.18A2 2 0 0111 3.06V5a2 2 0 012-2h2a2 2 0 012 2v2.06a2 2 0 01-.764 1.598l-.814 1.18A2 2 0 0011.93 12H13a2 2 0 002-2V9a2 2 0 00-2-2h-.93a2 2 0 00-1.76.9l-.814 1.18A2 2 0 017 10.06V13a2 2 0 002 2h2a2 2 0 002-2v-2.94a2 2 0 00-.764-1.598l-.814-1.18A2 2 0 0011.93 7H11a2 2 0 00-2 2v2a2 2 0 002 2h.93a2 2 0 001.76-.9l.814-1.18A2 2 0 0017 6.06V5a2 2 0 012-2h2a2 2 0 012 2v1.06a2 2 0 01-.764 1.598l-.814 1.18A2 2 0 0015.93 10H15a2 2 0 01-2-2V7a2 2 0 012-2h.93a2 2 0 001.76.9l.814 1.18A2 2 0 0021 8.94V11a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2.06a2 2 0 00.764-1.598l.814-1.18A2 2 0 0015.93 4H15a2 2 0 00-2 2v2a2 2 0 002 2h.93a2 2 0 001.76-.9l.814-1.18A2 2 0 0017 4.06V3a2 2 0 012-2h2a2 2 0 012 2v1.06a2 2 0 01-.764 1.598l-.814 1.18A2 2 0 0015.93 7H15a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
                   </button>
                 </div>
