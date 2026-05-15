@@ -1,14 +1,20 @@
 import React from "react";
 
-const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName }) => {
+const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContextMenu }) => {
   const formatTime = (dateStr) => {
     const d = new Date(dateStr);
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    onContextMenu?.(e, msg);
+  };
+
   return (
     <div className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
       <div
+        onContextMenu={handleContextMenu}
         className={`relative group max-w-[75%] px-5 py-3.5 transition-all duration-200 ${
           isMine
             ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl rounded-br-sm shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25"

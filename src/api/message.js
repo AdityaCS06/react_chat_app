@@ -70,3 +70,28 @@ export const updateMessageStatus = async (
     throw error.response?.data || error;
   }
 };
+
+export const deleteMessageForEveryone = async (token, chatId, messageId) => {
+  try {
+    const response = await axios.delete(
+      `${BASE_URL}/${chatId}/messages/${messageId}`,
+      authHeader(token)
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const deleteMessageForMe = async (token, chatId, messageId) => {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/${chatId}/messages/${messageId}/hide`,
+      null,
+      authHeader(token)
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};

@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../components/chat/MessageBubble";
-import { getMessages, updateMessageStatus } from "../../api/message";
+import MessageOptionsMenu from "../../components/chat/MessageOptionsMenu";
+import { getMessages, updateMessageStatus, deleteMessageForEveryone, deleteMessageForMe } from "../../api/message";
 import { connectToChatSocket } from "../../api/socket";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
@@ -14,6 +15,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [menuState, setMenuState] = useState({ isOpen: false, message: null, position: { x: 0, y: 0 } });
 
   const socketRef = useRef(null);
   const scrollRef = useRef(null);
@@ -84,6 +86,55 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     } catch {}
   }, [messages, user.public_id, token, chat?.cuid]);
 
+  const handleContextMenu = useCallback((e, msg) => {
+    const x = e.clientX;
+    const y = e.clientY;
+    const viewportWidth = window.innerWidth;
+    const menuWidth = 192;
+    const menuHeight = 80;
+    let adjustedX = x;
+    let adjustedY = y;
+    if (x + menuWidth > viewportWidth) {
+      adjustedX = viewportWidth - menuWidth - 10;
+    }
+    if (y + menuHeight > window.innerHeight) {
+      adjustedY = y - menuHeight - 10;
+    }
+    setMenuState({
+      isOpen: true,
+      message: msg,
+      position: { x: adjustedX, y: adjustedY },
+    });
+  }, []);
+
+  const handleCloseMenu = useCallback(() => {
+    setMenuState((prev) => ({ ...prev, isOpen: false }));
+  }, []);
+
+  const handleDeleteForMe = useCallback(async () => {
+    const msg = menuState.message;
+    if (!msg || !chat?.cuid) return;
+    try {
+      await deleteMessageForMe(token, chat.cuid, msg.muid);
+      setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
+      addToast("Message deleted for you", "success");
+    } catch {
+      addToast("Failed to delete message", "error");
+    }
+  }, [menuState.message, chat?.cuid, token, addToast]);
+
+  const handleDeleteForEveryone = useCallback(async () => {
+    const msg = menuState.message;
+    if (!msg || !chat?.cuid) return;
+    try {
+      await deleteMessageForEveryone(token, chat.cuid, msg.muid);
+      setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
+      addToast("Message deleted for everyone", "success");
+    } catch {
+      addToast("Failed to delete message", "error");
+    }
+  }, [menuState.message, chat?.cuid, token, addToast]);
+
   useEffect(() => {
     if (!loading && messages.length > 0) {
       markMessagesAsSeen();
@@ -126,8 +177,18 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
             isGroup={chat?.is_group}
             showSender={true}
             senderName={msg.sender_name || msg.sender_username}
+            onContextMenu={handleContextMenu}
           />
         ))}
+
+        <MessageOptionsMenu
+          isOpen={menuState.isOpen}
+          onClose={handleCloseMenu}
+          onDeleteForMe={handleDeleteForMe}
+          onDeleteForEveryone={handleDeleteForEveryone}
+          isSender={menuState.message?.sender_id === user.public_id}
+          position={menuState.position}
+        />
       </div>
 
       <ChatInput chat={chat} socketRef={socketRef} setMessages={setMessages} />
