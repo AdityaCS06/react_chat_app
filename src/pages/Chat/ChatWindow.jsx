@@ -3,7 +3,7 @@ import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../components/chat/MessageBubble";
 import MessageOptionsMenu from "../../components/chat/MessageOptionsMenu";
-import { getMessages, updateMessageStatus, deleteMessageForEveryone, deleteMessageForMe } from "../../api/message";
+import { getMessages, updateMessageStatus, deleteMessageForEveryone, deleteMessageForMe, editMessage } from "../../api/message";
 import { connectToChatSocket } from "../../api/socket";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
@@ -16,6 +16,8 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [menuState, setMenuState] = useState({ isOpen: false, message: null, position: { x: 0, y: 0 } });
+  const [editingMessage, setEditingMessage] = useState(null);
+  const [editContent, setEditContent] = useState("");
 
   const socketRef = useRef(null);
   const scrollRef = useRef(null);
@@ -50,7 +52,13 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       socketRef.current.close();
     }
     socketRef.current = connectToChatSocket(chat.cuid, token, (data) => {
-      setMessages((prev) => [...prev, data]);
+      setMessages((prev) => {
+        const tempMsg = prev.find((m) => m.muid.startsWith("temp-") && m.content === data.content && m.sender_id === data.sender_id);
+        if (tempMsg) {
+          return prev.map((m) => (m.muid === tempMsg.muid ? { ...m, muid: data.muid } : m));
+        }
+        return [...prev, data];
+      });
     });
   }, [chat?.cuid, token]);
 
@@ -135,6 +143,37 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     }
   }, [menuState.message, chat?.cuid, token, addToast]);
 
+  const handleEdit = useCallback(() => {
+    const msg = menuState.message;
+    if (!msg) return;
+    setEditingMessage(msg.muid);
+    setEditContent(msg.content);
+  }, [menuState.message]);
+
+  const handleSaveEdit = useCallback(async () => {
+    if (!editingMessage || !editContent.trim() || !chat?.cuid) return;
+    try {
+      const response = await editMessage(token, chat.cuid, editingMessage, editContent.trim());
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.muid === editingMessage
+            ? { ...m, content: response.content || editContent.trim(), is_edited: true, edited_at: response.edited_at }
+            : m
+        )
+      );
+      setEditingMessage(null);
+      setEditContent("");
+      addToast("Message edited", "success");
+    } catch {
+      addToast("Failed to edit message", "error");
+    }
+  }, [editingMessage, editContent, chat?.cuid, token, addToast]);
+
+  const handleCancelEdit = useCallback(() => {
+    setEditingMessage(null);
+    setEditContent("");
+  }, []);
+
   useEffect(() => {
     if (!loading && messages.length > 0) {
       markMessagesAsSeen();
@@ -178,6 +217,11 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
             showSender={true}
             senderName={msg.sender_name || msg.sender_username}
             onContextMenu={handleContextMenu}
+            isEditing={editingMessage === msg.muid}
+            editContent={editContent}
+            onEditChange={setEditContent}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
           />
         ))}
 
@@ -186,6 +230,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           onClose={handleCloseMenu}
           onDeleteForMe={handleDeleteForMe}
           onDeleteForEveryone={handleDeleteForEveryone}
+          onEdit={handleEdit}
           isSender={menuState.message?.sender_id === user.public_id}
           position={menuState.position}
         />

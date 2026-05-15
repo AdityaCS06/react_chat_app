@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Trash2, Ban } from "lucide-react";
+import { Trash2, Ban, Pencil } from "lucide-react";
 
 const MessageOptionsMenu = ({
   isOpen,
   onClose,
   onDeleteForMe,
   onDeleteForEveryone,
+  onEdit,
   isSender,
   position,
 }) => {
@@ -49,6 +50,19 @@ const MessageOptionsMenu = ({
         }}
       >
         <div className="py-1.5">
+          {isSender && (
+            <button
+              onClick={() => {
+                onEdit?.();
+                onClose();
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-100 transition-all duration-150"
+            >
+              <Pencil size={16} className="text-slate-400" />
+              <span className="font-medium">Edit</span>
+            </button>
+          )}
+
           <button
             onClick={() => {
               onDeleteForMe();

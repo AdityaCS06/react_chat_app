@@ -95,3 +95,16 @@ export const deleteMessageForMe = async (token, chatId, messageId) => {
     throw error.response?.data || error;
   }
 };
+
+export const editMessage = async (token, chatId, messageId, content) => {
+  try {
+    const response = await axios.patch(
+      `${BASE_URL}/${chatId}/messages/${messageId}`,
+      { content },
+      authHeader(token)
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
