@@ -152,6 +152,12 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
 
   const handleSaveEdit = useCallback(async () => {
     if (!editingMessage || !editContent.trim() || !chat?.cuid) return;
+    const originalMsg = messages.find((m) => m.muid === editingMessage);
+    if (originalMsg && originalMsg.content === editContent.trim()) {
+      setEditingMessage(null);
+      setEditContent("");
+      return;
+    }
     try {
       const response = await editMessage(token, chat.cuid, editingMessage, editContent.trim());
       setMessages((prev) =>
@@ -167,7 +173,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     } catch {
       addToast("Failed to edit message", "error");
     }
-  }, [editingMessage, editContent, chat?.cuid, token, addToast]);
+  }, [editingMessage, editContent, chat?.cuid, token, addToast, messages]);
 
   const handleCancelEdit = useCallback(() => {
     setEditingMessage(null);
