@@ -7,7 +7,7 @@ import { getUserStats, getMessageTrends } from "../../api/dashboard";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [chats, setChats] = useState([]);
   const [loadingChats, setLoadingChats] = useState(false);
   const [stats, setStats] = useState(null);
@@ -21,38 +21,27 @@ const Dashboard = () => {
     return "Good evening";
   };
 
-  useEffect(() => {
+useEffect(() => {
     const fetchData = async () => {
-      const token = localStorage.getItem("token");
       if (!token) return;
 
-      setLoadingChats(true);
-      setLoadingStats(true);
-
       try {
-        const [chatsData, statsData, trendsData] = await Promise.all([
-          getMyChats(token, 5, 0),
-          getUserStats(token),
-          getMessageTrends(token, 7)
-        ]);
-        console.log("Stats API response:", statsData);
-        console.log("Trends API response:", trendsData);
+        const chatsData = await getMyChats(token, 5, 0);
+        const statsData = await getUserStats(token);
+        const trendsData = await getMessageTrends(token, 7);
+        
         setChats(chatsData.chats || []);
         setStats(statsData);
         setTrends(trendsData.trends || []);
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
-        if (err.response) {
-          console.error("Response status:", err.response.status);
-          console.error("Response data:", err.response.data);
-        }
       } finally {
         setLoadingChats(false);
         setLoadingStats(false);
       }
     };
     fetchData();
-  }, []);
+  }, [token]);
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
