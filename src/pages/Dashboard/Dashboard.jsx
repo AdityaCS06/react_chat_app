@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [trends, setTrends] = useState([]);
   const [unreadData, setUnreadData] = useState(null);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [trendsDays, setTrendsDays] = useState(7);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -30,7 +31,7 @@ try {
         const [chatsData, statsData, trendsData, unreadData] = await Promise.all([
           getMyChats(token, 5, 0),
           getUserStats(token),
-          getMessageTrends(token, 7),
+          getMessageTrends(token, trendsDays),
           getUnreadStats(token)
         ]);
         setChats(chatsData.chats || []);
@@ -46,6 +47,17 @@ try {
     };
     fetchData();
   }, [token]);
+
+  const fetchTrends = async (days) => {
+    if (!token) return;
+    setTrendsDays(days);
+    try {
+      const trendsData = await getMessageTrends(token, days);
+      setTrends(trendsData.trends || []);
+    } catch (err) {
+      console.error("Failed to fetch trends:", err);
+    }
+  };
 
   const formatTime = (dateString) => {
     const date = new Date(dateString);
@@ -156,7 +168,7 @@ try {
 
           <div className="mb-10">
             <h2 className="text-lg font-semibold text-gray-700 mb-4 ml-1">Your Stats</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
@@ -290,7 +302,19 @@ try {
 
           {trends.length > 0 && (
             <div className="mb-10">
-              <h2 className="text-lg font-semibold text-gray-700 mb-4 ml-1">Message Activity (Last 7 Days)</h2>
+              <div className="flex items-center justify-between mb-4 ml-1">
+                <h2 className="text-lg font-semibold text-gray-700">Message Activity (Last {trendsDays} Days)</h2>
+                <select
+                  value={trendsDays}
+                  onChange={(e) => fetchTrends(Number(e.target.value))}
+                  className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer hover:border-gray-300 transition-colors"
+                >
+                  <option value={7}>7 Days</option>
+                  <option value={14}>14 Days</option>
+                  <option value={21}>21 Days</option>
+                  <option value={30}>30 Days</option>
+                </select>
+              </div>
               <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
                 <div className="flex items-end justify-between gap-2 h-32">
                   {trends.map((day, index) => {
