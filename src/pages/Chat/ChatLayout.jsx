@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import ChatSidebar from "./ChatSidebar";
 import ChatWindow from "./ChatWindow";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getChatDetails } from "../../api/chat";
 
 const ChatLayout = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
+  const { chatId } = useParams();
   const [activeChat, setActiveChat] = useState(null);
+  const [loadingChat, setLoadingChat] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -17,6 +20,21 @@ const ChatLayout = () => {
       sessionStorage.removeItem("activeChat_session");
     }
   }, []);
+
+  useEffect(() => {
+    if (chatId && token) {
+      setLoadingChat(true);
+      getChatDetails(chatId, token)
+        .then((chatData) => {
+          setActiveChat(chatData);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch chat:", err);
+          navigate("/chats");
+        })
+        .finally(() => setLoadingChat(false));
+    }
+  }, [chatId, token]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {

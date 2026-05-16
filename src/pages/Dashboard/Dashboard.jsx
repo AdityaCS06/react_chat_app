@@ -75,16 +75,16 @@ try {
 
   const getChatName = (chat) => {
     if (chat.name) return chat.name;
-    const otherUser = chat.participants?.find(p => p.id !== user?.id);
-    return otherUser?.username || "Unknown";
+    const otherUser = chat.members?.find(m => m.user.public_id !== user?.public_id);
+    return otherUser?.user?.username || "Unknown";
   };
 
   const getChatAvatar = (chat) => {
     if (chat.name) {
       return chat.name.charAt(0).toUpperCase();
     }
-    const otherUser = chat.participants?.find(p => p.id !== user?.id);
-    return otherUser?.username?.charAt(0).toUpperCase() || "?";
+    const otherUser = chat.members?.find(m => m.user.public_id !== user?.public_id);
+    return otherUser?.user?.username?.charAt(0).toUpperCase() || "?";
   };
 
   const ActionCard = ({ icon, title, subtitle, onClick, colorClass }) => (
