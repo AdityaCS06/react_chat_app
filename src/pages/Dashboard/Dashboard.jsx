@@ -3,7 +3,7 @@ import Navbar from "../../components/layout/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getMyChats } from "../../api/chat";
-import { getUserStats, getMessageTrends } from "../../api/dashboard";
+import { getUserStats, getMessageTrends, getUnreadStats } from "../../api/dashboard";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -12,6 +12,7 @@ const Dashboard = () => {
   const [loadingChats, setLoadingChats] = useState(false);
   const [stats, setStats] = useState(null);
   const [trends, setTrends] = useState([]);
+  const [unreadData, setUnreadData] = useState(null);
   const [loadingStats, setLoadingStats] = useState(false);
 
   const getGreeting = () => {
@@ -25,14 +26,17 @@ useEffect(() => {
     const fetchData = async () => {
       if (!token) return;
 
-      try {
-        const chatsData = await getMyChats(token, 5, 0);
-        const statsData = await getUserStats(token);
-        const trendsData = await getMessageTrends(token, 7);
-        
+try {
+        const [chatsData, statsData, trendsData, unreadData] = await Promise.all([
+          getMyChats(token, 5, 0),
+          getUserStats(token),
+          getMessageTrends(token, 7),
+          getUnreadStats(token)
+        ]);
         setChats(chatsData.chats || []);
         setStats(statsData);
         setTrends(trendsData.trends || []);
+        setUnreadData(unreadData);
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
       } finally {
@@ -152,7 +156,7 @@ useEffect(() => {
 
           <div className="mb-10">
             <h2 className="text-lg font-semibold text-gray-700 mb-4 ml-1">Your Stats</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
               <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
@@ -218,6 +222,28 @@ useEffect(() => {
                 </div>
                 <p className="text-2xl font-bold text-gray-900">{stats?.messages_this_month || 0}</p>
                 <p className="text-sm text-gray-500">This Month</p>
+              </div>
+              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{unreadData?.total_unread_messages || 0}</p>
+                <p className="text-sm text-gray-500">Unread Messages</p>
+              </div>
+              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{unreadData?.unread_chats_count || 0}</p>
+                <p className="text-sm text-gray-500">Unread Chats</p>
               </div>
             </div>
           </div>

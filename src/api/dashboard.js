@@ -15,3 +15,8 @@ export const getMessageTrends = async (token, days = 7) => {
   const res = await axios.get(`${BASE_URL}/stats/trends?days=${days}`, authHeader(token));
   return res.data;
 };
+
+export const getUnreadStats = async (token) => {
+  const res = await axios.get(`${BASE_URL}/unread`, authHeader(token));
+  return res.data;
+};
