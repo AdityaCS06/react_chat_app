@@ -8,12 +8,11 @@ export const connectToChatSocket = (chatId, token, onMessage) => {
   let disconnected = false;
 
   const connect = () => {
-    const socketUrl = `${SOCKET_BASE_URL}/chat/${chatId}`;
+    const socketUrl = `${SOCKET_BASE_URL}/chat/${chatId}?token=${token}`;
     socket = new WebSocket(socketUrl);
 
     socket.onopen = () => {
       retries = 0;
-      socket.send(JSON.stringify({ type: "auth", token }));
     };
 
     socket.onclose = () => {

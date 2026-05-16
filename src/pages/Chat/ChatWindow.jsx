@@ -30,7 +30,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       setLoading(true);
       try {
         const res = await getMessages(token, chat.cuid, limit, offset);
-        const newMessages = res.messages || [];
+        const newMessages = (res.messages || []).filter((msg) => msg.muid);
         const reversed = [...newMessages].reverse();
         setMessages((prev) =>
           replace ? reversed : [...reversed, ...prev]
@@ -53,11 +53,14 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     }
     socketRef.current = connectToChatSocket(chat.cuid, token, (data) => {
       setMessages((prev) => {
-        const tempMsg = prev.find((m) => m.muid.startsWith("temp-") && m.content === data.content && m.sender_id === data.sender_id);
+        const tempMsg = prev.find((m) => m.muid?.startsWith("temp-") && m.content === data.content && m.sender_id === data.sender_id);
         if (tempMsg) {
           return prev.map((m) => (m.muid === tempMsg.muid ? { ...m, muid: data.muid } : m));
         }
-        return [...prev, data];
+        if (data.muid) {
+          return [...prev, data];
+        }
+        return prev;
       });
     });
   }, [chat?.cuid, token]);
@@ -86,7 +89,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const markMessagesAsSeen = useCallback(async () => {
     try {
       const unseen = messages.filter(
-        (msg) => msg.sender_id !== user.public_id && msg.status !== "seen"
+        (msg) => msg.muid && msg.sender_id !== user.public_id && msg.status !== "seen"
       );
       await Promise.all(
         unseen.map((msg) => updateMessageStatus(token, chat.cuid, msg.muid, "seen"))
@@ -121,7 +124,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
 
   const handleDeleteForMe = useCallback(async () => {
     const msg = menuState.message;
-    if (!msg || !chat?.cuid) return;
+    if (!msg || !msg.muid || !chat?.cuid) return;
     try {
       await deleteMessageForMe(token, chat.cuid, msg.muid);
       setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
@@ -133,7 +136,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
 
   const handleDeleteForEveryone = useCallback(async () => {
     const msg = menuState.message;
-    if (!msg || !chat?.cuid) return;
+    if (!msg || !msg.muid || !chat?.cuid) return;
     try {
       await deleteMessageForEveryone(token, chat.cuid, msg.muid);
       setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
@@ -170,8 +173,13 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       setEditingMessage(null);
       setEditContent("");
       addToast("Message edited", "success");
-    } catch {
-      addToast("Failed to edit message", "error");
+    } catch (err) {
+      if (err.response?.status === 404) {
+        addToast("Message not found", "error");
+        setMessages((prev) => prev.filter((m) => m.muid !== editingMessage));
+      } else {
+        addToast("Failed to edit message", "error");
+      }
     }
   }, [editingMessage, editContent, chat?.cuid, token, addToast, messages]);
 
