@@ -36,7 +36,8 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
 
   return (
     <div
-      className={`rounded-md border ${style.border} ${style.bg} p-4 flex items-center justify-between shadow-sm animate-slide-in`}
+      className={`rounded-md border ${style.border} ${style.bg} p-4 flex items-center justify-between shadow-lg`}
+      style={{ animation: "fadeIn 0.3s ease-out" }}
     >
       <div className={`text-sm ${style.text}`}>{message}</div>
 
@@ -56,6 +57,12 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
     </div>
   );
 };

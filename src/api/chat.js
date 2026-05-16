@@ -29,6 +29,11 @@ export const getChatDetails = async (cuid, token) => {
   return response.data;
 };
 
+export const updateChat = async (cuid, data, token) => {
+  const response = await axios.patch(`${BASE_URL}/${cuid}`, data, authHeader(token));
+  return response.data;
+};
+
 
 
 

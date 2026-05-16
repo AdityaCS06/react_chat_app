@@ -8,7 +8,7 @@ import { connectToChatSocket } from "../../api/socket";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
-const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onLogout }) => {
+const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onLogout, onGroupUpdated }) => {
   const { token, user } = useAuth();
   const { addToast } = useToast();
 
@@ -205,6 +205,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         onAddMember={onAddMember}
         onRemoveMember={onRemoveMember}
         onLogout={onLogout}
+        onGroupUpdated={onGroupUpdated}
       />
 
       <div

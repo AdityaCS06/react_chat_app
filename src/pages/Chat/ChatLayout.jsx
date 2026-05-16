@@ -84,6 +84,10 @@ const ChatLayout = () => {
     console.log("Logout");
   };
 
+  const handleGroupUpdated = (updatedChat) => {
+    setActiveChat(updatedChat);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
       <div
@@ -123,6 +127,7 @@ const ChatLayout = () => {
             onAddMember={handleAddMember}
             onRemoveMember={handleRemoveMember}
             onLogout={handleLogout}
+            onGroupUpdated={handleGroupUpdated}
           />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-slate-50 to-indigo-50 p-8">
