@@ -5,7 +5,7 @@ import { getMyChats } from "../../api/chat";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
-const ChatSidebar = ({ onSelectChat, activeChat }) => {
+const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
   const navigate = useNavigate();
   const { token, user, logout } = useAuth();
   const { addToast } = useToast();
@@ -27,7 +27,7 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
       }
     };
     fetchChats();
-  }, [token]);
+  }, [token, refreshTrigger]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -202,7 +202,7 @@ const ChatSidebar = ({ onSelectChat, activeChat }) => {
       <div className="relative p-3 border-t border-slate-200/50 bg-white/50 backdrop-blur-sm" ref={dropdownRef}>
         <button
           onClick={() => setShowDropdown(!showDropdown)}
-          className="w-full flex items-center gap-3 hover:bg-white/60 p-1.5 -m-1.5 rounded-xl transition-all duration-300"
+          className="w-full flex items-center gap-3 hover:bg-white/60 p-1.5 -m-1.5 rounded-xl transition-all duration-300 cursor-pointer"
         >
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md">
             {user?.username?.charAt(0).toUpperCase() || "U"}

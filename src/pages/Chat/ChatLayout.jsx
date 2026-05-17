@@ -4,16 +4,19 @@ import ChatWindow from "./ChatWindow";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { getChatDetails } from "../../api/chat";
+import { getChatDetails, deleteChat, leaveGroup } from "../../api/chat";
+import { useToast } from "../../components/ui/ToastContainer";
 
 const ChatLayout = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const { chatId } = useParams();
+  const { addToast } = useToast();
   const [activeChat, setActiveChat] = useState(null);
   const [loadingChat, setLoadingChat] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [confirmDialog, setConfirmDialog] = useState({ open: false, type: null });
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, type: null, loading: false });
+  const [refreshSidebar, setRefreshSidebar] = useState(0);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("activeChat_session");
@@ -67,20 +70,35 @@ const ChatLayout = () => {
   };
 
   const handleDeleteChat = () => {
-    setConfirmDialog({ open: true, type: "deleteChat" });
+    setConfirmDialog({ open: true, type: "deleteChat", loading: false });
   };
 
   const handleExitGroup = () => {
-    setConfirmDialog({ open: true, type: "exitGroup" });
+    setConfirmDialog({ open: true, type: "exitGroup", loading: false });
   };
 
-  const confirmAction = () => {
+  const confirmAction = async () => {
     const type = confirmDialog.type;
-    setConfirmDialog({ open: false, type: null });
-    if (type === "deleteChat") {
-      console.log("Delete chat -", activeChat?.cuid);
-    } else if (type === "exitGroup") {
-      console.log("Exit group -", activeChat?.cuid);
+    if (!activeChat?.cuid || !token) return;
+
+    setConfirmDialog((prev) => ({ ...prev, loading: true }));
+
+    try {
+      if (type === "deleteChat") {
+        await deleteChat(activeChat.cuid, token);
+        addToast("Chat deleted", "success");
+      } else if (type === "exitGroup") {
+        await leaveGroup(activeChat.cuid, token);
+        addToast("Left the group", "success");
+      }
+      setConfirmDialog({ open: false, type: null, loading: false });
+      setActiveChat(null);
+      setRefreshSidebar((prev) => prev + 1);
+      navigate("/chats");
+    } catch (error) {
+      setConfirmDialog((prev) => ({ ...prev, loading: false }));
+      const msg = error?.detail || error?.message || "Failed to perform action";
+      addToast(msg, "error");
     }
   };
 
@@ -107,7 +125,7 @@ const ChatLayout = () => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <ChatSidebar onSelectChat={handleSelectChat} activeChat={activeChat} />
+        <ChatSidebar onSelectChat={handleSelectChat} activeChat={activeChat} refreshTrigger={refreshSidebar} />
       </div>
 
       {sidebarOpen && (
@@ -174,6 +192,7 @@ const ChatLayout = () => {
         cancelText="Cancel"
         onConfirm={confirmAction}
         confirmVariant="danger"
+        loading={confirmDialog.loading}
       />
     </div>
   );
