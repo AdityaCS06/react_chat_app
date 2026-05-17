@@ -206,7 +206,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   }, [messages, loading, markMessagesAsSeen]);
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-gradient-to-br from-slate-100 via-white to-indigo-50">
+    <div className="flex flex-col h-full min-h-0 bg-gradient-to-br from-slate-100 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <ChatHeader
         chat={chat}
         currentUser={user}
@@ -228,7 +228,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           <div className="space-y-4 p-4">
             {[1,2,3].map((i) => (
               <div key={i} className={`flex ${i % 2 === 0 ? "justify-end" : "justify-start"}`}>
-                <div className={`h-14 ${i % 2 === 0 ? "w-56" : "w-44"} bg-white/60 rounded-2xl shadow-sm animate-pulse`} />
+                <div className={`h-14 ${i % 2 === 0 ? "w-56" : "w-44"} bg-white/60 dark:bg-gray-700/60 rounded-2xl shadow-sm animate-pulse`} />
               </div>
             ))}
           </div>

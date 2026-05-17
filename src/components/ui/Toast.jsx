@@ -11,8 +11,8 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
 
   const types = {
     success: {
-      iconBg: "bg-green-100",
-      iconColor: "text-green-600",
+      iconBg: "bg-green-100 dark:bg-green-900/30",
+      iconColor: "text-green-600 dark:text-green-400",
       barColor: "from-green-400 to-emerald-500",
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -21,8 +21,8 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
       ),
     },
     error: {
-      iconBg: "bg-red-100",
-      iconColor: "text-red-600",
+      iconBg: "bg-red-100 dark:bg-red-900/30",
+      iconColor: "text-red-600 dark:text-red-400",
       barColor: "from-red-400 to-rose-500",
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -31,8 +31,8 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
       ),
     },
     warning: {
-      iconBg: "bg-amber-100",
-      iconColor: "text-amber-600",
+      iconBg: "bg-amber-100 dark:bg-amber-900/30",
+      iconColor: "text-amber-600 dark:text-amber-400",
       barColor: "from-amber-400 to-orange-500",
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -41,8 +41,8 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
       ),
     },
     info: {
-      iconBg: "bg-blue-100",
-      iconColor: "text-blue-600",
+      iconBg: "bg-blue-100 dark:bg-blue-900/30",
+      iconColor: "text-blue-600 dark:text-blue-400",
       barColor: "from-blue-400 to-indigo-500",
       icon: (
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -56,7 +56,7 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
 
   return (
     <div
-      className="bg-white rounded-2xl shadow-2xl overflow-hidden w-80 md:w-96 border border-slate-100"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden w-80 md:w-96 border border-slate-100 dark:border-gray-700"
       style={{ animation: "toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}
     >
       <div className="relative">
@@ -65,19 +65,19 @@ const Toast = ({ message, type = "success", onClose, duration = 4000 }) => {
             {style.icon}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-800">{message}</p>
+            <p className="text-sm font-semibold text-slate-800 dark:text-white">{message}</p>
           </div>
           <button
             onClick={onClose}
-            className="flex-shrink-0 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            className="flex-shrink-0 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-gray-700 transition-colors"
             aria-label="Dismiss"
           >
-            <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
-        <div className="h-1 bg-slate-100">
+        <div className="h-1 bg-slate-100 dark:bg-gray-700">
           <div 
             className={`h-full bg-gradient-to-r ${style.barColor}`}
             style={{ 
