@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ChatSidebar from "./ChatSidebar";
 import ChatWindow from "./ChatWindow";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { getChatDetails } from "../../api/chat";
@@ -12,6 +13,7 @@ const ChatLayout = () => {
   const [activeChat, setActiveChat] = useState(null);
   const [loadingChat, setLoadingChat] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, type: null });
 
   useEffect(() => {
     const saved = sessionStorage.getItem("activeChat_session");
@@ -65,11 +67,21 @@ const ChatLayout = () => {
   };
 
   const handleDeleteChat = () => {
-    console.log("Delete chat -", activeChat?.cuid);
+    setConfirmDialog({ open: true, type: "deleteChat" });
   };
 
   const handleExitGroup = () => {
-    console.log("Exit group -", activeChat?.cuid);
+    setConfirmDialog({ open: true, type: "exitGroup" });
+  };
+
+  const confirmAction = () => {
+    const type = confirmDialog.type;
+    setConfirmDialog({ open: false, type: null });
+    if (type === "deleteChat") {
+      console.log("Delete chat -", activeChat?.cuid);
+    } else if (type === "exitGroup") {
+      console.log("Exit group -", activeChat?.cuid);
+    }
   };
 
   const handleAddMember = () => {
@@ -148,6 +160,21 @@ const ChatLayout = () => {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog((prev) => ({ ...prev, open }))}
+        title={confirmDialog.type === "exitGroup" ? "Exit group?" : "Delete chat?"}
+        description={
+          confirmDialog.type === "exitGroup"
+            ? "You will be removed from this group. This action cannot be undone."
+            : "This chat will be permanently deleted. This action cannot be undone."
+        }
+        confirmText={confirmDialog.type === "exitGroup" ? "Exit group" : "Delete"}
+        cancelText="Cancel"
+        onConfirm={confirmAction}
+        confirmVariant="danger"
+      />
     </div>
   );
 };

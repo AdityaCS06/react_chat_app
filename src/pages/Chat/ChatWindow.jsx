@@ -3,6 +3,7 @@ import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../components/chat/MessageBubble";
 import MessageOptionsMenu from "../../components/chat/MessageOptionsMenu";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { getMessages, updateMessageStatus, deleteMessageForEveryone, deleteMessageForMe, editMessage } from "../../api/message";
 import { connectToChatSocket } from "../../api/socket";
 import { useAuth } from "../../context/AuthContext";
@@ -18,6 +19,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const [menuState, setMenuState] = useState({ isOpen: false, message: null, position: { x: 0, y: 0 } });
   const [editingMessage, setEditingMessage] = useState(null);
   const [editContent, setEditContent] = useState("");
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, message: null, type: null });
 
   const socketRef = useRef(null);
   const scrollRef = useRef(null);
@@ -122,8 +124,12 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     setMenuState((prev) => ({ ...prev, isOpen: false }));
   }, []);
 
-  const handleDeleteForMe = useCallback(async () => {
-    const msg = menuState.message;
+  const handleDeleteForMe = useCallback(() => {
+    setDeleteDialog({ open: true, message: menuState.message, type: "me" });
+  }, [menuState.message]);
+
+  const confirmDeleteForMe = useCallback(async () => {
+    const msg = deleteDialog.message;
     if (!msg || !msg.muid || !chat?.cuid) return;
     try {
       await deleteMessageForMe(token, chat.cuid, msg.muid);
@@ -132,10 +138,14 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     } catch {
       addToast("Failed to delete message", "error");
     }
-  }, [menuState.message, chat?.cuid, token, addToast]);
+  }, [deleteDialog.message, chat?.cuid, token, addToast]);
 
-  const handleDeleteForEveryone = useCallback(async () => {
-    const msg = menuState.message;
+  const handleDeleteForEveryone = useCallback(() => {
+    setDeleteDialog({ open: true, message: menuState.message, type: "everyone" });
+  }, [menuState.message]);
+
+  const confirmDeleteForEveryone = useCallback(async () => {
+    const msg = deleteDialog.message;
     if (!msg || !msg.muid || !chat?.cuid) return;
     try {
       await deleteMessageForEveryone(token, chat.cuid, msg.muid);
@@ -144,7 +154,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     } catch {
       addToast("Failed to delete message", "error");
     }
-  }, [menuState.message, chat?.cuid, token, addToast]);
+  }, [deleteDialog.message, chat?.cuid, token, addToast]);
 
   const handleEdit = useCallback(() => {
     const msg = menuState.message;
@@ -252,6 +262,21 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       </div>
 
       <ChatInput chat={chat} socketRef={socketRef} setMessages={setMessages} />
+
+      <ConfirmDialog
+        open={deleteDialog.open}
+        onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, open }))}
+        title={deleteDialog.type === "everyone" ? "Delete for everyone?" : "Delete for me?"}
+        description={
+          deleteDialog.type === "everyone"
+            ? "This message will be deleted for everyone in this chat. This action cannot be undone."
+            : "This message will be deleted only for you. Others will still be able to see it."
+        }
+        confirmText={deleteDialog.type === "everyone" ? "Delete for everyone" : "Delete"}
+        cancelText="Cancel"
+        onConfirm={deleteDialog.type === "everyone" ? confirmDeleteForEveryone : confirmDeleteForMe}
+        confirmVariant="danger"
+      />
     </div>
   );
 };
