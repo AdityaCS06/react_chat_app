@@ -6,6 +6,7 @@ import MessageOptionsMenu from "../../components/chat/MessageOptionsMenu";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { getMessages, updateMessageStatus, deleteMessageForEveryone, deleteMessageForMe, editMessage } from "../../api/message";
 import { connectToChatSocket } from "../../api/socket";
+import { getErrorMessage } from "../../api/utils";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
@@ -135,8 +136,8 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       await deleteMessageForMe(token, chat.cuid, msg.muid);
       setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
       addToast("Message deleted for you", "success");
-    } catch {
-      addToast("Failed to delete message", "error");
+    } catch (err) {
+      addToast(getErrorMessage(err), "error");
     }
   }, [deleteDialog.message, chat?.cuid, token, addToast]);
 
@@ -151,8 +152,8 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       await deleteMessageForEveryone(token, chat.cuid, msg.muid);
       setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
       addToast("Message deleted for everyone", "success");
-    } catch {
-      addToast("Failed to delete message", "error");
+    } catch (err) {
+      addToast(getErrorMessage(err), "error");
     }
   }, [deleteDialog.message, chat?.cuid, token, addToast]);
 
@@ -184,11 +185,11 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       setEditContent("");
       addToast("Message edited", "success");
     } catch (err) {
-      if (err.response?.status === 404) {
+      if (err.response?.data?.detail?.status_code === 404) {
         addToast("Message not found", "error");
         setMessages((prev) => prev.filter((m) => m.muid !== editingMessage));
       } else {
-        addToast("Failed to edit message", "error");
+        addToast(getErrorMessage(err), "error");
       }
     }
   }, [editingMessage, editContent, chat?.cuid, token, addToast, messages]);

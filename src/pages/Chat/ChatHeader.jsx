@@ -3,6 +3,7 @@ import { Search, MoreVertical, Users } from "lucide-react";
 import ChatOptionsMenu from "../../components/chat/ChatOptionsMenu";
 import EditGroupModal from "../../components/chat/EditGroupModal";
 import { updateChat } from "../../api/chat";
+import { getErrorMessage } from "../../api/utils";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
@@ -77,7 +78,7 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
       addToast("Group name updated!", "success");
     } catch (err) {
       console.error("Failed to update group:", err);
-      addToast("Failed to update group", "error");
+      addToast(getErrorMessage(err), "error");
     } finally {
       setUpdating(false);
     }
