@@ -3,6 +3,7 @@ import { Paperclip, Send } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 import { sendMessage } from "../../api/message";
+import { getErrorMessage } from "../../api/utils";
 
 const ChatInput = ({ chat, socketRef, setMessages }) => {
   const [message, setMessage] = useState("");
@@ -36,8 +37,8 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
             msg.muid === tempMuid ? { ...msg, muid: response.muid || response.message?.muid || msg.muid } : msg
           )
         );
-      } catch {
-        addToast("Failed to send message", "error");
+      } catch (err) {
+        addToast(getErrorMessage(err), "error");
       }
     }
   };

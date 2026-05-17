@@ -5,6 +5,7 @@ import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { getChatDetails, deleteChat, leaveGroup } from "../../api/chat";
+import { getErrorMessage } from "../../api/utils";
 import { useToast } from "../../components/ui/ToastContainer";
 
 const ChatLayout = () => {
@@ -96,9 +97,8 @@ const ChatLayout = () => {
       setRefreshSidebar((prev) => prev + 1);
       navigate("/chats");
     } catch (error) {
-      setConfirmDialog((prev) => ({ ...prev, loading: false }));
-      const msg = error?.detail || error?.message || "Failed to perform action";
-      addToast(msg, "error");
+      setConfirmDialog({ open: false, type: null, loading: false });
+      addToast(getErrorMessage(error), "error");
     }
   };
 

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 import { createChat } from "../../api/chat";
+import { getErrorMessage } from "../../api/utils";
 import UserSearch from "../../components/chat/UserSearch";
 import SelectedUserList from "../../components/chat/SelectedUserList";
 import { ArrowLeft, MessageCircle, Users, CheckCircle2 } from "lucide-react";
@@ -54,8 +55,8 @@ const CreateChat = () => {
       const res = await createChat(payload, token);
       addToast("Chat created successfully!", "success");
       navigate(`/chats/${res.cuid}`);
-    } catch {
-      addToast("Failed to create chat", "error");
+    } catch (err) {
+      addToast(getErrorMessage(err), "error");
     } finally {
       setLoading(false);
     }
