@@ -42,10 +42,15 @@ const CreateChat = () => {
       return;
     }
 
+    if (isGroup && (!chatName || chatName.trim() === "")) {
+      addToast("Please enter group name", "error");
+      return;
+    }
+
     const members = selectedUsers.map((u) => u.public_id);
 
     const payload = {
-      name: isGroup ? chatName : null,
+      name: isGroup ? chatName.trim() : null,
       is_group: isGroup,
       members,
     };
@@ -141,7 +146,7 @@ const CreateChat = () => {
 
           {isGroup && (
             <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-gray-900/30 border border-slate-200/60 dark:border-gray-700 p-5">
-              <label className="text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 block">Group Name</label>
+              <label className="text-sm font-bold text-slate-700 dark:text-gray-200 mb-2 block">Group Name <span className="text-red-500">*</span></label>
               <div className="relative">
                 <input
                   type="text"
@@ -151,6 +156,9 @@ const CreateChat = () => {
                   className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-xl text-sm text-slate-700 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 shadow-inner focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] focus:border-indigo-300 outline-none transition-all duration-300"
                 />
               </div>
+              {isGroup && selectedUsers.length > 0 && !chatName.trim() && (
+                <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">Enter group name to enable create button</p>
+              )}
             </div>
           )}
 
@@ -172,7 +180,7 @@ const CreateChat = () => {
 
           <button
             onClick={handleCreateChat}
-            disabled={loading || selectedUsers.length === 0}
+            disabled={loading || selectedUsers.length === 0 || (isGroup && !chatName.trim())}
             className="w-full py-4 text-sm font-bold text-white bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-2xl hover:shadow-xl hover:shadow-indigo-500/25 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20 active:scale-[0.98] transition-all duration-300"
           >
             {loading ? (
@@ -183,6 +191,8 @@ const CreateChat = () => {
                 </svg>
                 Creating...
               </span>
+            ) : isGroup && selectedUsers.length > 0 && !chatName.trim() ? (
+              <span>Enter group name</span>
             ) : (
               `Create ${isGroup ? "Group" : "Chat"}`
             )}
