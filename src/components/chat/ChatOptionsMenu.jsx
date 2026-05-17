@@ -48,11 +48,11 @@ const ChatOptionsMenu = ({
         onClick?.();
         onClose();
       }}
-      className={`w-full flex items-center gap-3 px-4 py-3.5 text-sm transition-all duration-200 hover:bg-slate-100 active:scale-[0.98] ${
-        danger ? "text-red-500 hover:bg-red-50" : "text-slate-700"
+      className={`w-full flex items-center gap-3 px-4 py-3.5 text-sm transition-all duration-200 hover:bg-slate-100 dark:hover:bg-gray-700 active:scale-[0.98] ${
+        danger ? "text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20" : "text-slate-700 dark:text-slate-300"
       }`}
     >
-      <Icon size={18} className={danger ? "text-red-500" : "text-slate-400"} />
+      <Icon size={18} className={danger ? "text-red-500 dark:text-red-400" : "text-slate-400 dark:text-slate-500"} />
       <span className="font-medium">{label}</span>
     </button>
   );
@@ -64,7 +64,7 @@ const ChatOptionsMenu = ({
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
         ref={menuRef}
-        className="fixed right-4 top-[72px] z-50 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/40 overflow-hidden animate-scale-in"
+        className="fixed right-4 top-[72px] z-50 w-64 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/40 dark:border-gray-700 overflow-hidden animate-scale-in"
         style={{ animation: "scaleIn 0.2s ease-out forwards" }}
       >
         <div className="py-2">
@@ -84,7 +84,7 @@ const ChatOptionsMenu = ({
             onClick={() => console.log("Chat info")}
           />
 
-          <div className="h-px bg-slate-200/60 my-2" />
+          <div className="h-px bg-slate-200/60 dark:bg-gray-700 my-2" />
 
           {chat?.is_group ? (
             <>
@@ -103,7 +103,7 @@ const ChatOptionsMenu = ({
                 label="Edit group"
                 onClick={onEditGroup}
               />
-              <div className="h-px bg-slate-200/60 my-2" />
+              <div className="h-px bg-slate-200/60 dark:bg-gray-700 my-2" />
               <MenuItem
                 icon={DoorOpen}
                 label="Exit group"

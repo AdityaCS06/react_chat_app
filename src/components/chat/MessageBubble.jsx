@@ -28,11 +28,11 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContext
         className={`relative group max-w-[75%] px-5 py-3.5 transition-all duration-200 ${
           isMine
             ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl rounded-br-sm shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25"
-            : "bg-white/95 backdrop-blur-sm text-slate-700 rounded-2xl rounded-bl-sm shadow-lg shadow-slate-200/50 hover:shadow-xl hover:shadow-slate-300/40"
+            : "bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-slate-700 dark:text-slate-200 rounded-2xl rounded-bl-sm shadow-lg shadow-slate-200/50 dark:shadow-gray-900/50 hover:shadow-xl hover:shadow-slate-300/40 dark:hover:shadow-gray-800/40"
         }`}
       >
         {isGroup && showSender && !isMine && (
-          <div className={`text-xs font-bold mb-1.5 ${isMine ? "text-blue-200" : "text-indigo-500"}`}>
+          <div className={`text-xs font-bold mb-1.5 ${isMine ? "text-blue-200" : "text-indigo-500 dark:text-indigo-400"}`}>
             {senderName || "Unknown"}
           </div>
         )}
@@ -44,19 +44,19 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContext
               value={editContent}
               onChange={(e) => onEditChange?.(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full px-3 py-1.5 text-sm bg-black/10 rounded-lg text-white placeholder-white/50 outline-none"
+              className="w-full px-3 py-1.5 text-sm bg-black/10 dark:bg-white/10 rounded-lg text-white placeholder-white/50 outline-none"
               autoFocus
             />
             <div className="flex justify-end gap-2">
               <button
                 onClick={onCancelEdit}
-                className="p-1.5 rounded-full hover:bg-black/20"
+                className="p-1.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20"
               >
                 <X size={14} />
               </button>
               <button
                 onClick={onSaveEdit}
-                className="p-1.5 rounded-full hover:bg-black/20"
+                className="p-1.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20"
               >
                 <Check size={14} />
               </button>
@@ -68,7 +68,7 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContext
 
         <div
           className={`text-[10px] mt-2 flex items-center justify-end gap-1.5 ${
-            isMine ? "text-blue-100" : "text-slate-400"
+            isMine ? "text-blue-100" : "text-slate-400 dark:text-slate-500"
           }`}
         >
           {msg.is_edited && !isEditing && (

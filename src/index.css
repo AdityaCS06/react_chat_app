@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Hide all scrollbars globally */
 * {
   -ms-overflow-style: none;

@@ -46,10 +46,10 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
   return (
     <form
       onSubmit={handleSend}
-      className="sticky bottom-0 p-4 bg-white/70 backdrop-blur-xl border-t border-slate-200/40 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]"
+      className="sticky bottom-0 p-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-t border-slate-200/40 dark:border-gray-700 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-none"
     >
       <div className="flex items-center gap-3">
-        <button type="button" aria-label="Attach" className="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all flex-shrink-0">
+        <button type="button" aria-label="Attach" className="p-2.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all flex-shrink-0">
           <Paperclip size={20} />
         </button>
         <div className="relative flex-1">
@@ -59,7 +59,7 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Write a message..."
             aria-label="Message input"
-            className="w-full px-5 py-3.5 bg-white/80 backdrop-blur-sm rounded-2xl text-sm text-slate-700 placeholder-slate-400 shadow-[inset_2px_2px_6px_rgba(0,0,0,0.04),inset_-2px_-2px_6px_rgba(255,255,255,0.9)] focus:shadow-[inset_2px_2px_8px_rgba(0,0,0,0.06),inset_-2px_-2px_8px_rgba(255,255,255,1),0_0_0_3px_rgba(99,102,241,0.2)] outline-none transition-all duration-300"
+            className="w-full px-5 py-3.5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl text-sm text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 shadow-[inset_2px_2px_6px_rgba(0,0,0,0.04),inset_-2px_-2px_6px_rgba(255,255,255,0.9)] dark:shadow-none focus:shadow-[inset_2px_2px_8px_rgba(0,0,0,0.06),inset_-2px_-2px_8px_rgba(255,255,255,1),0_0_0_3px_rgba(99,102,241,0.2)] outline-none transition-all duration-300"
           />
         </div>
         <button
