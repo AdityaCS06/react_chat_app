@@ -98,7 +98,6 @@ const ChatLayout = () => {
       navigate("/chats");
     } catch (error) {
       setConfirmDialog({ open: false, type: null, loading: false });
-      console.log("Error response:", error.response?.data);
       addToast(getErrorMessage(error), "error");
     }
   };
