@@ -23,11 +23,11 @@ const Dashboard = () => {
     return "Good evening";
   };
 
-useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       if (!token) return;
 
-try {
+      try {
         const [chatsData, statsData, trendsData, unreadData] = await Promise.all([
           getMyChats(token, 5, 0),
           getUserStats(token),
@@ -106,7 +106,7 @@ try {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col">
       <Navbar />
 
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
@@ -117,18 +117,18 @@ try {
                 {user?.username?.charAt(0).toUpperCase() || "U"}
               </div>
               <div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
                   {getGreeting()}!
                 </h1>
-                <p className="text-gray-500 text-sm">
-                  Welcome back to <span className="text-blue-600 font-semibold">Convo</span>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  Welcome back to <span className="text-blue-600 dark:text-blue-400 font-semibold">Convo</span>
                 </p>
               </div>
             </div>
           </div>
 
           <div className="mb-10">
-            <h2 className="text-lg font-semibold text-gray-700 mb-4 ml-1">Quick Actions</h2>
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 ml-1">Quick Actions</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
               <ActionCard
                 icon={
@@ -139,7 +139,7 @@ try {
                 title="Open Chats"
                 subtitle="View all conversations"
                 onClick={() => navigate("/chats")}
-                colorClass="bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-200"
+                colorClass="bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-200 dark:shadow-blue-900/30"
               />
               <ActionCard
                 icon={
@@ -150,7 +150,7 @@ try {
                 title="Your Profile"
                 subtitle="Manage your account"
                 onClick={() => navigate("/profile")}
-                colorClass="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-indigo-200"
+                colorClass="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-indigo-200 dark:shadow-indigo-900/30"
               />
               <ActionCard
                 icon={
@@ -161,101 +161,101 @@ try {
                 title="New Chat"
                 subtitle="Start a new conversation"
                 onClick={() => navigate("/create-chat")}
-                colorClass="bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-200"
+                colorClass="bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-200 dark:shadow-emerald-900/30"
               />
             </div>
           </div>
 
           <div className="mb-10">
-            <h2 className="text-lg font-semibold text-gray-700 mb-4 ml-1">Your Stats</h2>
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-4 ml-1">Your Stats</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                  <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stats?.total_messages || 0}</p>
-                <p className="text-sm text-gray-500">Total Messages</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.total_messages || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Total Messages</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
                     </svg>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stats?.total_chats || 0}</p>
-                <p className="text-sm text-gray-500">Total Chats</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.total_chats || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Total Chats</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stats?.total_contacts || 0}</p>
-                <p className="text-sm text-gray-500">Contacts</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.total_contacts || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Contacts</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
+                  <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stats?.groups_created || 0}</p>
-                <p className="text-sm text-gray-500">Groups Created</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.groups_created || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Groups Created</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                  <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stats?.messages_this_week || 0}</p>
-                <p className="text-sm text-gray-500">This Week</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.messages_this_week || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">This Week</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center text-cyan-600">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stats?.messages_this_month || 0}</p>
-                <p className="text-sm text-gray-500">This Month</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.messages_this_month || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">This Month</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600">
+                  <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center text-rose-600 dark:text-rose-400">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{unreadData?.total_unread_messages || 0}</p>
-                <p className="text-sm text-gray-500">Unread Messages</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{unreadData?.total_unread_messages || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Unread Messages</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
+                  <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{unreadData?.unread_chats_count || 0}</p>
-                <p className="text-sm text-gray-500">Unread Chats</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{unreadData?.unread_chats_count || 0}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Unread Chats</p>
               </div>
             </div>
           </div>
@@ -263,8 +263,8 @@ try {
           {chats.length > 0 && (
             <div className="mb-10">
               <div className="flex items-center justify-between mb-4 ml-1">
-                <h2 className="text-lg font-semibold text-gray-700">Recent Chats</h2>
-                <button onClick={() => navigate("/chats")} className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">Recent Chats</h2>
+                <button onClick={() => navigate("/chats")} className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
                   View all
                 </button>
               </div>
@@ -273,19 +273,19 @@ try {
                   <div
                     key={chat.cuid}
                     onClick={() => navigate(`/chats/${chat.cuid}`)}
-                    className="bg-white rounded-2xl p-4 shadow-md border border-gray-100 hover:shadow-lg hover:border-blue-200 transition-all cursor-pointer flex items-center gap-4"
+                    className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800 transition-all cursor-pointer flex items-center gap-4"
                   >
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                       {getChatAvatar(chat)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-semibold text-gray-900 truncate">{getChatName(chat)}</h3>
-                        <span className="text-xs text-gray-400 flex-shrink-0">
+                        <h3 className="font-semibold text-gray-900 dark:text-white truncate">{getChatName(chat)}</h3>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
                           {chat.last_message?.created_at ? formatTime(chat.last_message.created_at) : ""}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-500 truncate">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                         {chat.last_message?.content || "No messages yet"}
                       </p>
                     </div>
@@ -303,11 +303,11 @@ try {
           {trends.length > 0 && (
             <div className="mb-10">
               <div className="flex items-center justify-between mb-4 ml-1">
-                <h2 className="text-lg font-semibold text-gray-700">Message Activity (Last {trendsDays} Days)</h2>
+                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">Message Activity (Last {trendsDays} Days)</h2>
                 <select
                   value={trendsDays}
                   onChange={(e) => fetchTrends(Number(e.target.value))}
-                  className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer hover:border-gray-300 transition-colors"
+                  className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
                 >
                   <option value={7}>7 Days</option>
                   <option value={14}>14 Days</option>
@@ -315,7 +315,7 @@ try {
                   <option value={30}>30 Days</option>
                 </select>
               </div>
-              <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-100 dark:border-gray-700">
                 <div className="flex items-end justify-between gap-2 h-32">
                   {trends.map((day, index) => {
                     const maxCount = Math.max(...trends.map(t => t.count), 1);
@@ -324,13 +324,13 @@ try {
                     return (
                       <div key={index} className="flex flex-col items-center flex-1">
                         <div className="w-full flex flex-col items-center justify-end h-24">
-                          <span className="text-xs font-medium text-gray-600 mb-1">{day.count}</span>
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{day.count}</span>
                           <div
                             className="w-full max-w-8 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-md transition-all duration-300 hover:from-blue-600 hover:to-blue-500"
                             style={{ height: `${Math.max(height, 4)}%` }}
                           />
                         </div>
-                        <span className="text-xs text-gray-500 mt-2">{dayName}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-2">{dayName}</span>
                       </div>
                     );
                   })}
@@ -339,42 +339,42 @@ try {
             </div>
           )}
 
-          <div className="bg-white/70 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-lg border border-white/50">
+          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl p-6 sm:p-8 shadow-lg border border-white/50 dark:border-gray-700">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+              <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h2 className="text-xl font-bold text-gray-900">Getting Started</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Getting Started</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="text-center p-4">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">Join Groups</h3>
-                <p className="text-sm text-gray-500">Create or join group chats with friends and family</p>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Join Groups</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Create or join group chats with friends and family</p>
               </div>
               <div className="text-center p-4">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">Secure Messaging</h3>
-                <p className="text-sm text-gray-500">Your conversations are private and encrypted</p>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Secure Messaging</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Your conversations are private and encrypted</p>
               </div>
               <div className="text-center p-4">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400">
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">Real-time Chat</h3>
-                <p className="text-sm text-gray-500">Send and receive messages instantly</p>
+                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Real-time Chat</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Send and receive messages instantly</p>
               </div>
             </div>
           </div>

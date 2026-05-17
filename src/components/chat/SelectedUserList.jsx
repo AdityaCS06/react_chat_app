@@ -25,14 +25,14 @@ const SelectedUserList = ({ users, onRemove }) => {
 
   return (
     <div className="mt-4">
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+      <p className="text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase tracking-wide mb-2">
         Selected ({users.length})
       </p>
       <div className="flex flex-wrap gap-2">
         {users.map((u) => (
           <div
             key={u.id || u.public_id}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100/50 text-blue-800 px-3 py-2 rounded-xl"
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100/50 dark:border-blue-800 text-blue-800 dark:text-blue-300 px-3 py-2 rounded-xl"
           >
             <div className={`w-6 h-6 rounded-lg bg-gradient-to-br ${getAvatarColor(u.username)} flex items-center justify-center text-white text-[10px] font-bold`}>
               {u.avatar ? (
@@ -44,7 +44,7 @@ const SelectedUserList = ({ users, onRemove }) => {
             <span className="text-xs font-medium">{u.full_name || u.username}</span>
             <button
               onClick={() => onRemove(u.id || u.public_id)}
-              className="p-0.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-all duration-200"
+              className="p-0.5 text-slate-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-all duration-200"
             >
               <X size={14} />
             </button>
