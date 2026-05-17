@@ -53,6 +53,15 @@ const AppRoutes = () => {
         }
       />
 
+      <Route
+        path="/chats/:chatId"
+        element={
+          <PrivateRoute>
+            <ChatLayout />
+          </PrivateRoute>
+        }
+      />
+
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

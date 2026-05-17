@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { Search, MoreVertical, Users } from "lucide-react";
 import ChatOptionsMenu from "../../components/chat/ChatOptionsMenu";
+import EditGroupModal from "../../components/chat/EditGroupModal";
+import { updateChat } from "../../api/chat";
+import { useAuth } from "../../context/AuthContext";
+import { useToast } from "../../components/ui/ToastContainer";
 
-const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember }) => {
+const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onGroupUpdated }) => {
+  const { token } = useAuth();
+  const { addToast } = useToast();
   const [showMenu, setShowMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   if (!chat) {
     return (
@@ -49,6 +57,31 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
   };
 
   const avatarColor = getAvatarColor(displayName);
+
+  const handleSaveGroupName = async (newName) => {
+    console.log("handleSaveGroupName called with:", newName);
+    console.log("chat?.cuid:", chat?.cuid);
+    console.log("token:", token);
+    if (!chat?.cuid || !token) {
+      console.log("Returning early - missing cuid or token");
+      return;
+    }
+    setUpdating(true);
+    try {
+      console.log("Calling updateChat API...");
+      const updatedChat = await updateChat(chat.cuid, { name: newName }, token);
+      console.log("API response:", updatedChat);
+      setShowEditModal(false);
+      setShowMenu(false);
+      onGroupUpdated?.(updatedChat);
+      addToast("Group name updated!", "success");
+    } catch (err) {
+      console.error("Failed to update group:", err);
+      addToast("Failed to update group", "error");
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-between px-6 py-4 bg-white/70 backdrop-blur-xl border-b border-slate-200/40 shadow-sm relative z-10">
@@ -107,6 +140,15 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
           onExitGroup={onExitGroup}
           onAddMember={onAddMember}
           onRemoveMember={onRemoveMember}
+          onEditGroup={() => setShowEditModal(true)}
+        />
+
+        <EditGroupModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          chat={chat}
+          onSave={handleSaveGroupName}
+          loading={updating}
         />
       </div>
     </div>

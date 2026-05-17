@@ -22,6 +22,7 @@ const ChatOptionsMenu = ({
   onExitGroup,
   onAddMember,
   onRemoveMember,
+  onEditGroup,
 }) => {
   const menuRef = useRef(null);
 
@@ -100,7 +101,7 @@ const ChatOptionsMenu = ({
               <MenuItem
                 icon={Pencil}
                 label="Edit group"
-                onClick={() => console.log("Edit group")}
+                onClick={onEditGroup}
               />
               <div className="h-px bg-slate-200/60 my-2" />
               <MenuItem

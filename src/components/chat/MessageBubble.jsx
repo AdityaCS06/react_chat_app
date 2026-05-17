@@ -1,14 +1,30 @@
 import React from "react";
+import { Check, X } from "lucide-react";
 
-const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName }) => {
+const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContextMenu, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit }) => {
   const formatTime = (dateStr) => {
     const d = new Date(dateStr);
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
+  const handleContextMenu = (e) => {
+    e.preventDefault();
+    onContextMenu?.(e, msg);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      onSaveEdit?.();
+    } else if (e.key === "Escape") {
+      onCancelEdit?.();
+    }
+  };
+
   return (
     <div className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
       <div
+        onContextMenu={handleContextMenu}
         className={`relative group max-w-[75%] px-5 py-3.5 transition-all duration-200 ${
           isMine
             ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl rounded-br-sm shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25"
@@ -21,13 +37,43 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName }) => {
           </div>
         )}
 
-        <div className="break-words whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+        {isEditing ? (
+          <div className="space-y-2">
+            <input
+              type="text"
+              value={editContent}
+              onChange={(e) => onEditChange?.(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-full px-3 py-1.5 text-sm bg-black/10 rounded-lg text-white placeholder-white/50 outline-none"
+              autoFocus
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={onCancelEdit}
+                className="p-1.5 rounded-full hover:bg-black/20"
+              >
+                <X size={14} />
+              </button>
+              <button
+                onClick={onSaveEdit}
+                className="p-1.5 rounded-full hover:bg-black/20"
+              >
+                <Check size={14} />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="break-words whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+        )}
 
         <div
           className={`text-[10px] mt-2 flex items-center justify-end gap-1.5 ${
             isMine ? "text-blue-100" : "text-slate-400"
           }`}
         >
+          {msg.is_edited && !isEditing && (
+            <span className="italic">edited</span>
+          )}
           {msg.status === "seen" && isMine && (
             <div className="flex -space-x-1">
               <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
@@ -43,7 +89,7 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName }) => {
               <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
             </svg>
           )}
-          {formatTime(msg.created_at)}
+          {!isEditing && formatTime(msg.created_at)}
         </div>
       </div>
     </div>

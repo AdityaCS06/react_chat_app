@@ -14,8 +14,9 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
     if (!message.trim()) return;
 
     const content = message.trim();
+    const tempMuid = `temp-${Date.now()}`;
     const tempMsg = {
-      muid: `temp-${Date.now()}`,
+      muid: tempMuid,
       sender_id: user.public_id,
       content,
       message_type: "text",
@@ -29,7 +30,12 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
     const sent = socketRef.current?.send?.(JSON.stringify({ content, message_type: "text" }));
     if (!sent) {
       try {
-        await sendMessage(token, chat.cuid, content);
+        const response = await sendMessage(token, chat.cuid, content);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.muid === tempMuid ? { ...msg, muid: response.muid || response.message?.muid || msg.muid } : msg
+          )
+        );
       } catch {
         addToast("Failed to send message", "error");
       }

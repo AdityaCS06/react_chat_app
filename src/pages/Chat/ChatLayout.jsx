@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
 import ChatSidebar from "./ChatSidebar";
 import ChatWindow from "./ChatWindow";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { getChatDetails, deleteChat, leaveGroup } from "../../api/chat";
+import { useToast } from "../../components/ui/ToastContainer";
 
 const ChatLayout = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
+  const { chatId } = useParams();
+  const { addToast } = useToast();
   const [activeChat, setActiveChat] = useState(null);
+  const [loadingChat, setLoadingChat] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, type: null, loading: false });
+  const [refreshSidebar, setRefreshSidebar] = useState(0);
 
   useEffect(() => {
     const saved = sessionStorage.getItem("activeChat_session");
@@ -17,6 +25,21 @@ const ChatLayout = () => {
       sessionStorage.removeItem("activeChat_session");
     }
   }, []);
+
+  useEffect(() => {
+    if (chatId && token) {
+      setLoadingChat(true);
+      getChatDetails(chatId, token)
+        .then((chatData) => {
+          setActiveChat(chatData);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch chat:", err);
+          navigate("/chats");
+        })
+        .finally(() => setLoadingChat(false));
+    }
+  }, [chatId, token]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -47,11 +70,36 @@ const ChatLayout = () => {
   };
 
   const handleDeleteChat = () => {
-    console.log("Delete chat -", activeChat?.cuid);
+    setConfirmDialog({ open: true, type: "deleteChat", loading: false });
   };
 
   const handleExitGroup = () => {
-    console.log("Exit group -", activeChat?.cuid);
+    setConfirmDialog({ open: true, type: "exitGroup", loading: false });
+  };
+
+  const confirmAction = async () => {
+    const type = confirmDialog.type;
+    if (!activeChat?.cuid || !token) return;
+
+    setConfirmDialog((prev) => ({ ...prev, loading: true }));
+
+    try {
+      if (type === "deleteChat") {
+        await deleteChat(activeChat.cuid, token);
+        addToast("Chat deleted", "success");
+      } else if (type === "exitGroup") {
+        await leaveGroup(activeChat.cuid, token);
+        addToast("Left the group", "success");
+      }
+      setConfirmDialog({ open: false, type: null, loading: false });
+      setActiveChat(null);
+      setRefreshSidebar((prev) => prev + 1);
+      navigate("/chats");
+    } catch (error) {
+      setConfirmDialog((prev) => ({ ...prev, loading: false }));
+      const msg = error?.detail || error?.message || "Failed to perform action";
+      addToast(msg, "error");
+    }
   };
 
   const handleAddMember = () => {
@@ -66,6 +114,10 @@ const ChatLayout = () => {
     console.log("Logout");
   };
 
+  const handleGroupUpdated = (updatedChat) => {
+    setActiveChat(updatedChat);
+  };
+
   return (
     <div className="flex h-screen overflow-hidden">
       <div
@@ -73,7 +125,7 @@ const ChatLayout = () => {
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <ChatSidebar onSelectChat={handleSelectChat} activeChat={activeChat} />
+        <ChatSidebar onSelectChat={handleSelectChat} activeChat={activeChat} refreshTrigger={refreshSidebar} />
       </div>
 
       {sidebarOpen && (
@@ -105,6 +157,7 @@ const ChatLayout = () => {
             onAddMember={handleAddMember}
             onRemoveMember={handleRemoveMember}
             onLogout={handleLogout}
+            onGroupUpdated={handleGroupUpdated}
           />
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 via-slate-50 to-indigo-50 p-8">
@@ -125,6 +178,22 @@ const ChatLayout = () => {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmDialog.open}
+        onOpenChange={(open) => setConfirmDialog((prev) => ({ ...prev, open }))}
+        title={confirmDialog.type === "exitGroup" ? "Exit group?" : "Delete chat?"}
+        description={
+          confirmDialog.type === "exitGroup"
+            ? "You will be removed from this group. This action cannot be undone."
+            : "This chat will be permanently deleted. This action cannot be undone."
+        }
+        confirmText={confirmDialog.type === "exitGroup" ? "Exit group" : "Delete"}
+        cancelText="Cancel"
+        onConfirm={confirmAction}
+        confirmVariant="danger"
+        loading={confirmDialog.loading}
+      />
     </div>
   );
 };

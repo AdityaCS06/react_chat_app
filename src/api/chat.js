@@ -29,6 +29,29 @@ export const getChatDetails = async (cuid, token) => {
   return response.data;
 };
 
+export const updateChat = async (cuid, data, token) => {
+  const response = await axios.patch(`${BASE_URL}/${cuid}`, data, authHeader(token));
+  return response.data;
+};
+
+export const deleteChat = async (cuid, token) => {
+  try {
+    const response = await axios.delete(`${BASE_URL}/${cuid}`, authHeader(token));
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const leaveGroup = async (cuid, token) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/${cuid}/leave`, {}, authHeader(token));
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
 
 
 
