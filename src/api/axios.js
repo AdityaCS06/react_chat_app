@@ -37,9 +37,9 @@ export const refreshToken = async () => {
     throw new Error("No refresh token");
   }
 
-  const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-    refresh_token,
-  });
+  const response = await axios.post(
+    `${API_BASE_URL}/auth/refresh?refresh_token=${refresh_token}`
+  );
 
   const { access_token, refresh_token: newRefreshToken } = response.data;
 
