@@ -11,7 +11,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
 const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onLogout, onGroupUpdated }) => {
-  const { token, user } = useAuth();
+  const { user, token } = useAuth();
   const { addToast } = useToast();
 
   const [messages, setMessages] = useState([]);
@@ -32,7 +32,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       isFetchingRef.current = true;
       setLoading(true);
       try {
-        const res = await getMessages(token, chat.cuid, limit, offset);
+        const res = await getMessages(chat.cuid, limit, offset);
         const newMessages = (res.messages || []).filter((msg) => msg.muid);
         const reversed = [...newMessages].reverse();
         setMessages((prev) =>
@@ -46,7 +46,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         setLoading(false);
       }
     },
-    [chat?.cuid, token, addToast]
+    [chat?.cuid, addToast]
   );
 
   const setupWebSocket = useCallback(() => {
@@ -95,10 +95,10 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         (msg) => msg.muid && msg.sender_id !== user.public_id && msg.status !== "seen"
       );
       await Promise.all(
-        unseen.map((msg) => updateMessageStatus(token, chat.cuid, msg.muid, "seen"))
+        unseen.map((msg) => updateMessageStatus(chat.cuid, msg.muid, "seen"))
       );
     } catch {}
-  }, [messages, user.public_id, token, chat?.cuid]);
+  }, [messages, user.public_id, chat?.cuid]);
 
   const handleContextMenu = useCallback((e, msg) => {
     const x = e.clientX;
@@ -133,13 +133,13 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     const msg = deleteDialog.message;
     if (!msg || !msg.muid || !chat?.cuid) return;
     try {
-      await deleteMessageForMe(token, chat.cuid, msg.muid);
+      await deleteMessageForMe(chat.cuid, msg.muid);
       setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
       addToast("Message deleted for you", "success");
     } catch (err) {
       addToast(getErrorMessage(err), "error");
     }
-  }, [deleteDialog.message, chat?.cuid, token, addToast]);
+  }, [deleteDialog.message, chat?.cuid, addToast]);
 
   const handleDeleteForEveryone = useCallback(() => {
     setDeleteDialog({ open: true, message: menuState.message, type: "everyone" });
@@ -149,13 +149,13 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     const msg = deleteDialog.message;
     if (!msg || !msg.muid || !chat?.cuid) return;
     try {
-      await deleteMessageForEveryone(token, chat.cuid, msg.muid);
+      await deleteMessageForEveryone(chat.cuid, msg.muid);
       setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
       addToast("Message deleted for everyone", "success");
     } catch (err) {
       addToast(getErrorMessage(err), "error");
     }
-  }, [deleteDialog.message, chat?.cuid, token, addToast]);
+  }, [deleteDialog.message, chat?.cuid, addToast]);
 
   const handleEdit = useCallback(() => {
     const msg = menuState.message;
@@ -173,7 +173,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       return;
     }
     try {
-      const response = await editMessage(token, chat.cuid, editingMessage, editContent.trim());
+      const response = await editMessage(chat.cuid, editingMessage, editContent.trim());
       setMessages((prev) =>
         prev.map((m) =>
           m.muid === editingMessage
@@ -192,7 +192,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         addToast(getErrorMessage(err), "error");
       }
     }
-  }, [editingMessage, editContent, chat?.cuid, token, addToast, messages]);
+  }, [editingMessage, editContent, chat?.cuid, addToast, messages]);
 
   const handleCancelEdit = useCallback(() => {
     setEditingMessage(null);

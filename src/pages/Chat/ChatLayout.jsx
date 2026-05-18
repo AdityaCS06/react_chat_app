@@ -9,7 +9,7 @@ import { getErrorMessage } from "../../api/utils";
 import { useToast } from "../../components/ui/ToastContainer";
 
 const ChatLayout = () => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { chatId } = useParams();
   const { addToast } = useToast();
@@ -28,9 +28,9 @@ const ChatLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (chatId && token) {
+    if (chatId) {
       setLoadingChat(true);
-      getChatDetails(chatId, token)
+      getChatDetails(chatId)
         .then((chatData) => {
           setActiveChat(chatData);
         })
@@ -40,7 +40,7 @@ const ChatLayout = () => {
         })
         .finally(() => setLoadingChat(false));
     }
-  }, [chatId, token]);
+  }, [chatId, navigate]);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
@@ -80,16 +80,16 @@ const ChatLayout = () => {
 
   const confirmAction = async () => {
     const type = confirmDialog.type;
-    if (!activeChat?.cuid || !token) return;
+    if (!activeChat?.cuid) return;
 
     setConfirmDialog((prev) => ({ ...prev, loading: true }));
 
     try {
       if (type === "deleteChat") {
-        await deleteChat(activeChat.cuid, token);
+        await deleteChat(activeChat.cuid);
         addToast("Chat deleted", "success");
       } else if (type === "exitGroup") {
-        await leaveGroup(activeChat.cuid, token);
+        await leaveGroup(activeChat.cuid);
         addToast("Left the group", "success");
       }
       setConfirmDialog({ open: false, type: null, loading: false });

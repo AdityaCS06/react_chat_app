@@ -7,7 +7,7 @@ import { getErrorMessage } from "../../api/utils";
 
 const ChatInput = ({ chat, socketRef, setMessages }) => {
   const [message, setMessage] = useState("");
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const { addToast } = useToast();
 
   const handleSend = async (e) => {
@@ -31,7 +31,7 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
     const sent = socketRef.current?.send?.(JSON.stringify({ content, message_type: "text" }));
     if (!sent) {
       try {
-        const response = await sendMessage(token, chat.cuid, content);
+        const response = await sendMessage(chat.cuid, content);
         setMessages((prev) =>
           prev.map((msg) =>
             msg.muid === tempMuid ? { ...msg, muid: response.muid || response.message?.muid || msg.muid } : msg

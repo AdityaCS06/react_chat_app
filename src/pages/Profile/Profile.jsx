@@ -6,18 +6,18 @@ import { useToast } from "../../components/ui/ToastContainer";
 import { timeAgo } from "../../utils/timeAgo";
 
 const Profile = () => {
-  const { user, token, setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const { addToast } = useToast();
   const [loading, setLoading] = useState(!user);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!user && token) {
+      if (!user) {
         setLoading(true);
         try {
-          const data = await getProfile(token);
+          const data = await getProfile();
           setUser(data);
-        } catch (err) {
+        } catch {
           addToast("Failed to load profile", "error");
         } finally {
           setLoading(false);
@@ -25,7 +25,7 @@ const Profile = () => {
       }
     };
     fetchProfile();
-  }, [token, user, setUser, addToast]);
+  }, [user, setUser, addToast]);
 
   if (loading)
     return (

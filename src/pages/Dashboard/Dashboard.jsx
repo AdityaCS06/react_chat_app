@@ -7,7 +7,7 @@ import { getUserStats, getMessageTrends, getUnreadStats } from "../../api/dashbo
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const [chats, setChats] = useState([]);
   const [loadingChats, setLoadingChats] = useState(false);
   const [stats, setStats] = useState(null);
@@ -25,14 +25,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!token) return;
-
       try {
         const [chatsData, statsData, trendsData, unreadData] = await Promise.all([
-          getMyChats(token, 5, 0),
-          getUserStats(token),
-          getMessageTrends(token, trendsDays),
-          getUnreadStats(token)
+          getMyChats(5, 0),
+          getUserStats(),
+          getMessageTrends(trendsDays),
+          getUnreadStats()
         ]);
         setChats(chatsData.chats || []);
         setStats(statsData);
@@ -46,13 +44,12 @@ const Dashboard = () => {
       }
     };
     fetchData();
-  }, [token]);
+  }, [trendsDays]);
 
   const fetchTrends = async (days) => {
-    if (!token) return;
     setTrendsDays(days);
     try {
-      const trendsData = await getMessageTrends(token, days);
+      const trendsData = await getMessageTrends(days);
       setTrends(trendsData.trends || []);
     } catch (err) {
       console.error("Failed to fetch trends:", err);

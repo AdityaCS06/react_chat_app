@@ -1,7 +1,6 @@
 // src/pages/Chat/CreateChat.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 import { createChat } from "../../api/chat";
 import { getErrorMessage } from "../../api/utils";
@@ -11,7 +10,6 @@ import { ArrowLeft, MessageCircle, Users, CheckCircle2 } from "lucide-react";
 
 const CreateChat = () => {
   const navigate = useNavigate();
-  const { token } = useAuth();
   const { addToast } = useToast();
 
   const [chatName, setChatName] = useState("");
@@ -57,7 +55,7 @@ const CreateChat = () => {
 
     try {
       setLoading(true);
-      const res = await createChat(payload, token);
+      const res = await createChat(payload);
       addToast("Chat created successfully!", "success");
       navigate(`/chats/${res.cuid}`);
     } catch (err) {

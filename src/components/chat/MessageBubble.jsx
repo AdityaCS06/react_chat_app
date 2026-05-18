@@ -63,7 +63,7 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContext
             </div>
           </div>
         ) : (
-          <div className="break-words whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+          <div className="break-all whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
         )}
 
         <div

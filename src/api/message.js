@@ -1,21 +1,8 @@
-// src/api/message.js
-import axios from "axios";
+import api from "./axios";
 
-// const BASE_URL = "http://localhost:8000/chats"; // same router as your chats
 const BASE_URL = import.meta.env.VITE_API_BASE_URL + "/chats";
 
-const authHeader = (token) => ({
-  headers: { Authorization: `Bearer ${token}` },
-});
-
-/**
- * Send a message in a chat
- * @param {string} token - JWT token
- * @param {string} chatId - Chat CUID/UUID
- * @param {string} content - Message content (text or file URL)
- * @param {string} messageType - Message type: 'text' | 'image' | 'file'
- */
-export const sendMessage = async (token, chatId, content, messageType = "text") => {
+export const sendMessage = async (chatId, content, messageType = "text") => {
   try {
     const payload = {
       chat_id: chatId,
@@ -23,47 +10,30 @@ export const sendMessage = async (token, chatId, content, messageType = "text") 
       message_type: messageType,
     };
 
-    const response = await axios.post(
-      `${BASE_URL}/${chatId}/message`,
-      payload,
-      authHeader(token)
-    );
-
-    return response.data; // MessageResponse
-  } catch (error) {
-    throw error.response?.data || error;
-  }
-};
-
-export const getMessages = async (token, chatId, limit = 50, offset = 0) => {
-  try {
-    const response = await axios.get(
-      `${BASE_URL}/${chatId}/messages`,
-      {
-        params: { limit, offset },
-        ...authHeader(token),
-      }
-    );
+    const response = await api.post(`${BASE_URL}/${chatId}/message`, payload);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
 };
 
-export const updateMessageStatus = async (
-  token,
-  chatId,
-  messageId,
-  status
-) => {
+export const getMessages = async (chatId, limit = 50, offset = 0) => {
   try {
-    const res = await axios.post(
+    const response = await api.get(`${BASE_URL}/${chatId}/messages`, {
+      params: { limit, offset },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const updateMessageStatus = async (chatId, messageId, status) => {
+  try {
+    const res = await api.post(
       `${BASE_URL}/${chatId}/messages/${messageId}/status`,
       null,
-      {
-        params: { status },
-        ...authHeader(token),
-      }
+      { params: { status } }
     );
     return res.data;
   } catch (error) {
@@ -71,38 +41,27 @@ export const updateMessageStatus = async (
   }
 };
 
-export const deleteMessageForEveryone = async (token, chatId, messageId) => {
+export const deleteMessageForEveryone = async (chatId, messageId) => {
   try {
-    const response = await axios.delete(
-      `${BASE_URL}/${chatId}/messages/${messageId}`,
-      authHeader(token)
-    );
+    const response = await api.delete(`${BASE_URL}/${chatId}/messages/${messageId}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
 };
 
-export const deleteMessageForMe = async (token, chatId, messageId) => {
+export const deleteMessageForMe = async (chatId, messageId) => {
   try {
-    const response = await axios.post(
-      `${BASE_URL}/${chatId}/messages/${messageId}/hide`,
-      null,
-      authHeader(token)
-    );
+    const response = await api.post(`${BASE_URL}/${chatId}/messages/${messageId}/hide`, null);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
 };
 
-export const editMessage = async (token, chatId, messageId, content) => {
+export const editMessage = async (chatId, messageId, content) => {
   try {
-    const response = await axios.patch(
-      `${BASE_URL}/${chatId}/messages/${messageId}`,
-      { content },
-      authHeader(token)
-    );
+    const response = await api.patch(`${BASE_URL}/${chatId}/messages/${messageId}`, { content });
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
