@@ -3,11 +3,10 @@ import { Search, MoreVertical, Users } from "lucide-react";
 import ChatOptionsMenu from "../../components/chat/ChatOptionsMenu";
 import EditGroupModal from "../../components/chat/EditGroupModal";
 import { updateChat } from "../../api/chat";
-import { useAuth } from "../../context/AuthContext";
+import { getErrorMessage } from "../../api/utils";
 import { useToast } from "../../components/ui/ToastContainer";
 
 const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onGroupUpdated }) => {
-  const { token } = useAuth();
   const { addToast } = useToast();
   const [showMenu, setShowMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -16,8 +15,8 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
 
   if (!chat) {
     return (
-      <div className="px-6 py-4 border-b border-slate-200/50 bg-white/80 backdrop-blur-sm shadow-sm">
-        <p className="text-slate-400 font-medium">Select a conversation</p>
+      <div className="px-6 py-4 border-b border-slate-200/50 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm">
+        <p className="text-slate-400 dark:text-slate-500 font-medium">Select a conversation</p>
       </div>
     );
   }
@@ -59,52 +58,45 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
   const avatarColor = getAvatarColor(displayName);
 
   const handleSaveGroupName = async (newName) => {
-    console.log("handleSaveGroupName called with:", newName);
-    console.log("chat?.cuid:", chat?.cuid);
-    console.log("token:", token);
-    if (!chat?.cuid || !token) {
-      console.log("Returning early - missing cuid or token");
+    if (!chat?.cuid) {
       return;
     }
     setUpdating(true);
     try {
-      console.log("Calling updateChat API...");
-      const updatedChat = await updateChat(chat.cuid, { name: newName }, token);
-      console.log("API response:", updatedChat);
+      const updatedChat = await updateChat(chat.cuid, { name: newName });
       setShowEditModal(false);
       setShowMenu(false);
       onGroupUpdated?.(updatedChat);
       addToast("Group name updated!", "success");
     } catch (err) {
-      console.error("Failed to update group:", err);
-      addToast("Failed to update group", "error");
+      addToast(getErrorMessage(err), "error");
     } finally {
       setUpdating(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 bg-white/70 backdrop-blur-xl border-b border-slate-200/40 shadow-sm relative z-10">
+    <div className="flex items-center justify-between px-6 py-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-slate-200/40 dark:border-gray-700 shadow-sm relative z-10">
       <div className="flex items-center gap-4">
         <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold shadow-lg`}>
           {getInitials(displayName)}
         </div>
 
         <div>
-          <h3 className="text-base font-bold text-slate-800 truncate">
+          <h3 className="text-base font-bold text-slate-800 dark:text-white truncate">
             {displayName}
           </h3>
 
           <div className="flex items-center gap-2">
             {chat.is_group ? (
               <>
-                <Users size={13} className="text-slate-400" />
-                <p className="text-xs text-slate-500 font-medium">{chat.members?.length || 0} members</p>
+                <Users size={13} className="text-slate-400 dark:text-slate-500" />
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{chat.members?.length || 0} members</p>
               </>
             ) : (
               <>
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <p className="text-xs text-slate-500 font-medium">Active now</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Active now</p>
               </>
             )}
           </div>
@@ -115,14 +107,14 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
         <button
           aria-label="Search"
           onClick={() => setShowSearch(!showSearch)}
-          className="p-2.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all"
+          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
         >
           <Search size={20} />
         </button>
         <button
           aria-label="More options"
           onClick={() => setShowMenu(!showMenu)}
-          className="p-2.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all"
+          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
         >
           <MoreVertical size={20} />
         </button>

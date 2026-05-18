@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormInput from "../../components/forms/FormInput";
 import PasswordInput from "../../components/forms/PasswordInput";
 import { loginUser } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 import { useNavigate } from "react-router-dom";
-// import logo from "../../assets/svg/chat_interface.svg";
 import logo from "../../assets/svg/message_ui.svg";
-
 
 const Login = () => {
   const [formValues, setFormValues] = useState({
@@ -16,9 +14,15 @@ const Login = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
@@ -74,9 +78,9 @@ const Login = () => {
       </div>
 
       {/* Right side (Form) */}
-      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 px-6 py-10">
-        <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-8">
-          <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
+      <div className="flex w-full md:w-1/2 items-center justify-center bg-gray-50 dark:bg-gray-900 px-6 py-10">
+        <div className="bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900/50 rounded-2xl w-full max-w-md p-8">
+          <h2 className="text-3xl font-semibold text-center text-gray-800 dark:text-white mb-8">
             Login to Your Account
           </h2>
 
@@ -103,11 +107,11 @@ const Login = () => {
               {loading ? "Logging in..." : "Login"}
             </button>
 
-            <div className="text-center text-sm text-gray-600 mt-4">
-              Don’t have an account?{" "}
+            <div className="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+              Don't have an account?{" "}
               <span
                 onClick={() => navigate("/signup")}
-                className="text-blue-600 font-medium hover:underline cursor-pointer"
+                className="text-blue-600 dark:text-blue-400 font-medium hover:underline cursor-pointer"
               >
                 Sign up
               </span>

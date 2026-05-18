@@ -6,18 +6,18 @@ import { useToast } from "../../components/ui/ToastContainer";
 import { timeAgo } from "../../utils/timeAgo";
 
 const Profile = () => {
-  const { user, token, setUser } = useAuth();
+  const { user, setUser } = useAuth();
   const { addToast } = useToast();
   const [loading, setLoading] = useState(!user);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!user && token) {
+      if (!user) {
         setLoading(true);
         try {
-          const data = await getProfile(token);
+          const data = await getProfile();
           setUser(data);
-        } catch (err) {
+        } catch {
           addToast("Failed to load profile", "error");
         } finally {
           setLoading(false);
@@ -25,21 +25,21 @@ const Profile = () => {
       }
     };
     fetchProfile();
-  }, [token, user, setUser, addToast]);
+  }, [user, setUser, addToast]);
 
   if (loading)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col">
         <Navbar />
         <div className="flex-grow flex items-center justify-center">
-          <p className="text-gray-500 text-lg animate-pulse">Loading profile...</p>
+          <p className="text-gray-500 dark:text-gray-400 text-lg animate-pulse">Loading profile...</p>
         </div>
       </div>
     );
 
   if (!user)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col">
         <Navbar />
         <div className="flex-grow flex items-center justify-center">
           <p className="text-red-500 text-lg">Please login to view your profile.</p>
@@ -50,55 +50,55 @@ const Profile = () => {
   const profilePhotoUrl = user.profile_photo || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   const InfoItem = ({ label, value, isHighlight }) => (
-    <div className="flex justify-between items-center py-3 border-b border-gray-100 last:border-0">
-      <span className="text-gray-500 font-medium">{label}</span>
-      <span className={`font-semibold ${isHighlight ? "text-blue-600" : "text-gray-800"}`}>{value}</span>
+    <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
+      <span className="text-gray-500 dark:text-gray-400 font-medium">{label}</span>
+      <span className={`font-semibold ${isHighlight ? "text-blue-600 dark:text-blue-400" : "text-gray-800 dark:text-white"}`}>{value}</span>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col">
       <Navbar />
 
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
-            <p className="text-gray-500 mt-1">Manage your account information</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your account information</p>
           </div>
 
           <div className="space-y-6">
-            <div className="bg-white rounded-3xl shadow-xl p-8 border border-white/50">
+            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 border border-white/50 dark:border-gray-700">
               <div className="flex flex-col items-center">
                 <div className="relative mb-4">
                   <img
                     src={profilePhotoUrl}
                     alt="Profile"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
                   />
-<button className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full text-white flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors">
+                  <button className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full text-white flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                     </svg>
                   </button>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{user.full_name || user.username}</h2>
-                <p className="text-gray-500">@{user.username}</p>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user.full_name || user.username}</h2>
+                <p className="text-gray-500 dark:text-gray-400">@{user.username}</p>
                 <div className="flex items-center gap-2 mt-3">
                   <span className="w-2 h-2 bg-emerald-400 rounded-full" />
-                  <span className="text-sm text-gray-500">Last seen {timeAgo(user.last_seen)}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Last seen {timeAgo(user.last_seen)}</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-xl p-6 border border-white/50">
+            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 border border-white/50 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-gray-900">Account Info</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Account Info</h3>
               </div>
               <div className="space-y-1">
                 <InfoItem label="Email" value={user.email} isHighlight />

@@ -1,68 +1,46 @@
-// src/api/chat.js
-import axios from "axios";
+import api from "./axios";
 
-// const BASE_URL = "http://localhost:8000/chats"; // your backend base URL
 const BASE_URL = import.meta.env.VITE_API_BASE_URL + "/chats";
 
-const authHeader = (token) => ({
-  headers: { Authorization: `Bearer ${token}` },
-});
-
-// Create new chat
-export const createChat = async (chatData, token) => {
+export const createChat = async (chatData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/create`, chatData, authHeader(token));
+    const response = await api.post(`${BASE_URL}/create`, chatData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
 };
 
-export const getMyChats = async (token, limit = 50, offset = 0) => {
+export const getMyChats = async (limit = 50, offset = 0) => {
   const params = new URLSearchParams({ limit, offset });
-  const response = await axios.get(`${BASE_URL}/my?${params.toString()}`, authHeader(token));
-  return response.data; // → { total: number, chats: [...] }
-};
-
-export const getChatDetails = async (cuid, token) => {
-  const response = await axios.get(`${BASE_URL}/${cuid}`, authHeader(token));
+  const response = await api.get(`${BASE_URL}/my?${params.toString()}`);
   return response.data;
 };
 
-export const updateChat = async (cuid, data, token) => {
-  const response = await axios.patch(`${BASE_URL}/${cuid}`, data, authHeader(token));
+export const getChatDetails = async (cuid) => {
+  const response = await api.get(`${BASE_URL}/${cuid}`);
   return response.data;
 };
 
-export const deleteChat = async (cuid, token) => {
+export const updateChat = async (cuid, data) => {
+  const response = await api.patch(`${BASE_URL}/${cuid}`, data);
+  return response.data;
+};
+
+export const deleteChat = async (cuid) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/${cuid}`, authHeader(token));
+    const response = await api.delete(`${BASE_URL}/${cuid}`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
 };
 
-export const leaveGroup = async (cuid, token) => {
+export const leaveGroup = async (cuid) => {
   try {
-    const response = await axios.post(`${BASE_URL}/${cuid}/leave`, {}, authHeader(token));
+    const response = await api.post(`${BASE_URL}/${cuid}/leave`, {});
     return response.data;
   } catch (error) {
     throw error.response?.data || error;
   }
 };
-
-
-
-
-
-// Get all users (with optional search)
-// export const getAllUsers = async (token, search = "", limit = 50, offset = 0) => {
-//   const params = new URLSearchParams();
-//   if (search) params.append("search", search);
-//   params.append("limit", limit);
-//   params.append("offset", offset);
-
-//   const response = await axios.get(`${BASE_URL}/all?${params.toString()}`, authHeader(token));
-//   return response.data;
-// };

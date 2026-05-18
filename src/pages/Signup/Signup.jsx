@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormInput from "../../components/forms/FormInput";
 import PasswordInput from "../../components/forms/PasswordInput";
 import { registerUser } from "../../api/auth";
@@ -6,8 +6,7 @@ import { validateSignup } from "../../utils/validators";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 import { useNavigate } from "react-router-dom";
-// import logo from "../../assets/svg/chat_interface.svg";
-import logo from "../../assets/svg/team_chat.png"; // same as Login for consistency
+import logo from "../../assets/svg/team_chat.png";
 
 const Signup = () => {
   const [formValues, setFormValues] = useState({
@@ -19,9 +18,15 @@ const Signup = () => {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleChange = (e) => {
     setFormValues({ ...formValues, [e.target.name]: e.target.value });
@@ -72,12 +77,12 @@ const Signup = () => {
       </div>
 
       {/* Right Side (Signup Form) */}
-      <div className="flex w-full md:w-1/2 items-start justify-center bg-gray-50 px-4 py-8 md:px-6 md:py-10 overflow-y-auto">
-        <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-6 md:p-8 mt-4 md:mt-0">
-          <h2 className="text-3xl font-semibold text-center text-gray-800 mb-4">
+      <div className="flex w-full md:w-1/2 items-start justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8 md:px-6 md:py-10 overflow-y-auto">
+        <div className="bg-white dark:bg-gray-800 shadow-lg dark:shadow-gray-900/50 rounded-2xl w-full max-w-md p-6 md:p-8 mt-4 md:mt-0">
+          <h2 className="text-3xl font-semibold text-center text-gray-800 dark:text-white mb-4">
             Create Account
           </h2>
-          <p className="text-center text-gray-500 mb-6">
+          <p className="text-center text-gray-500 dark:text-gray-400 mb-6">
             Sign up to get started with your account
           </p>
 
@@ -121,11 +126,11 @@ const Signup = () => {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-gray-600 text-sm">
+          <div className="mt-6 text-center text-gray-600 dark:text-gray-400 text-sm">
             Already have an account?{" "}
             <span
               onClick={() => navigate("/login")}
-              className="text-blue-600 font-medium hover:underline cursor-pointer"
+              className="text-blue-600 dark:text-blue-400 font-medium hover:underline cursor-pointer"
             >
               Login
             </span>
