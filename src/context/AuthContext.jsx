@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { getProfile } from "../api/auth";
-import axios from "axios";
+import { setAuthToken } from "../api/axios";
 
 const AuthContext = createContext();
 
@@ -9,47 +9,17 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const refreshToken = useCallback(async () => {
-    const storedRefresh = localStorage.getItem("refresh_token");
-    if (!storedRefresh) return false;
-    try {
-      const AUTH_BASE_URL = import.meta.env.VITE_API_BASE_URL + "/auth";
-      const res = await axios.post(`${AUTH_BASE_URL}/refresh`, {
-        refresh_token: storedRefresh,
-      });
-      const data = res.data;
-      setToken(data.access_token);
-      localStorage.setItem("access_token", data.access_token);
-      if (data.refresh_token) {
-        localStorage.setItem("refresh_token", data.refresh_token);
-      }
-      return true;
-    } catch {
-      return false;
-    }
-  }, []);
-
   useEffect(() => {
     const storedToken = localStorage.getItem("access_token");
     if (storedToken) {
       setToken(storedToken);
-      getProfile(storedToken)
+      setAuthToken(storedToken);
+      getProfile()
         .then((data) => {
           setUser(data);
         })
-        .catch(async () => {
-          const refreshed = await refreshToken();
-          if (refreshed) {
-            const newToken = localStorage.getItem("access_token");
-            try {
-              const data = await getProfile(newToken);
-              setUser(data);
-            } catch {
-              logout();
-            }
-          } else {
-            logout();
-          }
+        .catch(() => {
+          logout();
         })
         .finally(() => setLoading(false));
     } else {
@@ -60,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   const login = (data) => {
     setUser(data.user);
     setToken(data.access_token);
+    setAuthToken(data.access_token);
 
     localStorage.setItem("user", JSON.stringify(data.user));
     localStorage.setItem("access_token", data.access_token);
@@ -69,6 +40,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
+    setAuthToken(null);
     localStorage.removeItem("user");
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");

@@ -5,7 +5,7 @@ import { getMyChats } from "../../api/chat";
 import { useNavigate } from "react-router-dom";
 
 const ChatList = () => {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const ChatList = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const res = await getMyChats(token);
+        const res = await getMyChats();
         setChats(res.chats || []);
       } catch (err) {
         console.error(err);
@@ -26,7 +26,7 @@ const ChatList = () => {
       }
     };
     fetchChats();
-  }, [token, addToast]);
+  }, [addToast]);
 
   const filteredChats = useMemo(
     () =>

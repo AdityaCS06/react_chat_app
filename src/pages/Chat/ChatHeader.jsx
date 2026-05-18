@@ -4,11 +4,9 @@ import ChatOptionsMenu from "../../components/chat/ChatOptionsMenu";
 import EditGroupModal from "../../components/chat/EditGroupModal";
 import { updateChat } from "../../api/chat";
 import { getErrorMessage } from "../../api/utils";
-import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 
 const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onGroupUpdated }) => {
-  const { token } = useAuth();
   const { addToast } = useToast();
   const [showMenu, setShowMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -60,12 +58,12 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
   const avatarColor = getAvatarColor(displayName);
 
   const handleSaveGroupName = async (newName) => {
-    if (!chat?.cuid || !token) {
+    if (!chat?.cuid) {
       return;
     }
     setUpdating(true);
     try {
-      const updatedChat = await updateChat(chat.cuid, { name: newName }, token);
+      const updatedChat = await updateChat(chat.cuid, { name: newName });
       setShowEditModal(false);
       setShowMenu(false);
       onGroupUpdated?.(updatedChat);

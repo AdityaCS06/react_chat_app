@@ -7,7 +7,7 @@ import { useToast } from "../../components/ui/ToastContainer";
 
 const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
   const navigate = useNavigate();
-  const { token, user, logout } = useAuth();
+  const { user, logout } = useAuth();
   const { addToast } = useToast();
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const res = await getMyChats(token);
+        const res = await getMyChats();
         setChats(res?.chats || []);
       } catch {
         addToast("Failed to load chats", "error");
@@ -27,7 +27,7 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
       }
     };
     fetchChats();
-  }, [token, refreshTrigger]);
+  }, [refreshTrigger]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
