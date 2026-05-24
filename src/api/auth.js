@@ -31,3 +31,13 @@ export const getProfile = async () => {
     throw { detail: "Network error" };
   }
 };
+
+export const updateProfile = async (formData) => {
+  try {
+    const response = await api.patch(`/users/me`, formData);
+    return response.data;
+  } catch (error) {
+    if (error.response) throw error.response.data;
+    throw { detail: "Network error" };
+  }
+};
