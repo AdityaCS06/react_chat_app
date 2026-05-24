@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Check, X } from "lucide-react";
 
+const MAX_CHARS = 250;
+
 const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContextMenu, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit }) => {
+  const [expanded, setExpanded] = useState(false);
+
   const formatTime = (dateStr) => {
     const d = new Date(dateStr);
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -20,6 +24,10 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContext
       onCancelEdit?.();
     }
   };
+
+  const content = msg.content || "";
+  const isLongMsg = content.length > MAX_CHARS;
+  const displayContent = isLongMsg && !expanded ? content.slice(0, MAX_CHARS) : content;
 
   return (
     <div className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
@@ -63,7 +71,24 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContext
             </div>
           </div>
         ) : (
-          <div className="break-all whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+          <div>
+            <div className="break-all whitespace-pre-wrap text-sm leading-relaxed">{displayContent}</div>
+            {isLongMsg && !expanded && (
+              <span className="text-slate-400 dark:text-slate-500">...</span>
+            )}
+            {isLongMsg && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className={`text-xs font-semibold mt-1 transition-colors ${
+                  isMine
+                    ? "text-blue-200 hover:text-white"
+                    : "text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300"
+                }`}
+              >
+                {expanded ? "Show less" : "Read more"}
+              </button>
+            )}
+          </div>
         )}
 
         <div

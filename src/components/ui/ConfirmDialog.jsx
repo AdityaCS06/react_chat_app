@@ -6,6 +6,7 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
+  children,
   confirmText = "Confirm",
   cancelText = "Cancel",
   onConfirm,
@@ -65,6 +66,7 @@ export function ConfirmDialog({
               {description}
             </p>
           )}
+          {children && <div className="mt-4">{children}</div>}
         </div>
         <div className="flex justify-end gap-3 px-6 pb-6">
           <button

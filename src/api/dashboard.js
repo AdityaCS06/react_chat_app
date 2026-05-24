@@ -1,6 +1,6 @@
 import api from "./axios";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL + "/users/me";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL + "/dashboard/me";
 
 export const getUserStats = async () => {
   const res = await api.get(`${BASE_URL}/stats`);

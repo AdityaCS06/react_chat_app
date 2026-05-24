@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useLayoutEffect } from "react";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../components/chat/MessageBubble";
@@ -20,11 +20,17 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const [menuState, setMenuState] = useState({ isOpen: false, message: null, position: { x: 0, y: 0 } });
   const [editingMessage, setEditingMessage] = useState(null);
   const [editContent, setEditContent] = useState("");
-  const [deleteDialog, setDeleteDialog] = useState({ open: false, message: null, type: null });
+  const [deleteDialog, setDeleteDialog] = useState({ open: false, type: null });
+  const [deleting, setDeleting] = useState(false);
 
   const socketRef = useRef(null);
   const scrollRef = useRef(null);
   const isFetchingRef = useRef(false);
+  const paginationStateRef = useRef(null);
+  const initialLoadRef = useRef(true);
+  const deleteTargetRef = useRef(null);
+  const messagesRef = useRef([]);
+  messagesRef.current = messages;
 
   const fetchMessages = useCallback(
     async (replace = false, limit = 50, offset = 0) => {
@@ -70,21 +76,44 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
 
   useEffect(() => {
     if (!chat) return;
+    initialLoadRef.current = true;
     setMessages([]);
     fetchMessages(true);
     setupWebSocket();
     return () => socketRef.current?.close();
   }, [chat, fetchMessages, setupWebSocket]);
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el || messages.length === 0) return;
+
+    if (paginationStateRef.current !== null) {
+      const { scrollHeight: oldHeight, scrollTop: oldTop } = paginationStateRef.current;
+      el.scrollTop = oldTop + (el.scrollHeight - oldHeight);
+      paginationStateRef.current = null;
+      return;
+    }
+
+    if (initialLoadRef.current) {
+      initialLoadRef.current = false;
+      el.scrollTop = el.scrollHeight;
+      return;
+    }
+
+    const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+    if (isAtBottom) {
+      el.scrollTop = el.scrollHeight;
+    }
   }, [messages.length]);
 
   const handleScroll = (e) => {
-    if (e.target.scrollTop < 80 && hasMore && !loading) {
+    const el = e.target;
+
+    if (el.scrollTop < 80 && hasMore && !loading && !isFetchingRef.current) {
+      paginationStateRef.current = {
+        scrollHeight: el.scrollHeight,
+        scrollTop: el.scrollTop,
+      };
       fetchMessages(false, 50, messages.length);
     }
   };
@@ -126,36 +155,58 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   }, []);
 
   const handleDeleteForMe = useCallback(() => {
-    setDeleteDialog({ open: true, message: menuState.message, type: "me" });
+    const msg = menuState.message;
+    if (!msg?.muid) return;
+    const latest = messagesRef.current.find(
+      (m) => m.content === msg.content && m.sender_id === msg.sender_id
+    );
+    deleteTargetRef.current = { muid: latest?.muid || msg.muid };
+    setDeleteDialog({ open: true, type: "me" });
   }, [menuState.message]);
 
   const confirmDeleteForMe = useCallback(async () => {
-    const msg = deleteDialog.message;
-    if (!msg || !msg.muid || !chat?.cuid) return;
+    const target = deleteTargetRef.current;
+    if (!target?.muid || !chat?.cuid) return;
+    setDeleting(true);
     try {
-      await deleteMessageForMe(chat.cuid, msg.muid);
-      setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
+      await deleteMessageForMe(chat.cuid, target.muid);
+      setMessages((prev) => prev.filter((m) => m.muid !== target.muid));
+      setDeleteDialog({ open: false, type: null });
       addToast("Message deleted for you", "success");
     } catch (err) {
+      setDeleteDialog({ open: false, type: null });
       addToast(getErrorMessage(err), "error");
+    } finally {
+      setDeleting(false);
     }
-  }, [deleteDialog.message, chat?.cuid, addToast]);
+  }, [chat?.cuid, addToast]);
 
   const handleDeleteForEveryone = useCallback(() => {
-    setDeleteDialog({ open: true, message: menuState.message, type: "everyone" });
+    const msg = menuState.message;
+    if (!msg?.muid) return;
+    const latest = messagesRef.current.find(
+      (m) => m.content === msg.content && m.sender_id === msg.sender_id
+    );
+    deleteTargetRef.current = { muid: latest?.muid || msg.muid };
+    setDeleteDialog({ open: true, type: "everyone" });
   }, [menuState.message]);
 
   const confirmDeleteForEveryone = useCallback(async () => {
-    const msg = deleteDialog.message;
-    if (!msg || !msg.muid || !chat?.cuid) return;
+    const target = deleteTargetRef.current;
+    if (!target?.muid || !chat?.cuid) return;
+    setDeleting(true);
     try {
-      await deleteMessageForEveryone(chat.cuid, msg.muid);
-      setMessages((prev) => prev.filter((m) => m.muid !== msg.muid));
+      await deleteMessageForEveryone(chat.cuid, target.muid);
+      setMessages((prev) => prev.filter((m) => m.muid !== target.muid));
+      setDeleteDialog({ open: false, type: null });
       addToast("Message deleted for everyone", "success");
     } catch (err) {
+      setDeleteDialog({ open: false, type: null });
       addToast(getErrorMessage(err), "error");
+    } finally {
+      setDeleting(false);
     }
-  }, [deleteDialog.message, chat?.cuid, addToast]);
+  }, [chat?.cuid, addToast]);
 
   const handleEdit = useCallback(() => {
     const msg = menuState.message;
@@ -266,7 +317,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
 
       <ConfirmDialog
         open={deleteDialog.open}
-        onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, open }))}
+        onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, open, ...(!open ? { type: null } : {}) }))}
         title={deleteDialog.type === "everyone" ? "Delete for everyone?" : "Delete for me?"}
         description={
           deleteDialog.type === "everyone"
@@ -277,6 +328,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         cancelText="Cancel"
         onConfirm={deleteDialog.type === "everyone" ? confirmDeleteForEveryone : confirmDeleteForMe}
         confirmVariant="danger"
+        loading={deleting}
       />
     </div>
   );

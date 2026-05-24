@@ -168,6 +168,7 @@ const CreateChat = () => {
               <UserSearch
                 onSelectUser={handleSelectUser}
                 selectedUsers={selectedUsers}
+                isGroup={isGroup}
               />
               <SelectedUserList
                 users={selectedUsers}
