@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Navbar from "../../components/layout/Navbar";
 import { useAuth } from "../../context/AuthContext";
-import { getProfile, updateProfile } from "../../api/auth";
+import { getProfile, updateProfilePhoto } from "../../api/auth";
 import { supabase } from "../../api/supabase";
 import { useToast } from "../../components/ui/ToastContainer";
 import { timeAgo } from "../../utils/timeAgo";
@@ -59,10 +59,9 @@ const Profile = () => {
         .from("profile_images")
         .getPublicUrl(fileName);
 
-      const formData = new FormData();
-      formData.append("profile_photo_url", publicUrlData.publicUrl);
+      const photoUrl = publicUrlData.publicUrl;
 
-      const updatedUser = await updateProfile(formData);
+      const updatedUser = await updateProfilePhoto(photoUrl);
       setUser(updatedUser);
       addToast("Profile photo updated", "success");
     } catch (err) {
