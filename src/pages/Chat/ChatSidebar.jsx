@@ -59,6 +59,11 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
       .slice(0, 2);
   };
 
+  const getOtherUser = (chat) => {
+    if (chat.is_group) return null;
+    return chat.members?.find((m) => m.user.public_id !== user.public_id)?.user || null;
+  };
+
   const getAvatarColor = (name) => {
     const colors = [
       "from-violet-500 to-purple-600",
@@ -148,11 +153,15 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
               >
                 <div className="flex items-center gap-3">
                   <div className={`relative flex-shrink-0 ${isActive ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900" : ""} rounded-2xl`}>
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300`}>
-                      <span className="text-sm font-semibold text-white">
-                        {getAvatarInitials(chatName)}
-                      </span>
-                    </div>
+                    {!chat.is_group && getOtherUser(chat)?.profile_photo ? (
+                      <img src={getOtherUser(chat).profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300" />
+                    ) : (
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300`}>
+                        <span className="text-sm font-semibold text-white">
+                          {getAvatarInitials(chatName)}
+                        </span>
+                      </div>
+                    )}
                     {!chat.is_group && (
                       <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900 shadow-sm" />
                     )}

@@ -75,9 +75,13 @@ const UserSearch = ({ onSelectUser, selectedUsers, isGroup }) => {
             onClick={() => onSelectUser(u)}
             className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all duration-200 border-b border-slate-100/50 dark:border-gray-600 last:border-0 group"
           >
-            <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${getAvatarColor(u.username)} flex items-center justify-center text-white text-[10px] font-bold shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300`}>
-              {getInitials(u.full_name || u.username)}
-            </div>
+            {u.profile_photo ? (
+              <img src={u.profile_photo} alt="" className="w-8 h-8 rounded-lg object-cover shadow-sm" />
+            ) : (
+              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${getAvatarColor(u.username)} flex items-center justify-center text-white text-[10px] font-bold shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300`}>
+                {getInitials(u.full_name || u.username)}
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm text-slate-700 dark:text-white truncate">{u.full_name || u.username}</p>
               {u.full_name && (

@@ -38,6 +38,11 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
     return "Direct Chat";
   };
 
+  const getOtherUser = () => {
+    if (chat.is_group) return null;
+    return chat.members?.find((m) => m.user.public_id !== currentUser.public_id)?.user || null;
+  };
+
   const displayName = getDisplayName();
 
   const getInitials = (name) => {
@@ -90,9 +95,13 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
   return (
     <div className="flex items-center justify-between px-6 py-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-slate-200/40 dark:border-gray-700 shadow-sm relative z-10">
       <div className="flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold shadow-lg`}>
-          {getInitials(displayName)}
-        </div>
+        {!chat.is_group && getOtherUser()?.profile_photo ? (
+          <img src={getOtherUser().profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-lg" />
+        ) : (
+          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold shadow-lg`}>
+            {getInitials(displayName)}
+          </div>
+        )}
 
         <div>
           <h3 className="text-base font-bold text-slate-800 dark:text-white truncate">
