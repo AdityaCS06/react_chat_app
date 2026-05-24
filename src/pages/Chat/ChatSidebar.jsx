@@ -204,9 +204,13 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
           onClick={() => setShowDropdown(!showDropdown)}
           className="w-full flex items-center gap-3 hover:bg-white/60 dark:hover:bg-gray-800/60 p-1.5 -m-1.5 rounded-xl transition-all duration-300 cursor-pointer"
         >
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md">
-            {user?.username?.charAt(0).toUpperCase() || "U"}
-          </div>
+          {user?.profile_photo ? (
+            <img src={user.profile_photo} alt="" className="w-10 h-10 rounded-2xl object-cover shadow-md" />
+          ) : (
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md">
+              {user?.username?.charAt(0).toUpperCase() || "U"}
+            </div>
+          )}
           <div className="flex-1 min-w-0 text-left">
             <p className="font-semibold text-sm text-slate-700 dark:text-slate-200 truncate">{user?.username}</p>
             <p className="text-xs text-slate-400 dark:text-slate-500">My Account</p>

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Navbar from "../../components/layout/Navbar";
 import { useAuth } from "../../context/AuthContext";
-import { getProfile } from "../../api/auth";
+import { getProfile, updateProfilePhoto } from "../../api/auth";
+import { supabase } from "../../api/supabase";
 import { useToast } from "../../components/ui/ToastContainer";
 import { timeAgo } from "../../utils/timeAgo";
 
@@ -9,6 +10,8 @@ const Profile = () => {
   const { user, setUser } = useAuth();
   const { addToast } = useToast();
   const [loading, setLoading] = useState(!user);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -26,6 +29,48 @@ const Profile = () => {
     };
     fetchProfile();
   }, [user, setUser, addToast]);
+
+  const handleEditClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      addToast("Image must be less than 2MB", "error");
+      e.target.value = "";
+      return;
+    }
+
+    const ext = file.name.split(".").pop();
+    const fileName = `${user.public_id}/${Date.now()}.${ext}`;
+
+    setUploading(true);
+    try {
+      const { error: uploadError } = await supabase.storage
+        .from("profile_images")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from("profile_images")
+        .getPublicUrl(fileName);
+
+      const photoUrl = publicUrlData.publicUrl;
+
+      const updatedUser = await updateProfilePhoto(photoUrl);
+      setUser(updatedUser);
+      addToast("Profile photo updated", "success");
+    } catch (err) {
+      addToast(err.detail || "Failed to upload photo", "error");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
 
   if (loading)
     return (
@@ -71,15 +116,33 @@ const Profile = () => {
             <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 border border-white/50 dark:border-gray-700">
               <div className="flex flex-col items-center">
                 <div className="relative mb-4">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
                   <img
                     src={profilePhotoUrl}
                     alt="Profile"
                     className="w-32 h-32 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
                   />
-                  <button className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full text-white flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
+                  <button
+                    onClick={handleEditClick}
+                    disabled={uploading}
+                    className="absolute bottom-0 right-0 w-10 h-10 bg-blue-600 rounded-full text-white flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {uploading ? (
+                      <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    )}
                   </button>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user.full_name || user.username}</h2>

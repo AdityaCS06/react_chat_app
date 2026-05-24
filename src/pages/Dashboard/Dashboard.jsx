@@ -109,10 +109,14 @@ const Dashboard = () => {
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="mb-10">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                {user?.username?.charAt(0).toUpperCase() || "U"}
-              </div>
+              <div className="flex items-center gap-4 mb-2">
+              {user?.profile_photo ? (
+                <img src={user.profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-lg" />
+              ) : (
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                  {user?.username?.charAt(0).toUpperCase() || "U"}
+                </div>
+              )}
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
                   {getGreeting()}!

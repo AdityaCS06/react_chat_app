@@ -49,14 +49,18 @@ const Navbar = () => {
 
           {user && (
             <div className="relative">
-              <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-gray-800 transition-all duration-200"
-              >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
-                  {getInitials(user.username)}
-                </div>
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 300)}
+                  className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-gray-800 transition-all duration-200"
+                >
+                  {user.profile_photo ? (
+                    <img src={user.profile_photo} alt="" className="w-8 h-8 rounded-lg object-cover shadow-md" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+                      {getInitials(user.username)}
+                    </div>
+                  )}
                 <div className="hidden sm:block text-left">
                   <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-none">Signed in as</p>
                   <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 leading-tight">{user.username}</p>
