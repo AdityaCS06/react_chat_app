@@ -76,6 +76,11 @@ const Dashboard = () => {
     return otherUser?.user?.username || "Unknown";
   };
 
+  const getOtherUser = (chat) => {
+    if (chat.name) return null;
+    return chat.members?.find(m => m.user.public_id !== user?.public_id)?.user || null;
+  };
+
   const getChatAvatar = (chat) => {
     if (chat.name) {
       return chat.name.charAt(0).toUpperCase();
@@ -276,9 +281,13 @@ const Dashboard = () => {
                     onClick={() => navigate(`/chats/${chat.cuid}`)}
                     className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800 transition-all cursor-pointer flex items-center gap-4"
                   >
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                      {getChatAvatar(chat)}
-                    </div>
+                    {!chat.name && getOtherUser(chat)?.profile_photo ? (
+                      <img src={getOtherUser(chat).profile_photo} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+                        {getChatAvatar(chat)}
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className="font-semibold text-gray-900 dark:text-white truncate">{getChatName(chat)}</h3>

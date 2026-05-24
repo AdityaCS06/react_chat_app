@@ -1,16 +1,24 @@
 import React, { useEffect, useState, useRef } from "react";
 import Navbar from "../../components/layout/Navbar";
 import { useAuth } from "../../context/AuthContext";
-import { getProfile, updateProfilePhoto } from "../../api/auth";
+import { getProfile, updateProfilePhoto, updateProfileName } from "../../api/auth";
 import { supabase } from "../../api/supabase";
 import { useToast } from "../../components/ui/ToastContainer";
+import CropModal from "../../components/ui/CropModal";
 import { timeAgo } from "../../utils/timeAgo";
+
+const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 
 const Profile = () => {
   const { user, setUser } = useAuth();
   const { addToast } = useToast();
   const [loading, setLoading] = useState(!user);
   const [uploading, setUploading] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState(null);
+  const [pendingFile, setPendingFile] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -34,9 +42,16 @@ const Profile = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileSelect = async (e) => {
+  const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const ext = file.name.split(".").pop().toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      addToast("Only JPG, PNG, and WebP images are allowed", "error");
+      e.target.value = "";
+      return;
+    }
 
     if (file.size > 2 * 1024 * 1024) {
       addToast("Image must be less than 2MB", "error");
@@ -44,14 +59,27 @@ const Profile = () => {
       return;
     }
 
-    const ext = file.name.split(".").pop();
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPendingFile(file);
+      setCropImageSrc(reader.result);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleCropComplete = async (blob) => {
+    const ext = pendingFile.name.split(".").pop().toLowerCase();
     const fileName = `${user.public_id}/${Date.now()}.${ext}`;
+    const croppedFile = new File([blob], fileName, { type: `image/${ext === "jpg" ? "jpeg" : ext}` });
 
     setUploading(true);
+    setPendingFile(null);
+    setCropImageSrc(null);
     try {
       const { error: uploadError } = await supabase.storage
         .from("profile_images")
-        .upload(fileName, file);
+        .upload(fileName, croppedFile);
 
       if (uploadError) throw uploadError;
 
@@ -59,17 +87,43 @@ const Profile = () => {
         .from("profile_images")
         .getPublicUrl(fileName);
 
-      const photoUrl = publicUrlData.publicUrl;
-
-      const updatedUser = await updateProfilePhoto(photoUrl);
+      const updatedUser = await updateProfilePhoto(publicUrlData.publicUrl);
       setUser(updatedUser);
       addToast("Profile photo updated", "success");
     } catch (err) {
       addToast(err.detail || "Failed to upload photo", "error");
     } finally {
       setUploading(false);
-      e.target.value = "";
     }
+  };
+
+  const handleNameEdit = () => {
+    setNameInput(user.full_name || "");
+    setEditingName(true);
+  };
+
+  const handleNameSave = async () => {
+    const trimmed = nameInput.trim();
+    if (!trimmed) {
+      addToast("Name cannot be empty", "error");
+      return;
+    }
+    setSavingName(true);
+    try {
+      const updatedUser = await updateProfileName(trimmed);
+      setUser(updatedUser);
+      setEditingName(false);
+      addToast("Name updated", "success");
+    } catch (err) {
+      addToast(err.detail || "Failed to update name", "error");
+    } finally {
+      setSavingName(false);
+    }
+  };
+
+  const handleNameCancel = () => {
+    setEditingName(false);
+    setNameInput("");
   };
 
   if (loading)
@@ -165,7 +219,45 @@ const Profile = () => {
               </div>
               <div className="space-y-1">
                 <InfoItem label="Email" value={user.email} isHighlight />
-                <InfoItem label="Full Name" value={user.full_name || "Not set"} />
+                {editingName ? (
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+                    <span className="text-gray-500 dark:text-gray-400 font-medium">Full Name</span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={nameInput}
+                        onChange={(e) => setNameInput(e.target.value)}
+                        className="px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        autoFocus
+                      />
+                      <button
+                        onClick={handleNameSave}
+                        disabled={savingName}
+                        className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                      >
+                        {savingName ? "..." : "Save"}
+                      </button>
+                      <button
+                        onClick={handleNameCancel}
+                        className="px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 text-xs font-medium hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700">
+                    <span className="text-gray-500 dark:text-gray-400 font-medium">Full Name</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-800 dark:text-white">{user.full_name || "Not set"}</span>
+                      <button onClick={handleNameEdit} className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <InfoItem 
                   label="Email Verified" 
                   value={user.email_verified_at ? timeAgo(user.email_verified_at) : "Not Verified"} 
@@ -182,6 +274,13 @@ const Profile = () => {
           </div>
         </div>
       </main>
+
+      <CropModal
+        open={!!cropImageSrc}
+        onOpenChange={() => { setCropImageSrc(null); setPendingFile(null); }}
+        imageSrc={cropImageSrc}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 };

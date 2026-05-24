@@ -51,3 +51,13 @@ export const updateProfilePhoto = async (profilePhotoUrl) => {
     throw { detail: "Network error" };
   }
 };
+
+export const updateProfileName = async (fullName) => {
+  try {
+    const response = await api.patch(`/users/me/name`, { full_name: fullName });
+    return response.data;
+  } catch (error) {
+    if (error.response) throw error.response.data;
+    throw { detail: "Network error" };
+  }
+};
