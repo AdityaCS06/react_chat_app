@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Search, MoreVertical, Users } from "lucide-react";
 import ChatOptionsMenu from "../../components/chat/ChatOptionsMenu";
-import EditGroupModal from "../../components/chat/EditGroupModal";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { updateChat } from "../../api/chat";
 import { getErrorMessage } from "../../api/utils";
 import { useToast } from "../../components/ui/ToastContainer";
@@ -11,6 +11,7 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
   const [showMenu, setShowMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [groupName, setGroupName] = useState("");
   const [updating, setUpdating] = useState(false);
 
   if (!chat) {
@@ -57,21 +58,32 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
 
   const avatarColor = getAvatarColor(displayName);
 
-  const handleSaveGroupName = async (newName) => {
-    if (!chat?.cuid) {
-      return;
-    }
+  const handleSaveGroupName = async () => {
+    const name = groupName.trim();
+    if (!name || !chat?.cuid) return;
     setUpdating(true);
     try {
-      const updatedChat = await updateChat(chat.cuid, { name: newName });
+      const updatedChat = await updateChat(chat.cuid, { name });
       setShowEditModal(false);
       setShowMenu(false);
       onGroupUpdated?.(updatedChat);
       addToast("Group name updated!", "success");
     } catch (err) {
+      setShowEditModal(false);
       addToast(getErrorMessage(err), "error");
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleOpenEdit = () => {
+    setGroupName(chat?.name || "");
+    setShowEditModal(true);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSaveGroupName();
     }
   };
 
@@ -132,16 +144,30 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
           onExitGroup={onExitGroup}
           onAddMember={onAddMember}
           onRemoveMember={onRemoveMember}
-          onEditGroup={() => setShowEditModal(true)}
+          onEditGroup={handleOpenEdit}
         />
 
-        <EditGroupModal
-          isOpen={showEditModal}
-          onClose={() => setShowEditModal(false)}
-          chat={chat}
-          onSave={handleSaveGroupName}
+        <ConfirmDialog
+          open={showEditModal}
+          onOpenChange={(open) => { setShowEditModal(open); if (!open) setGroupName(""); }}
+          title="Edit Group"
+          description="Enter a new name for this group."
+          confirmText={updating ? "Saving..." : "Save"}
+          cancelText="Cancel"
+          onConfirm={handleSaveGroupName}
+          confirmVariant="primary"
           loading={updating}
-        />
+        >
+          <input
+            type="text"
+            value={groupName}
+            onChange={(e) => setGroupName(e.target.value)}
+            placeholder="Enter group name"
+            className="w-full px-4 py-3 border border-slate-200 dark:border-gray-600 rounded-xl text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            onKeyDown={handleKeyDown}
+            autoFocus
+          />
+        </ConfirmDialog>
       </div>
     </div>
   );

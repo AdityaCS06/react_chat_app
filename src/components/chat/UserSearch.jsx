@@ -4,7 +4,7 @@ import { getAllUsers } from "../../api/user";
 import { useAuth } from "../../context/AuthContext";
 import { Search, User as UserIcon } from "lucide-react";
 
-const UserSearch = ({ onSelectUser, selectedUsers }) => {
+const UserSearch = ({ onSelectUser, selectedUsers, isGroup }) => {
   const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState([]);
@@ -12,7 +12,7 @@ const UserSearch = ({ onSelectUser, selectedUsers }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const data = await getAllUsers(search);
+        const data = await getAllUsers(search, 50, 0, isGroup);
         setUsers(
           data.filter(
             (u) =>
@@ -24,7 +24,7 @@ const UserSearch = ({ onSelectUser, selectedUsers }) => {
     };
     const timeout = setTimeout(fetchUsers, 400);
     return () => clearTimeout(timeout);
-  }, [search, user, selectedUsers]);
+  }, [search, user, selectedUsers, isGroup]);
 
   const getAvatarColor = (name) => {
     const colors = [

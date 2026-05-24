@@ -116,6 +116,7 @@ const ChatLayout = () => {
 
   const handleGroupUpdated = (updatedChat) => {
     setActiveChat(updatedChat);
+    setRefreshSidebar((prev) => prev + 1);
   };
 
   return (

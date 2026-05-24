@@ -29,6 +29,8 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const paginationStateRef = useRef(null);
   const initialLoadRef = useRef(true);
   const deleteTargetRef = useRef(null);
+  const messagesRef = useRef([]);
+  messagesRef.current = messages;
 
   const fetchMessages = useCallback(
     async (replace = false, limit = 50, offset = 0) => {
@@ -155,7 +157,10 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const handleDeleteForMe = useCallback(() => {
     const msg = menuState.message;
     if (!msg?.muid) return;
-    deleteTargetRef.current = { muid: msg.muid };
+    const latest = messagesRef.current.find(
+      (m) => m.content === msg.content && m.sender_id === msg.sender_id
+    );
+    deleteTargetRef.current = { muid: latest?.muid || msg.muid };
     setDeleteDialog({ open: true, type: "me" });
   }, [menuState.message]);
 
@@ -179,7 +184,10 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const handleDeleteForEveryone = useCallback(() => {
     const msg = menuState.message;
     if (!msg?.muid) return;
-    deleteTargetRef.current = { muid: msg.muid };
+    const latest = messagesRef.current.find(
+      (m) => m.content === msg.content && m.sender_id === msg.sender_id
+    );
+    deleteTargetRef.current = { muid: latest?.muid || msg.muid };
     setDeleteDialog({ open: true, type: "everyone" });
   }, [menuState.message]);
 
