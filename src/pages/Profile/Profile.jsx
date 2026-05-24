@@ -4,7 +4,10 @@ import { useAuth } from "../../context/AuthContext";
 import { getProfile, updateProfilePhoto, updateProfileName } from "../../api/auth";
 import { supabase } from "../../api/supabase";
 import { useToast } from "../../components/ui/ToastContainer";
+import CropModal from "../../components/ui/CropModal";
 import { timeAgo } from "../../utils/timeAgo";
+
+const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 
 const Profile = () => {
   const { user, setUser } = useAuth();
@@ -14,6 +17,8 @@ const Profile = () => {
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState("");
   const [savingName, setSavingName] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState(null);
+  const [pendingFile, setPendingFile] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -37,9 +42,16 @@ const Profile = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileSelect = async (e) => {
+  const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const ext = file.name.split(".").pop().toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      addToast("Only JPG, PNG, and WebP images are allowed", "error");
+      e.target.value = "";
+      return;
+    }
 
     if (file.size > 2 * 1024 * 1024) {
       addToast("Image must be less than 2MB", "error");
@@ -47,14 +59,27 @@ const Profile = () => {
       return;
     }
 
-    const ext = file.name.split(".").pop();
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPendingFile(file);
+      setCropImageSrc(reader.result);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleCropComplete = async (blob) => {
+    const ext = pendingFile.name.split(".").pop().toLowerCase();
     const fileName = `${user.public_id}/${Date.now()}.${ext}`;
+    const croppedFile = new File([blob], fileName, { type: `image/${ext === "jpg" ? "jpeg" : ext}` });
 
     setUploading(true);
+    setPendingFile(null);
+    setCropImageSrc(null);
     try {
       const { error: uploadError } = await supabase.storage
         .from("profile_images")
-        .upload(fileName, file);
+        .upload(fileName, croppedFile);
 
       if (uploadError) throw uploadError;
 
@@ -62,16 +87,13 @@ const Profile = () => {
         .from("profile_images")
         .getPublicUrl(fileName);
 
-      const photoUrl = publicUrlData.publicUrl;
-
-      const updatedUser = await updateProfilePhoto(photoUrl);
+      const updatedUser = await updateProfilePhoto(publicUrlData.publicUrl);
       setUser(updatedUser);
       addToast("Profile photo updated", "success");
     } catch (err) {
       addToast(err.detail || "Failed to upload photo", "error");
     } finally {
       setUploading(false);
-      e.target.value = "";
     }
   };
 
@@ -252,6 +274,13 @@ const Profile = () => {
           </div>
         </div>
       </main>
+
+      <CropModal
+        open={!!cropImageSrc}
+        onOpenChange={() => { setCropImageSrc(null); setPendingFile(null); }}
+        imageSrc={cropImageSrc}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 };
