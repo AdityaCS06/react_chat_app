@@ -80,7 +80,9 @@ const UserSearch = ({ onSelectUser, selectedUsers }) => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm text-slate-700 dark:text-white truncate">{u.full_name || u.username}</p>
-              <p className="text-[11px] text-slate-400 dark:text-gray-400 truncate">{u.email}</p>
+              {u.full_name && (
+                <p className="text-[11px] text-slate-400 dark:text-gray-400 truncate">@{u.username}</p>
+              )}
             </div>
             <button className="px-2.5 py-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-all duration-200">
               Add
