@@ -273,7 +273,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 min-h-0 overflow-y-auto p-6 space-y-1"
+        className="flex-1 min-h-0 overflow-y-auto p-6"
       >
         {loading && messages.length === 0 && (
           <div className="space-y-4 p-4">
@@ -288,7 +288,9 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         {messages.map((msg, idx) => {
           const prevMsg = idx > 0 ? messages[idx - 1] : null;
           const sameSender = prevMsg?.sender_id === msg.sender_id;
-          const showSender = chat?.is_group && !sameSender;
+          const isFirstInGroup = !sameSender;
+          const isConsecutive = !!sameSender;
+          const showSender = chat?.is_group && isFirstInGroup;
           const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
           const senderName = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
           const senderAvatar = member?.user?.profile_photo;
@@ -299,6 +301,8 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
               msg={msg}
               isMine={msg.sender_id === user.public_id}
               isGroup={chat?.is_group}
+              isFirstInGroup={isFirstInGroup}
+              isConsecutive={isConsecutive}
               showSender={showSender}
               senderName={senderName}
               senderAvatar={senderAvatar}
