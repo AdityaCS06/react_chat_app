@@ -285,22 +285,32 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           </div>
         )}
 
-        {messages.map((msg) => (
-          <MessageBubble
-            key={msg.muid}
-            msg={msg}
-            isMine={msg.sender_id === user.public_id}
-            isGroup={chat?.is_group}
-            showSender={true}
-            senderName={msg.sender_name || msg.sender_username}
-            onContextMenu={handleContextMenu}
-            isEditing={editingMessage === msg.muid}
-            editContent={editContent}
-            onEditChange={setEditContent}
-            onSaveEdit={handleSaveEdit}
-            onCancelEdit={handleCancelEdit}
-          />
-        ))}
+        {messages.map((msg, idx) => {
+          const prevMsg = idx > 0 ? messages[idx - 1] : null;
+          const sameSender = prevMsg?.sender_id === msg.sender_id;
+          const showSender = chat?.is_group && !sameSender;
+          const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
+          const senderName = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
+          const senderAvatar = member?.user?.profile_photo;
+
+          return (
+            <MessageBubble
+              key={msg.muid}
+              msg={msg}
+              isMine={msg.sender_id === user.public_id}
+              isGroup={chat?.is_group}
+              showSender={showSender}
+              senderName={senderName}
+              senderAvatar={senderAvatar}
+              onContextMenu={handleContextMenu}
+              isEditing={editingMessage === msg.muid}
+              editContent={editContent}
+              onEditChange={setEditContent}
+              onSaveEdit={handleSaveEdit}
+              onCancelEdit={handleCancelEdit}
+            />
+          );
+        })}
 
         <MessageOptionsMenu
           isOpen={menuState.isOpen}
