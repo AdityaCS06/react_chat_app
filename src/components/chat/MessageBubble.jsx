@@ -3,7 +3,28 @@ import { Check, X } from "lucide-react";
 
 const MAX_CHARS = 250;
 
-const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContextMenu, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit }) => {
+const AVATAR_COLORS = [
+  "#6366f1", "#8b5cf6", "#a855f7", "#d946ef",
+  "#ec4899", "#f43f5e", "#ef4444", "#f97316",
+  "#eab308", "#22c55e", "#14b8a6", "#06b6d4",
+];
+
+const getAvatarColor = (name) => {
+  let hash = 0;
+  for (let i = 0; i < (name?.length || 0); i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+};
+
+const getRadius = (isMine, isFirstInGroup) => {
+  if (isMine) {
+    return isFirstInGroup ? "rounded-[10px] rounded-tr-[2px]" : "rounded-[10px]";
+  }
+  return isFirstInGroup ? "rounded-[10px] rounded-tl-[2px]" : "rounded-[10px]";
+};
+
+const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, showSender, senderName, senderAvatar, onContextMenu, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit }) => {
   const [expanded, setExpanded] = useState(false);
 
   const formatTime = (dateStr) => {
@@ -30,17 +51,35 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContext
   const displayContent = isLongMsg && !expanded ? content.slice(0, MAX_CHARS) : content;
 
   return (
-    <div className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
+    <div className={`flex ${isMine ? "justify-end" : "justify-start"} items-start gap-2 ${isFirstInGroup ? "mt-3 first:mt-0" : "mt-1"}`}>
+      {isGroup && !isMine && (
+        <div className={`w-7 h-7 rounded-full flex-shrink-0 overflow-hidden mt-1.5 ${showSender ? "" : "invisible"}`} title={senderName}>
+          {senderAvatar ? (
+            <img
+              src={senderAvatar}
+              alt={senderName}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center text-xs font-bold text-white"
+              style={{ backgroundColor: getAvatarColor(senderName) }}
+            >
+              {(senderName || "?")[0].toUpperCase()}
+            </div>
+          )}
+        </div>
+      )}
       <div
         onContextMenu={handleContextMenu}
-        className={`relative group max-w-[75%] px-5 py-3.5 transition-all duration-200 ${
+        className={`relative group max-w-[75%] px-4 pt-2.5 pb-1.5 transition-all duration-200 ${
           isMine
-            ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl rounded-br-sm shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25"
-            : "bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-slate-700 dark:text-slate-200 rounded-2xl rounded-bl-sm shadow-lg shadow-slate-200/50 dark:shadow-gray-900/50 hover:shadow-xl hover:shadow-slate-300/40 dark:hover:shadow-gray-800/40"
+            ? `bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25 ${getRadius(isMine, isFirstInGroup)}`
+            : `bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-slate-700 dark:text-slate-200 shadow-lg shadow-slate-200/50 dark:shadow-gray-900/50 hover:shadow-xl hover:shadow-slate-300/40 dark:hover:shadow-gray-800/40 ${getRadius(isMine, isFirstInGroup)}`
         }`}
       >
         {isGroup && showSender && !isMine && (
-          <div className={`text-xs font-bold mb-1.5 ${isMine ? "text-blue-200" : "text-indigo-500 dark:text-indigo-400"}`}>
+          <div className="text-xs font-bold mb-1 text-indigo-500 dark:text-indigo-400">
             {senderName || "Unknown"}
           </div>
         )}
@@ -71,7 +110,7 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContext
             </div>
           </div>
         ) : (
-          <div>
+          <div className="pr-12 pb-6">
             <div className="break-all whitespace-pre-wrap text-sm leading-relaxed">{displayContent}</div>
             {isLongMsg && !expanded && (
               <span className="text-slate-400 dark:text-slate-500">...</span>
@@ -91,31 +130,33 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, onContext
           </div>
         )}
 
-        <div
-          className={`text-[10px] mt-2 flex items-center justify-end gap-1.5 ${
-            isMine ? "text-blue-100" : "text-slate-400 dark:text-slate-500"
-          }`}
-        >
-          {msg.is_edited && !isEditing && (
-            <span className="italic">edited</span>
-          )}
-          {msg.status === "seen" && isMine && (
-            <div className="flex -space-x-1">
+        {!isEditing && (
+          <div
+            className={`absolute bottom-1 right-2.5 text-[10px] flex items-center gap-1 ${
+              isMine ? "text-blue-100" : "text-slate-400 dark:text-slate-500"
+            }`}
+          >
+            {msg.is_edited && (
+              <span className="italic">edited</span>
+            )}
+            {msg.status === "seen" && isMine && (
+              <div className="flex -space-x-1.5">
+                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
+                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                </svg>
+                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
+                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                </svg>
+              </div>
+            )}
+            {msg.status === "sent" && isMine && (
               <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
                 <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
               </svg>
-              <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
-                <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </svg>
-            </div>
-          )}
-          {msg.status === "sent" && isMine && (
-            <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
-              <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-            </svg>
-          )}
-          {!isEditing && formatTime(msg.created_at)}
-        </div>
+            )}
+            {formatTime(msg.created_at)}
+          </div>
+        )}
       </div>
     </div>
   );

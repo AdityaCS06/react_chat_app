@@ -19,6 +19,8 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
     const tempMsg = {
       muid: tempMuid,
       sender_id: user.public_id,
+      sender_name: user.full_name || user.username,
+      sender_username: user.username,
       content,
       message_type: "text",
       created_at: new Date().toISOString(),

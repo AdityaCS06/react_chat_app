@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import Navbar from "../../components/layout/Navbar";
 import { useAuth } from "../../context/AuthContext";
-import { getProfile, updateProfilePhoto, updateProfileName } from "../../api/auth";
-import { supabase } from "../../api/supabase";
+import { getProfile, updateProfilePhoto, updateProfileName, removeProfilePhoto } from "../../api/auth";
+import { uploadProfileImage, cleanupProfileImages, getProfileImageUrl } from "../../api/supabase";
 import { useToast } from "../../components/ui/ToastContainer";
 import CropModal from "../../components/ui/CropModal";
 import { timeAgo } from "../../utils/timeAgo";
 
 const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
+const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 const Profile = () => {
   const { user, setUser } = useAuth();
@@ -18,7 +19,6 @@ const Profile = () => {
   const [nameInput, setNameInput] = useState("");
   const [savingName, setSavingName] = useState(false);
   const [cropImageSrc, setCropImageSrc] = useState(null);
-  const [pendingFile, setPendingFile] = useState(null);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -60,38 +60,40 @@ const Profile = () => {
     }
 
     const reader = new FileReader();
-    reader.onload = () => {
-      setPendingFile(file);
-      setCropImageSrc(reader.result);
-    };
+    reader.onload = () => setCropImageSrc(reader.result);
     reader.readAsDataURL(file);
     e.target.value = "";
   };
 
   const handleCropComplete = async (blob) => {
-    const ext = pendingFile.name.split(".").pop().toLowerCase();
-    const fileName = `${user.public_id}/${Date.now()}.${ext}`;
-    const croppedFile = new File([blob], fileName, { type: `image/${ext === "jpg" ? "jpeg" : ext}` });
+    const croppedFile = new File([blob], "avatar.jpg", { type: "image/jpeg" });
 
     setUploading(true);
-    setPendingFile(null);
     setCropImageSrc(null);
     try {
-      const { error: uploadError } = await supabase.storage
-        .from("profile_images")
-        .upload(fileName, croppedFile);
-
-      if (uploadError) throw uploadError;
-
-      const { data: publicUrlData } = supabase.storage
-        .from("profile_images")
-        .getPublicUrl(fileName);
-
-      const updatedUser = await updateProfilePhoto(publicUrlData.publicUrl);
+      await cleanupProfileImages(user.public_id);
+      await uploadProfileImage(croppedFile, user.public_id);
+      const publicUrl = getProfileImageUrl(user.public_id);
+      const updatedUser = await updateProfilePhoto(publicUrl);
       setUser(updatedUser);
       addToast("Profile photo updated", "success");
     } catch (err) {
       addToast(err.detail || "Failed to upload photo", "error");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemovePhoto = async () => {
+    if (!user.profile_photo) return;
+    setUploading(true);
+    try {
+      await cleanupProfileImages(user.public_id);
+      const updatedUser = await removeProfilePhoto();
+      setUser(updatedUser);
+      addToast("Profile photo removed", "success");
+    } catch (err) {
+      addToast(err.detail || "Failed to remove photo", "error");
     } finally {
       setUploading(false);
     }
@@ -146,7 +148,7 @@ const Profile = () => {
       </div>
     );
 
-  const profilePhotoUrl = user.profile_photo || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+  const profilePhotoUrl = user.profile_photo || DEFAULT_AVATAR;
 
   const InfoItem = ({ label, value, isHighlight }) => (
     <div className="flex justify-between items-center py-3 border-b border-gray-100 dark:border-gray-700 last:border-0">
@@ -205,6 +207,15 @@ const Profile = () => {
                   <span className="w-2 h-2 bg-emerald-400 rounded-full" />
                   <span className="text-sm text-gray-500 dark:text-gray-400">Last seen {timeAgo(user.last_seen)}</span>
                 </div>
+                {user.profile_photo && user.profile_photo !== DEFAULT_AVATAR && (
+                  <button
+                    onClick={handleRemovePhoto}
+                    disabled={uploading}
+                    className="mt-3 text-sm text-red-500 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Remove photo
+                  </button>
+                )}
               </div>
             </div>
 
@@ -277,7 +288,7 @@ const Profile = () => {
 
       <CropModal
         open={!!cropImageSrc}
-        onOpenChange={() => { setCropImageSrc(null); setPendingFile(null); }}
+        onOpenChange={() => setCropImageSrc(null)}
         imageSrc={cropImageSrc}
         onCropComplete={handleCropComplete}
       />

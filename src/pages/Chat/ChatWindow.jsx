@@ -273,7 +273,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5"
+        className="flex-1 min-h-0 overflow-y-auto p-6"
       >
         {loading && messages.length === 0 && (
           <div className="space-y-4 p-4">
@@ -285,22 +285,36 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           </div>
         )}
 
-        {messages.map((msg) => (
-          <MessageBubble
-            key={msg.muid}
-            msg={msg}
-            isMine={msg.sender_id === user.public_id}
-            isGroup={chat?.is_group}
-            showSender={true}
-            senderName={msg.sender_name || msg.sender_username}
-            onContextMenu={handleContextMenu}
-            isEditing={editingMessage === msg.muid}
-            editContent={editContent}
-            onEditChange={setEditContent}
-            onSaveEdit={handleSaveEdit}
-            onCancelEdit={handleCancelEdit}
-          />
-        ))}
+        {messages.map((msg, idx) => {
+          const prevMsg = idx > 0 ? messages[idx - 1] : null;
+          const sameSender = prevMsg?.sender_id === msg.sender_id;
+          const isFirstInGroup = !sameSender;
+          const isConsecutive = !!sameSender;
+          const showSender = chat?.is_group && isFirstInGroup;
+          const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
+          const senderName = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
+          const senderAvatar = member?.user?.profile_photo;
+
+          return (
+            <MessageBubble
+              key={msg.muid}
+              msg={msg}
+              isMine={msg.sender_id === user.public_id}
+              isGroup={chat?.is_group}
+              isFirstInGroup={isFirstInGroup}
+              isConsecutive={isConsecutive}
+              showSender={showSender}
+              senderName={senderName}
+              senderAvatar={senderAvatar}
+              onContextMenu={handleContextMenu}
+              isEditing={editingMessage === msg.muid}
+              editContent={editContent}
+              onEditChange={setEditContent}
+              onSaveEdit={handleSaveEdit}
+              onCancelEdit={handleCancelEdit}
+            />
+          );
+        })}
 
         <MessageOptionsMenu
           isOpen={menuState.isOpen}
