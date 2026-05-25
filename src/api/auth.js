@@ -61,3 +61,9 @@ export const updateProfileName = async (fullName) => {
     throw { detail: "Network error" };
   }
 };
+
+const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+export const removeProfilePhoto = async () => {
+  return updateProfilePhoto(DEFAULT_AVATAR);
+};
