@@ -44,9 +44,9 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, senderAva
   const displayContent = isLongMsg && !expanded ? content.slice(0, MAX_CHARS) : content;
 
   return (
-    <div className={`flex ${isMine ? "justify-end" : "justify-start"} items-end gap-2`}>
+    <div className={`flex ${isMine ? "justify-end" : "justify-start"} items-start gap-2`}>
       {isGroup && !isMine && (
-        <div className={`w-7 h-7 rounded-full flex-shrink-0 overflow-hidden mb-0.5 ${showSender ? "" : "invisible"}`} title={senderName}>
+        <div className={`w-7 h-7 rounded-full flex-shrink-0 overflow-hidden mt-1.5 ${showSender ? "" : "invisible"}`} title={senderName}>
           {senderAvatar ? (
             <img
               src={senderAvatar}
@@ -67,8 +67,8 @@ const MessageBubble = ({ msg, isMine, isGroup, showSender, senderName, senderAva
         onContextMenu={handleContextMenu}
         className={`relative group max-w-[75%] px-5 py-3.5 transition-all duration-200 ${
           isMine
-            ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl rounded-br-sm shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25"
-            : "bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-slate-700 dark:text-slate-200 rounded-2xl rounded-bl-sm shadow-lg shadow-slate-200/50 dark:shadow-gray-900/50 hover:shadow-xl hover:shadow-slate-300/40 dark:hover:shadow-gray-800/40"
+            ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-[18px] rounded-tr-[4px] shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25"
+            : "bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-slate-700 dark:text-slate-200 rounded-[18px] rounded-tl-[4px] shadow-lg shadow-slate-200/50 dark:shadow-gray-900/50 hover:shadow-xl hover:shadow-slate-300/40 dark:hover:shadow-gray-800/40"
         }`}
       >
         {isGroup && showSender && !isMine && (
