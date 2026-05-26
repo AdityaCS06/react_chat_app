@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getMyChats } from "../../api/chat";
 import { getUserStats, getMessageTrends, getUnreadStats } from "../../api/dashboard";
+import { hasProfilePhoto } from "../../utils/permissions";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -115,7 +116,7 @@ const Dashboard = () => {
         <div className="max-w-5xl mx-auto">
           <div className="mb-10">
               <div className="flex items-center gap-4 mb-2">
-              {user?.profile_photo ? (
+              {hasProfilePhoto(user) ? (
                 <img src={user.profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-lg" />
               ) : (
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
@@ -281,7 +282,7 @@ const Dashboard = () => {
                     onClick={() => navigate(`/chats/${chat.cuid}`)}
                     className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800 transition-all cursor-pointer flex items-center gap-4"
                   >
-                    {!chat.name && getOtherUser(chat)?.profile_photo ? (
+                    {!chat.name && hasProfilePhoto(getOtherUser(chat)) ? (
                       <img src={getOtherUser(chat).profile_photo} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
                     ) : (
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">

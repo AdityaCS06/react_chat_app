@@ -4,6 +4,7 @@ import { Plus, Search, MessageCircle, Users, User, LogOut } from "lucide-react";
 import { getMyChats } from "../../api/chat";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
+import { hasProfilePhoto } from "../../utils/permissions";
 
 const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
   const navigate = useNavigate();
@@ -153,7 +154,7 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
               >
                 <div className="flex items-center gap-3">
                   <div className={`relative flex-shrink-0 ${isActive ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900" : ""} rounded-2xl`}>
-                    {!chat.is_group && getOtherUser(chat)?.profile_photo ? (
+                    {!chat.is_group && hasProfilePhoto(getOtherUser(chat)) ? (
                       <img src={getOtherUser(chat).profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300" />
                     ) : (
                       <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300`}>
@@ -213,7 +214,7 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
           onClick={() => setShowDropdown(!showDropdown)}
           className="w-full flex items-center gap-3 hover:bg-white/60 dark:hover:bg-gray-800/60 p-1.5 -m-1.5 rounded-xl transition-all duration-300 cursor-pointer"
         >
-          {user?.profile_photo ? (
+          {hasProfilePhoto(user) ? (
             <img src={user.profile_photo} alt="" className="w-10 h-10 rounded-2xl object-cover shadow-md" />
           ) : (
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md">

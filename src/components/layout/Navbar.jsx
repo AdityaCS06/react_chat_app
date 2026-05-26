@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
+import { hasProfilePhoto } from "../../utils/permissions";
 import { LogOut, User, ChevronDown, Sun, Moon } from "lucide-react";
 import logo from "../../assets/logo/chat-logo.png";
 
@@ -54,7 +55,7 @@ const Navbar = () => {
                   onBlur={() => setTimeout(() => setShowDropdown(false), 300)}
                   className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-gray-800 transition-all duration-200"
                 >
-                  {user.profile_photo ? (
+                  {hasProfilePhoto(user) ? (
                     <img src={user.profile_photo} alt="" className="w-8 h-8 rounded-lg object-cover shadow-md" />
                   ) : (
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md">

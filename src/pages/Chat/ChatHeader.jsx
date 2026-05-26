@@ -7,6 +7,7 @@ import { updateChat } from "../../api/chat";
 import { getErrorMessage } from "../../api/utils";
 import { useToast } from "../../components/ui/ToastContainer";
 import { useTheme } from "../../context/ThemeContext";
+import { hasProfilePhoto } from "../../utils/permissions";
 
 const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onGroupUpdated }) => {
   const { theme, toggleTheme } = useTheme();
@@ -102,7 +103,7 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
         className={`flex items-center gap-4 ${chat.is_group ? "cursor-pointer" : ""}`}
         onClick={() => { if (chat.is_group) setShowChatInfo(true); }}
       >
-        {!chat.is_group && getOtherUser()?.profile_photo ? (
+        {!chat.is_group && hasProfilePhoto(getOtherUser()) ? (
           <img src={getOtherUser().profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-lg" />
         ) : (
           <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold shadow-lg`}>

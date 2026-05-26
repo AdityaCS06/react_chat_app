@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { X, Users, Calendar, Shield, User, Crown } from "lucide-react";
 import { getChatDetails } from "../../api/chat";
 import { useAuth } from "../../context/AuthContext";
+import { hasProfilePhoto } from "../../utils/permissions";
 
 const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
   const { user: currentUser } = useAuth();
@@ -167,7 +168,7 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
                     key={mu?.public_id}
                     className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-all"
                   >
-                    {mu?.profile_photo ? (
+                    {hasProfilePhoto(mu) ? (
                       <img
                         src={mu.profile_photo}
                         alt=""
