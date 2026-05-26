@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Paperclip, Send } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 import { sendMessage } from "../../api/message";
 import { getErrorMessage } from "../../api/utils";
 
-const ChatInput = ({ chat, socketRef, setMessages }) => {
+const ChatInput = ({ chat, socketRef, setMessages, onMessageSent }) => {
   const [message, setMessage] = useState("");
   const { user } = useAuth();
   const { addToast } = useToast();
+
+  useEffect(() => {
+    setMessage("");
+  }, [chat?.cuid]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -43,6 +47,8 @@ const ChatInput = ({ chat, socketRef, setMessages }) => {
         addToast(getErrorMessage(err), "error");
       }
     }
+
+    onMessageSent?.();
   };
 
   return (

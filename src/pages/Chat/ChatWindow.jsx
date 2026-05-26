@@ -328,7 +328,14 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         />
       </div>
 
-      <ChatInput chat={chat} socketRef={socketRef} setMessages={setMessages} />
+      <ChatInput
+        chat={chat}
+        socketRef={socketRef}
+        setMessages={setMessages}
+        onMessageSent={() => requestAnimationFrame(() => {
+          scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+        })}
+      />
 
       <ConfirmDialog
         open={deleteDialog.open}
