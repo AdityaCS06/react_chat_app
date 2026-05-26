@@ -5,6 +5,7 @@ import { getMyChats } from "../../api/chat";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 import { hasProfilePhoto } from "../../utils/permissions";
+import Avatar from "../../components/ui/Avatar";
 
 const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
   const navigate = useNavigate();
@@ -51,31 +52,9 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
     return other?.user?.username || "Unknown User";
   };
 
-  const getAvatarInitials = (name) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   const getOtherUser = (chat) => {
     if (chat.is_group) return null;
     return chat.members?.find((m) => m.user.public_id !== user.public_id)?.user || null;
-  };
-
-  const getAvatarColor = (name) => {
-    const colors = [
-      "from-violet-500 to-purple-600",
-      "from-blue-500 to-cyan-500",
-      "from-pink-500 to-rose-500",
-      "from-emerald-500 to-teal-500",
-      "from-orange-500 to-amber-500",
-      "from-indigo-500 to-blue-500",
-    ];
-    const index = name.charCodeAt(0) % colors.length;
-    return colors[index];
   };
 
   const filteredChats = useMemo(
@@ -140,7 +119,6 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
         ) : (
           filteredChats.map((chat) => {
             const chatName = getChatDisplayName(chat);
-            const avatarColor = getAvatarColor(chatName);
             const isActive = activeChat?.cuid === chat.cuid;
             return (
               <div
@@ -154,15 +132,12 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
               >
                 <div className="flex items-center gap-3">
                   <div className={`relative flex-shrink-0 ${isActive ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-900" : ""} rounded-2xl`}>
-                    {!chat.is_group && hasProfilePhoto(getOtherUser(chat)) ? (
-                      <img src={getOtherUser(chat).profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300" />
-                    ) : (
-                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300`}>
-                        <span className="text-sm font-semibold text-white">
-                          {getAvatarInitials(chatName)}
-                        </span>
-                      </div>
-                    )}
+                    <Avatar
+                      src={!chat.is_group && hasProfilePhoto(getOtherUser(chat)) ? getOtherUser(chat).profile_photo : null}
+                      name={chatName}
+                      className="w-12 h-12 rounded-2xl shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300"
+                      textClassName="text-sm font-semibold"
+                    />
                     {!chat.is_group && (
                       <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 rounded-full border-2 border-white dark:border-gray-900 shadow-sm" />
                     )}
@@ -214,13 +189,12 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
           onClick={() => setShowDropdown(!showDropdown)}
           className="w-full flex items-center gap-3 hover:bg-white/60 dark:hover:bg-gray-800/60 p-1.5 -m-1.5 rounded-xl transition-all duration-300 cursor-pointer"
         >
-          {hasProfilePhoto(user) ? (
-            <img src={user.profile_photo} alt="" className="w-10 h-10 rounded-2xl object-cover shadow-md" />
-          ) : (
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md">
-              {user?.username?.charAt(0).toUpperCase() || "U"}
-            </div>
-          )}
+          <Avatar
+            src={hasProfilePhoto(user) ? user.profile_photo : null}
+            name={user?.username}
+            className="w-10 h-10 rounded-2xl shadow-md"
+            textClassName="text-sm font-semibold"
+          />
           <div className="flex-1 min-w-0 text-left">
             <p className="font-semibold text-sm text-slate-700 dark:text-slate-200 truncate">{user?.username}</p>
             <p className="text-xs text-slate-400 dark:text-slate-500">My Account</p>

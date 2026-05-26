@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { hasProfilePhoto } from "../../utils/permissions";
+import Avatar from "../ui/Avatar";
 import { LogOut, User, ChevronDown, Sun, Moon } from "lucide-react";
 import logo from "../../assets/logo/chat-logo.png";
 
@@ -55,13 +56,12 @@ const Navbar = () => {
                   onBlur={() => setTimeout(() => setShowDropdown(false), 300)}
                   className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-gray-800 transition-all duration-200"
                 >
-                  {hasProfilePhoto(user) ? (
-                    <img src={user.profile_photo} alt="" className="w-8 h-8 rounded-lg object-cover shadow-md" />
-                  ) : (
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
-                      {getInitials(user.username)}
-                    </div>
-                  )}
+                  <Avatar
+                    src={hasProfilePhoto(user) ? user.profile_photo : null}
+                    name={user?.username}
+                    className="w-8 h-8 rounded-lg shadow-md"
+                    textClassName="text-xs font-bold"
+                  />
                 <div className="hidden sm:block text-left">
                   <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-none">Signed in as</p>
                   <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 leading-tight">{user.username}</p>

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, Users, Calendar, Shield, User, Crown } from "lucide-react";
+import { X, Users, Calendar, Shield, Crown } from "lucide-react";
 import { getChatDetails } from "../../api/chat";
 import { useAuth } from "../../context/AuthContext";
 import { hasProfilePhoto } from "../../utils/permissions";
+import Avatar from "../ui/Avatar";
 
 const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
   const { user: currentUser } = useAuth();
@@ -55,24 +56,6 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
     return null;
   };
 
-  const getInitials = (name) => {
-    if (!name) return "?";
-    return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
-  };
-
-  const getAvatarColor = (name) => {
-    const colors = [
-      "from-violet-500 to-purple-600",
-      "from-blue-500 to-cyan-500",
-      "from-pink-500 to-rose-500",
-      "from-emerald-500 to-teal-500",
-      "from-orange-500 to-amber-500",
-      "from-indigo-500 to-blue-500",
-    ];
-    if (!name) return colors[0];
-    return colors[name.charCodeAt(0) % colors.length];
-  };
-
   const formatDate = (dateStr) => {
     if (!dateStr) return "Unknown";
     const d = new Date(dateStr);
@@ -112,11 +95,12 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
         ) : chat ? (
           <div className="p-6">
             <div className="flex flex-col items-center mb-8">
-              <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${getAvatarColor(chat.name || "G")} flex items-center justify-center shadow-lg mb-4`}>
-                <span className="text-2xl font-bold text-white">
-                  {getInitials(chat.name || (chat.is_group ? "G" : "U"))}
-                </span>
-              </div>
+              <Avatar
+                src={null}
+                name={chat.name || (chat.is_group ? "Group" : "Chat")}
+                className="w-20 h-20 rounded-3xl shadow-lg mb-4"
+                textClassName="text-2xl font-bold"
+              />
               <h3 className="text-xl font-bold text-slate-800 dark:text-white text-center">
                 {chat.name || (chat.is_group ? "Group" : "Chat")}
               </h3>
@@ -168,19 +152,12 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
                     key={mu?.public_id}
                     className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-all"
                   >
-                    {hasProfilePhoto(mu) ? (
-                      <img
-                        src={mu.profile_photo}
-                        alt=""
-                        className="w-11 h-11 rounded-2xl object-cover shadow-sm"
-                      />
-                    ) : (
-                      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${getAvatarColor(mu?.username || mu?.full_name)} flex items-center justify-center shadow-sm flex-shrink-0`}>
-                        <span className="text-sm font-bold text-white">
-                          {getInitials(mu?.username || mu?.full_name)}
-                        </span>
-                      </div>
-                    )}
+                    <Avatar
+                      src={hasProfilePhoto(mu) ? mu.profile_photo : null}
+                      name={mu?.username || mu?.full_name}
+                      className="w-11 h-11 rounded-2xl shadow-sm flex-shrink-0"
+                      textClassName="text-sm font-bold"
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">

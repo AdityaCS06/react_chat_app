@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { getMyChats } from "../../api/chat";
 import { getUserStats, getMessageTrends, getUnreadStats } from "../../api/dashboard";
 import { hasProfilePhoto } from "../../utils/permissions";
+import Avatar from "../../components/ui/Avatar";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -82,13 +83,6 @@ const Dashboard = () => {
     return chat.members?.find(m => m.user.public_id !== user?.public_id)?.user || null;
   };
 
-  const getChatAvatar = (chat) => {
-    if (chat.name) {
-      return chat.name.charAt(0).toUpperCase();
-    }
-    const otherUser = chat.members?.find(m => m.user.public_id !== user?.public_id);
-    return otherUser?.user?.username?.charAt(0).toUpperCase() || "?";
-  };
 
   const ActionCard = ({ icon, title, subtitle, onClick, colorClass }) => (
     <button
@@ -116,13 +110,12 @@ const Dashboard = () => {
         <div className="max-w-5xl mx-auto">
           <div className="mb-10">
               <div className="flex items-center gap-4 mb-2">
-              {hasProfilePhoto(user) ? (
-                <img src={user.profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-lg" />
-              ) : (
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                  {user?.username?.charAt(0).toUpperCase() || "U"}
-                </div>
-              )}
+              <Avatar
+                src={hasProfilePhoto(user) ? user.profile_photo : null}
+                name={user?.username}
+                className="w-12 h-12 rounded-2xl shadow-lg"
+                textClassName="text-xl font-bold"
+              />
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
                   {getGreeting()}!
@@ -282,13 +275,12 @@ const Dashboard = () => {
                     onClick={() => navigate(`/chats/${chat.cuid}`)}
                     className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-md border border-gray-100 dark:border-gray-700 hover:shadow-lg hover:border-blue-200 dark:hover:border-blue-800 transition-all cursor-pointer flex items-center gap-4"
                   >
-                    {!chat.name && hasProfilePhoto(getOtherUser(chat)) ? (
-                      <img src={getOtherUser(chat).profile_photo} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
-                        {getChatAvatar(chat)}
-                      </div>
-                    )}
+                    <Avatar
+                      src={!chat.name && hasProfilePhoto(getOtherUser(chat)) ? getOtherUser(chat).profile_photo : null}
+                      name={getChatName(chat)}
+                      className="w-12 h-12 rounded-full flex-shrink-0"
+                      textClassName="text-lg font-bold"
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className="font-semibold text-gray-900 dark:text-white truncate">{getChatName(chat)}</h3>

@@ -8,6 +8,7 @@ import { getErrorMessage } from "../../api/utils";
 import { useToast } from "../../components/ui/ToastContainer";
 import { useTheme } from "../../context/ThemeContext";
 import { hasProfilePhoto } from "../../utils/permissions";
+import Avatar from "../../components/ui/Avatar";
 
 const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onGroupUpdated }) => {
   const { theme, toggleTheme } = useTheme();
@@ -50,24 +51,6 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
 
   const displayName = getDisplayName();
 
-  const getInitials = (name) => {
-    return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
-  };
-
-  const getAvatarColor = (name) => {
-    const colors = [
-      "from-violet-500 to-purple-600",
-      "from-blue-500 to-cyan-500",
-      "from-pink-500 to-rose-500",
-      "from-emerald-500 to-teal-500",
-      "from-orange-500 to-amber-500",
-      "from-indigo-500 to-blue-500",
-    ];
-    return colors[name.charCodeAt(0) % colors.length];
-  };
-
-  const avatarColor = getAvatarColor(displayName);
-
   const handleSaveGroupName = async () => {
     const name = groupName.trim();
     if (!name || !chat?.cuid) return;
@@ -103,13 +86,12 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
         className={`flex items-center gap-4 ${chat.is_group ? "cursor-pointer" : ""}`}
         onClick={() => { if (chat.is_group) setShowChatInfo(true); }}
       >
-        {!chat.is_group && hasProfilePhoto(getOtherUser()) ? (
-          <img src={getOtherUser().profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-lg" />
-        ) : (
-          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold shadow-lg`}>
-            {getInitials(displayName)}
-          </div>
-        )}
+        <Avatar
+          src={!chat.is_group && hasProfilePhoto(getOtherUser()) ? getOtherUser().profile_photo : null}
+          name={displayName}
+          className="w-12 h-12 rounded-2xl shadow-lg"
+          textClassName="text-base font-bold"
+        />
 
         <div>
           <h3 className="text-base font-bold text-slate-800 dark:text-white truncate">

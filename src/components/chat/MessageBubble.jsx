@@ -1,21 +1,8 @@
 import React, { useState } from "react";
 import { Check, X } from "lucide-react";
+import Avatar from "../ui/Avatar";
 
 const MAX_CHARS = 250;
-
-const AVATAR_COLORS = [
-  "#6366f1", "#8b5cf6", "#a855f7", "#d946ef",
-  "#ec4899", "#f43f5e", "#ef4444", "#f97316",
-  "#eab308", "#22c55e", "#14b8a6", "#06b6d4",
-];
-
-const getAvatarColor = (name) => {
-  let hash = 0;
-  for (let i = 0; i < (name?.length || 0); i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-};
 
 const getRadius = (isMine, isFirstInGroup) => {
   if (isMine) {
@@ -54,20 +41,12 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, sh
     <div className={`flex ${isMine ? "justify-end" : "justify-start"} items-start gap-2 ${isFirstInGroup ? "mt-3 first:mt-0" : "mt-1"}`}>
       {isGroup && !isMine && (
         <div className={`w-7 h-7 rounded-full flex-shrink-0 overflow-hidden mt-1.5 ${showSender ? "" : "invisible"}`} title={senderName}>
-          {senderAvatar ? (
-            <img
-              src={senderAvatar}
-              alt={senderName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div
-              className="w-full h-full flex items-center justify-center text-xs font-bold text-white"
-              style={{ backgroundColor: getAvatarColor(senderName) }}
-            >
-              {(senderName || "?")[0].toUpperCase()}
-            </div>
-          )}
+          <Avatar
+            src={senderAvatar}
+            name={senderName}
+            className="w-full h-full rounded-full"
+            textClassName="text-[10px] font-bold"
+          />
         </div>
       )}
       <div
