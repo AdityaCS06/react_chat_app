@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
-  Pin,
-  BellOff,
   Info,
   UserPlus,
   UserMinus,
@@ -11,6 +9,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { isGroupAdmin } from "../../utils/permissions";
 
 const ChatOptionsMenu = ({
   chat,
@@ -25,6 +24,7 @@ const ChatOptionsMenu = ({
   onEditGroup,
 }) => {
   const menuRef = useRef(null);
+  const isAdmin = isGroupAdmin(chat, currentUser?.public_id);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -69,47 +69,40 @@ const ChatOptionsMenu = ({
       >
         <div className="py-2">
           <MenuItem
-            icon={Pin}
-            label="Pin chat"
-            onClick={() => console.log("Pin chat")}
-          />
-          <MenuItem
-            icon={BellOff}
-            label="Mute notifications"
-            onClick={() => console.log("Mute notifications")}
-          />
-          <MenuItem
             icon={Info}
             label="Chat info"
             onClick={() => console.log("Chat info")}
           />
 
-          <div className="h-px bg-slate-200/60 dark:bg-gray-700 my-2" />
-
           {chat?.is_group ? (
             <>
-              <MenuItem
-                icon={UserPlus}
-                label="Add member"
-                onClick={onAddMember}
-              />
-              <MenuItem
-                icon={UserMinus}
-                label="Remove member"
-                onClick={onRemoveMember}
-              />
-              <MenuItem
-                icon={Pencil}
-                label="Edit group"
-                onClick={onEditGroup}
-              />
-              <div className="h-px bg-slate-200/60 dark:bg-gray-700 my-2" />
+              {isAdmin && (
+                <>
+                  <MenuItem
+                    icon={UserPlus}
+                    label="Add member"
+                    onClick={onAddMember}
+                  />
+                  <MenuItem
+                    icon={UserMinus}
+                    label="Remove member"
+                    onClick={onRemoveMember}
+                  />
+                  <MenuItem
+                    icon={Pencil}
+                    label="Edit group"
+                    onClick={onEditGroup}
+                  />
+                  <div className="h-px bg-slate-200/60 dark:bg-gray-700 my-2" />
+                </>
+              )}
               <MenuItem
                 icon={DoorOpen}
                 label="Exit group"
                 onClick={onExitGroup}
                 danger
               />
+              <div className="h-px bg-slate-200/60 dark:bg-gray-700 my-2" />
             </>
           ) : null}
 

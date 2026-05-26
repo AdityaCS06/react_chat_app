@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { Search, MoreVertical, Users } from "lucide-react";
+import { Search, MoreVertical, Users, Sun, Moon } from "lucide-react";
 import ChatOptionsMenu from "../../components/chat/ChatOptionsMenu";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { updateChat } from "../../api/chat";
 import { getErrorMessage } from "../../api/utils";
 import { useToast } from "../../components/ui/ToastContainer";
+import { useTheme } from "../../context/ThemeContext";
 
 const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onGroupUpdated }) => {
+  const { theme, toggleTheme } = useTheme();
   const { addToast } = useToast();
   const [showMenu, setShowMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -125,6 +127,17 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
       </div>
 
       <div className="flex items-center gap-1.5">
+        <button
+          onClick={toggleTheme}
+          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {theme === "dark" ? (
+            <Sun size={20} className="text-yellow-500" />
+          ) : (
+            <Moon size={20} className="text-slate-500" />
+          )}
+        </button>
         <button
           aria-label="Search"
           onClick={() => setShowSearch(!showSearch)}
