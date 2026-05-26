@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { getProfile, updateProfilePhoto, updateProfileName, removeProfilePhoto } from "../../api/auth";
 import { uploadProfileImage, cleanupProfileImages, getProfileImageUrl } from "../../api/supabase";
 import { useToast } from "../../components/ui/ToastContainer";
+import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import CropModal from "../../components/ui/CropModal";
 import { timeAgo } from "../../utils/timeAgo";
 
@@ -19,6 +20,7 @@ const Profile = () => {
   const [nameInput, setNameInput] = useState("");
   const [savingName, setSavingName] = useState(false);
   const [cropImageSrc, setCropImageSrc] = useState(null);
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -86,6 +88,7 @@ const Profile = () => {
 
   const handleRemovePhoto = async () => {
     if (!user.profile_photo) return;
+    setShowRemoveDialog(false);
     setUploading(true);
     try {
       await cleanupProfileImages(user.public_id);
@@ -209,7 +212,7 @@ const Profile = () => {
                 </div>
                 {user.profile_photo && user.profile_photo !== DEFAULT_AVATAR && (
                   <button
-                    onClick={handleRemovePhoto}
+                    onClick={() => setShowRemoveDialog(true)}
                     disabled={uploading}
                     className="mt-3 text-sm text-red-500 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
@@ -285,6 +288,18 @@ const Profile = () => {
           </div>
         </div>
       </main>
+
+      <ConfirmDialog
+        open={showRemoveDialog}
+        onOpenChange={(open) => setShowRemoveDialog(open)}
+        title="Remove profile photo?"
+        description="Are you sure you want to remove your profile photo? A default avatar will be shown instead."
+        confirmText="Remove"
+        cancelText="Cancel"
+        onConfirm={handleRemovePhoto}
+        confirmVariant="danger"
+        loading={uploading}
+      />
 
       <CropModal
         open={!!cropImageSrc}

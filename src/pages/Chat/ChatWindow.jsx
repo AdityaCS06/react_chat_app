@@ -9,6 +9,7 @@ import { connectToChatSocket } from "../../api/socket";
 import { getErrorMessage } from "../../api/utils";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
+import { hasProfilePhoto } from "../../utils/permissions";
 
 const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onLogout, onGroupUpdated }) => {
   const { user, token } = useAuth();
@@ -293,7 +294,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           const showSender = chat?.is_group && isFirstInGroup;
           const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
           const senderName = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
-          const senderAvatar = member?.user?.profile_photo;
+          const senderAvatar = hasProfilePhoto(member?.user) ? member.user.profile_photo : null;
 
           return (
             <MessageBubble

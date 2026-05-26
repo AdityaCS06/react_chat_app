@@ -62,8 +62,11 @@ export const updateProfileName = async (fullName) => {
   }
 };
 
-const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-
 export const removeProfilePhoto = async () => {
-  return updateProfilePhoto(DEFAULT_AVATAR);
+  const formData = new FormData();
+  formData.append("remove_photo", "true");
+  const response = await api.patch(`/users/me`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return response.data;
 };

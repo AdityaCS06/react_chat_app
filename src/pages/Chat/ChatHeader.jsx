@@ -1,16 +1,21 @@
 import React, { useState } from "react";
-import { Search, MoreVertical, Users } from "lucide-react";
+import { Search, MoreVertical, Users, Sun, Moon } from "lucide-react";
 import ChatOptionsMenu from "../../components/chat/ChatOptionsMenu";
+import ChatInfoModal from "../../components/chat/ChatInfoModal";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { updateChat } from "../../api/chat";
 import { getErrorMessage } from "../../api/utils";
 import { useToast } from "../../components/ui/ToastContainer";
+import { useTheme } from "../../context/ThemeContext";
+import { hasProfilePhoto } from "../../utils/permissions";
 
 const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onGroupUpdated }) => {
+  const { theme, toggleTheme } = useTheme();
   const { addToast } = useToast();
   const [showMenu, setShowMenu] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showChatInfo, setShowChatInfo] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [updating, setUpdating] = useState(false);
 
@@ -94,8 +99,11 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
 
   return (
     <div className="flex items-center justify-between px-6 py-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-slate-200/40 dark:border-gray-700 shadow-sm relative z-10">
-      <div className="flex items-center gap-4">
-        {!chat.is_group && getOtherUser()?.profile_photo ? (
+      <div
+        className={`flex items-center gap-4 ${chat.is_group ? "cursor-pointer" : ""}`}
+        onClick={() => { if (chat.is_group) setShowChatInfo(true); }}
+      >
+        {!chat.is_group && hasProfilePhoto(getOtherUser()) ? (
           <img src={getOtherUser().profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-lg" />
         ) : (
           <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold shadow-lg`}>
@@ -126,6 +134,17 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
 
       <div className="flex items-center gap-1.5">
         <button
+          onClick={toggleTheme}
+          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+        >
+          {theme === "dark" ? (
+            <Sun size={20} className="text-yellow-500" />
+          ) : (
+            <Moon size={20} className="text-slate-500" />
+          )}
+        </button>
+        <button
           aria-label="Search"
           onClick={() => setShowSearch(!showSearch)}
           className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
@@ -154,6 +173,7 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
           onAddMember={onAddMember}
           onRemoveMember={onRemoveMember}
           onEditGroup={handleOpenEdit}
+          onChatInfo={() => { setShowMenu(false); setShowChatInfo(true); }}
         />
 
         <ConfirmDialog
@@ -177,6 +197,12 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
             autoFocus
           />
         </ConfirmDialog>
+
+        <ChatInfoModal
+          chatId={chat?.cuid}
+          isOpen={showChatInfo}
+          onClose={() => setShowChatInfo(false)}
+        />
       </div>
     </div>
   );
