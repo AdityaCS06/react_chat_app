@@ -22,6 +22,7 @@ const ChatOptionsMenu = ({
   onAddMember,
   onRemoveMember,
   onEditGroup,
+  onChatInfo,
 }) => {
   const menuRef = useRef(null);
   const isAdmin = isGroupAdmin(chat, currentUser?.public_id);
@@ -71,7 +72,7 @@ const ChatOptionsMenu = ({
           <MenuItem
             icon={Info}
             label="Chat info"
-            onClick={() => console.log("Chat info")}
+            onClick={onChatInfo}
           />
 
           {chat?.is_group ? (
