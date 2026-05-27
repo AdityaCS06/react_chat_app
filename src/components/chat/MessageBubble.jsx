@@ -12,6 +12,17 @@ const getRadius = (isMine, isFirstInGroup) => {
   return isFirstInGroup ? "rounded-[10px] rounded-tl-[2px]" : "rounded-[10px]";
 };
 
+const scrollToMessage = (muid) => {
+  const el = document.getElementById(`msg-${muid}`);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("ring-2", "ring-indigo-400", "rounded-[10px]", "animate-reply-highlight");
+    setTimeout(() => {
+      el.classList.remove("ring-2", "ring-indigo-400", "rounded-[10px]", "animate-reply-highlight");
+    }, 1500);
+  }
+};
+
 const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, senderName, senderAvatar, onContextMenu, onDoubleClick, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit, currentUserId }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -51,6 +62,7 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
         </div>
       )}
       <div
+        id={`msg-${msg.muid}`}
         onContextMenu={handleContextMenu}
         onDoubleClick={() => onDoubleClick?.(msg)}
         className={`relative group max-w-[75%] px-4 pt-2.5 pb-1.5 transition-all duration-200 ${
@@ -67,7 +79,8 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
 
         {msg.reply_to && (
           <div
-            className={`mb-2.5 pl-3 pr-4 py-1.5 border-l-4 rounded-md ${
+            onClick={() => scrollToMessage(msg.reply_to.muid)}
+            className={`mb-2.5 pl-3 pr-4 py-1.5 border-l-4 rounded-md cursor-pointer hover:brightness-95 dark:hover:brightness-110 transition-all ${
               isMine
                 ? "border-blue-300 bg-blue-400/20"
                 : "border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-gray-700/50"

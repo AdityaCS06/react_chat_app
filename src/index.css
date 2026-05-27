@@ -20,3 +20,13 @@
 .animate-slide-in {
   animation: slide-in 0.3s ease-out forwards;
 }
+
+@keyframes reply-highlight {
+  0% { box-shadow: 0 0 0 0 rgba(99,102,241,0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(99,102,241,0.15); }
+  100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+}
+
+.animate-reply-highlight {
+  animation: reply-highlight 1.5s ease-out forwards;
+}
