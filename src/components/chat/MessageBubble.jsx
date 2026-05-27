@@ -16,9 +16,9 @@ const scrollToMessage = (muid) => {
   const el = document.getElementById(`msg-${muid}`);
   if (el) {
     el.scrollIntoView({ behavior: "smooth", block: "center" });
-    el.classList.add("ring-2", "ring-indigo-400", "rounded-[10px]", "animate-reply-highlight");
+    el.classList.add("animate-reply-highlight");
     setTimeout(() => {
-      el.classList.remove("ring-2", "ring-indigo-400", "rounded-[10px]", "animate-reply-highlight");
+      el.classList.remove("animate-reply-highlight");
     }, 1500);
   }
 };

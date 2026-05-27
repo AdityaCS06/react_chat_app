@@ -28,5 +28,5 @@
 }
 
 .animate-reply-highlight {
-  animation: reply-highlight 1.5s ease-out forwards;
+  animation: reply-highlight 1.5s ease-out;
 }
