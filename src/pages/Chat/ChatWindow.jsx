@@ -153,8 +153,10 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   }, []);
 
   const handleReply = useCallback((msg) => {
-    setReplyTo(msg);
-  }, []);
+    const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
+    const name = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
+    setReplyTo({ ...msg, sender_name: name });
+  }, [chat]);
 
   const clearReply = useCallback(() => {
     setReplyTo(null);
