@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Paperclip, Send, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
@@ -9,14 +9,22 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
   const [message, setMessage] = useState("");
   const { user } = useAuth();
   const { addToast } = useToast();
+  const inputRef = useRef(null);
 
   useEffect(() => {
     setMessage("");
     clearReply?.();
   }, [chat?.cuid, clearReply]);
 
+  useEffect(() => {
+    if (replyTo) {
+      inputRef.current?.focus();
+    }
+  }, [replyTo]);
+
   const getReplySenderName = () => {
     if (!replyTo) return "";
+    if (replyTo.sender_id === user.public_id) return "You";
     return replyTo.sender_name || replyTo.sender_username || "Unknown";
   };
 
@@ -82,7 +90,9 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
               Replying to {getReplySenderName()}
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
-              {replyTo.content}
+              {replyTo.content.length > 100
+                ? replyTo.content.slice(0, 100) + "..."
+                : replyTo.content}
             </div>
           </div>
           <button
@@ -100,6 +110,7 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
         </button>
         <div className="relative flex-1">
           <input
+            ref={inputRef}
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}

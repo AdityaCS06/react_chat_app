@@ -3,6 +3,7 @@ import { Check, X } from "lucide-react";
 import Avatar from "../ui/Avatar";
 
 const MAX_CHARS = 250;
+const REPLY_PREVIEW_MAX = 100;
 
 const getRadius = (isMine, isFirstInGroup) => {
   if (isMine) {
@@ -11,7 +12,7 @@ const getRadius = (isMine, isFirstInGroup) => {
   return isFirstInGroup ? "rounded-[10px] rounded-tl-[2px]" : "rounded-[10px]";
 };
 
-const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, senderName, senderAvatar, onContextMenu, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit }) => {
+const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, senderName, senderAvatar, onContextMenu, onDoubleClick, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit, currentUserId }) => {
   const [expanded, setExpanded] = useState(false);
 
   const formatTime = (dateStr) => {
@@ -51,6 +52,7 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
       )}
       <div
         onContextMenu={handleContextMenu}
+        onDoubleClick={() => onDoubleClick?.(msg)}
         className={`relative group max-w-[75%] px-4 pt-2.5 pb-1.5 transition-all duration-200 ${
           isMine
             ? `bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25 ${getRadius(isMine, isFirstInGroup)}`
@@ -65,21 +67,23 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
 
         {msg.reply_to && (
           <div
-            className={`mb-2 pl-2.5 border-l-[3px] rounded-sm ${
+            className={`mb-2.5 pl-3 pr-4 py-1.5 border-l-4 rounded-md ${
               isMine
                 ? "border-blue-300 bg-blue-400/20"
                 : "border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-gray-700/50"
             }`}
           >
-            <div className={`text-xs font-semibold truncate ${
+            <div className={`text-xs font-semibold truncate max-w-full ${
               isMine ? "text-blue-100" : "text-indigo-500 dark:text-indigo-400"
             }`}>
-              {msg.reply_to.sender_name || msg.reply_to.sender_username || "Unknown"}
+              {msg.reply_to.sender_id === currentUserId ? "You" : (msg.reply_to.sender_name || msg.reply_to.sender_username || "Unknown")}
             </div>
-            <div className={`text-xs truncate mt-0.5 ${
+            <div className={`text-xs truncate max-w-full mt-0.5 ${
               isMine ? "text-blue-200" : "text-slate-500 dark:text-slate-400"
             }`}>
-              {msg.reply_to.content}
+              {msg.reply_to.content.length > REPLY_PREVIEW_MAX
+                ? msg.reply_to.content.slice(0, REPLY_PREVIEW_MAX) + "..."
+                : msg.reply_to.content}
             </div>
           </div>
         )}
@@ -110,7 +114,7 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
             </div>
           </div>
         ) : (
-          <div className="pr-12 pb-6">
+          <div className="pr-12 pb-4">
             <div className="break-all whitespace-pre-wrap text-sm leading-relaxed">{displayContent}</div>
             {isLongMsg && !expanded && (
               <span className="text-slate-400 dark:text-slate-500">...</span>

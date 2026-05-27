@@ -12,7 +12,7 @@ import { useToast } from "../../components/ui/ToastContainer";
 import { hasProfilePhoto } from "../../utils/permissions";
 
 const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onLogout, onGroupUpdated }) => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const { addToast } = useToast();
 
   const [messages, setMessages] = useState([]);
@@ -58,11 +58,11 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   );
 
   const setupWebSocket = useCallback(() => {
-    if (!chat?.cuid || !token) return;
+    if (!chat?.cuid) return;
     if (socketRef.current) {
       socketRef.current.close();
     }
-    socketRef.current = connectToChatSocket(chat.cuid, token, (data) => {
+    socketRef.current = connectToChatSocket(chat.cuid, null, (data) => {
       setMessages((prev) => {
         const tempMsg = prev.find((m) => m.muid?.startsWith("temp-") && m.content === data.content && m.sender_id === data.sender_id);
         if (tempMsg) {
@@ -74,7 +74,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         return prev;
       });
     });
-  }, [chat?.cuid, token]);
+  }, [chat?.cuid]);
 
   useEffect(() => {
     if (!chat) return;
@@ -317,11 +317,13 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
               senderName={senderName}
               senderAvatar={senderAvatar}
               onContextMenu={handleContextMenu}
+              onDoubleClick={handleReply}
               isEditing={editingMessage === msg.muid}
               editContent={editContent}
               onEditChange={setEditContent}
               onSaveEdit={handleSaveEdit}
               onCancelEdit={handleCancelEdit}
+              currentUserId={user.public_id}
             />
           );
         })}
