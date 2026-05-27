@@ -81,7 +81,7 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
   };
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-slate-200/40 dark:border-gray-700 shadow-sm relative z-10">
+    <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-slate-200/40 dark:border-gray-700 shadow-sm relative z-10">
       <div
         className={`flex items-center gap-4 ${chat.is_group ? "cursor-pointer" : ""}`}
         onClick={() => { if (chat.is_group) setShowChatInfo(true); }}
@@ -89,7 +89,7 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
         <Avatar
           src={!chat.is_group && hasProfilePhoto(getOtherUser()) ? getOtherUser().profile_photo : null}
           name={displayName}
-          className="w-12 h-12 rounded-2xl shadow-lg"
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl shadow-lg"
           textClassName="text-base font-bold"
         />
 
@@ -114,10 +114,10 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1 sm:gap-1.5">
         <button
           onClick={toggleTheme}
-          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+          className="p-3 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
           title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
         >
           {theme === "dark" ? (
@@ -129,14 +129,14 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
         <button
           aria-label="Search"
           onClick={() => setShowSearch(!showSearch)}
-          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+          className="p-3 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
         >
           <Search size={20} />
         </button>
         <button
           aria-label="More options"
           onClick={() => setShowMenu(!showMenu)}
-          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+          className="p-3 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
         >
           <MoreVertical size={20} />
         </button>

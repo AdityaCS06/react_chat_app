@@ -98,14 +98,14 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
           <button
             type="button"
             onClick={clearReply}
-            className="p-1 rounded-full hover:bg-slate-200 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+            className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
           >
-            <X size={14} className="text-slate-400" />
+            <X size={18} className="text-slate-400" />
           </button>
         </div>
       )}
       <div className="flex items-center gap-3 p-4">
-        <button type="button" aria-label="Attach" className="p-2.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all flex-shrink-0">
+        <button type="button" aria-label="Attach" className="p-3 sm:p-2.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all flex-shrink-0">
           <Paperclip size={20} />
         </button>
         <div className="relative flex-1">

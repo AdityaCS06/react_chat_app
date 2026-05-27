@@ -65,7 +65,7 @@ const ChatOptionsMenu = ({
       <div className="fixed inset-0 z-40" onClick={onClose} />
       <div
         ref={menuRef}
-        className="fixed right-4 top-[72px] z-50 w-64 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/40 dark:border-gray-700 overflow-hidden animate-scale-in"
+        className="fixed right-4 top-[72px] z-50 w-64 max-w-[calc(100vw-32px)] bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl shadow-xl border border-slate-200/40 dark:border-gray-700 overflow-hidden animate-scale-in"
         style={{ animation: "scaleIn 0.2s ease-out forwards" }}
       >
         <div className="py-2">

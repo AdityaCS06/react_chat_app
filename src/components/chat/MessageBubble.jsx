@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Check, X } from "lucide-react";
 import Avatar from "../ui/Avatar";
 
@@ -36,6 +36,28 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
     onContextMenu?.(e, msg);
   };
 
+  const longPressTimer = useRef(null);
+
+  const handleTouchStart = (e) => {
+    longPressTimer.current = setTimeout(() => {
+      handleContextMenu(e);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleTouchMove = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -50,7 +72,7 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
   const displayContent = isLongMsg && !expanded ? content.slice(0, MAX_CHARS) : content;
 
   return (
-    <div className={`flex ${isMine ? "justify-end" : "justify-start"} items-start gap-2 ${isFirstInGroup ? "mt-3 first:mt-0" : "mt-1"}`}>
+    <div className={`flex ${isMine ? "justify-end" : "justify-start"} items-start gap-1.5 sm:gap-2 ${isFirstInGroup ? "mt-3 first:mt-0" : "mt-1"}`}>
       {isGroup && !isMine && (
         <div className={`w-7 h-7 rounded-full flex-shrink-0 overflow-hidden mt-1.5 ${showSender ? "" : "invisible"}`} title={senderName}>
           <Avatar
@@ -65,7 +87,10 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
         id={`msg-${msg.muid}`}
         onContextMenu={handleContextMenu}
         onDoubleClick={() => onDoubleClick?.(msg)}
-        className={`relative group max-w-[75%] px-4 pt-2.5 pb-1.5 transition-all duration-200 ${
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchMove={handleTouchMove}
+        className={`relative group max-w-[90%] sm:max-w-[75%] px-4 pt-2.5 pb-1.5 transition-all duration-200 ${
           isMine
             ? `bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25 ${getRadius(isMine, isFirstInGroup)}`
             : `bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-slate-700 dark:text-slate-200 shadow-lg shadow-slate-200/50 dark:shadow-gray-900/50 hover:shadow-xl hover:shadow-slate-300/40 dark:hover:shadow-gray-800/40 ${getRadius(isMine, isFirstInGroup)}`
@@ -108,34 +133,34 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
               value={editContent}
               onChange={(e) => onEditChange?.(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full px-3 py-1.5 text-sm bg-black/10 dark:bg-white/10 rounded-lg text-white placeholder-white/50 outline-none"
+              className="w-full px-3 py-2.5 text-sm bg-black/10 dark:bg-white/10 rounded-lg text-white placeholder-white/50 outline-none"
               autoFocus
             />
             <div className="flex justify-end gap-2">
               <button
                 onClick={onCancelEdit}
-                className="p-1.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20"
+                className="p-2.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center"
               >
-                <X size={14} />
+                <X size={18} />
               </button>
               <button
                 onClick={onSaveEdit}
-                className="p-1.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20"
+                className="p-2.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center"
               >
-                <Check size={14} />
+                <Check size={18} />
               </button>
             </div>
           </div>
         ) : (
-          <div className="pr-12 pb-4">
-            <div className="break-all whitespace-pre-wrap text-sm leading-relaxed">{displayContent}</div>
+          <div className="pr-10 sm:pr-12 pb-4 min-w-0">
+            <div className="break-words whitespace-pre-wrap text-sm leading-relaxed max-w-full">{displayContent}</div>
             {isLongMsg && !expanded && (
               <span className="text-slate-400 dark:text-slate-500">...</span>
             )}
             {isLongMsg && (
               <button
                 onClick={() => setExpanded(!expanded)}
-                className={`text-xs font-semibold mt-1 transition-colors ${
+                className={`text-xs font-semibold mt-1 py-1 px-1 -ml-1 transition-colors ${
                   isMine
                     ? "text-blue-200 hover:text-white"
                     : "text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300"

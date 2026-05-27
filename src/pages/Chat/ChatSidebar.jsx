@@ -74,7 +74,7 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
           </h2>
           <button
             onClick={() => navigate("/create-chat")}
-            className="relative px-4 py-2 text-sm font-medium text-white transition-all duration-300 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95"
+            className="relative px-4 py-2.5 sm:py-2 text-sm font-medium text-white transition-all duration-300 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl hover:from-blue-600 hover:to-indigo-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95"
           >
             <span className="flex items-center gap-1.5">
               <Plus size={16} />
@@ -100,7 +100,7 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="flex items-center gap-3 p-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-200 to-slate-300 dark:from-gray-700 dark:to-gray-600 animate-pulse" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-slate-200 to-slate-300 dark:from-gray-700 dark:to-gray-600 animate-pulse" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 w-24 bg-slate-200 dark:bg-gray-700 rounded-lg animate-pulse" />
                   <div className="h-3 w-16 bg-slate-200 dark:bg-gray-700 rounded-lg animate-pulse" />
@@ -135,7 +135,7 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
                     <Avatar
                       src={!chat.is_group && hasProfilePhoto(getOtherUser(chat)) ? getOtherUser(chat).profile_photo : null}
                       name={chatName}
-                      className="w-12 h-12 rounded-2xl shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300"
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all duration-300"
                       textClassName="text-sm font-semibold"
                     />
                     {!chat.is_group && (
@@ -205,14 +205,14 @@ const ChatSidebar = ({ onSelectChat, activeChat, refreshTrigger }) => {
           <div className="absolute bottom-full left-2 right-2 mb-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-slate-200/50 dark:border-gray-700 overflow-hidden z-50">
             <button
               onClick={() => { navigate("/profile"); setShowDropdown(false); }}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-gray-700 transition-all"
+              className="w-full flex items-center gap-2.5 px-3 py-3 min-h-[44px] text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-gray-700 transition-all"
             >
               <User size={16} className="text-slate-400 dark:text-slate-500" />
               Profile
             </button>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+              className="w-full flex items-center gap-2.5 px-3 py-3 min-h-[44px] text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
             >
               <LogOut size={16} />
               Logout

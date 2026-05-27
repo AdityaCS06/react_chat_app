@@ -305,12 +305,12 @@ const Dashboard = () => {
 
           {trends.length > 0 && (
             <div className="mb-10">
-              <div className="flex items-center justify-between mb-4 ml-1">
-                <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-200">Message Activity (Last {trendsDays} Days)</h2>
+              <div className="flex items-center justify-between mb-4 ml-1 gap-3 flex-wrap">
+                <h2 className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-200">Message Activity (Last {trendsDays} Days)</h2>
                 <select
                   value={trendsDays}
                   onChange={(e) => fetchTrends(Number(e.target.value))}
-                  className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                  className="px-4 py-2.5 min-h-[44px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-700 dark:text-gray-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
                 >
                   <option value={7}>7 Days</option>
                   <option value={14}>14 Days</option>
@@ -319,13 +319,13 @@ const Dashboard = () => {
                 </select>
               </div>
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-md border border-gray-100 dark:border-gray-700">
-                <div className="flex items-end justify-between gap-2 h-32">
+                <div className="flex items-end gap-2 h-32 overflow-x-auto pb-1">
                   {trends.map((day, index) => {
                     const maxCount = Math.max(...trends.map(t => t.count), 1);
                     const height = (day.count / maxCount) * 100;
                     const dayName = new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' });
                     return (
-                      <div key={index} className="flex flex-col items-center flex-1">
+                      <div key={index} className="flex flex-col items-center min-w-[36px] sm:min-w-[44px] flex-shrink-0">
                         <div className="w-full flex flex-col items-center justify-end h-24">
                           <span className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{day.count}</span>
                           <div

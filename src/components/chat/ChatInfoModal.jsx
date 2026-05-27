@@ -72,12 +72,12 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
       <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl overflow-y-auto animate-slide-in">
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-slate-200/40 dark:border-gray-700">
           <h2 className="text-lg font-bold text-slate-800 dark:text-white">Chat Info</h2>
-          <button
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
-          >
-            <X size={20} />
-          </button>
+        <button
+          onClick={onClose}
+          className="p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+        >
+          <X size={20} />
+        </button>
         </div>
 
         {loading ? (

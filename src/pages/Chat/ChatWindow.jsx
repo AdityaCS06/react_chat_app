@@ -140,10 +140,10 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     let adjustedX = x;
     let adjustedY = y;
     if (x + menuWidth > viewportWidth) {
-      adjustedX = viewportWidth - menuWidth - 10;
+      adjustedX = Math.max(8, viewportWidth - menuWidth - 10);
     }
     if (y + menuHeight > window.innerHeight) {
-      adjustedY = y - menuHeight - 10;
+      adjustedY = Math.max(8, y - menuHeight - 10);
     }
     setMenuState({
       isOpen: true,
@@ -285,7 +285,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 min-h-0 overflow-y-auto p-6"
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3 sm:p-4 md:p-6"
       >
         {loading && messages.length === 0 && (
           <div className="space-y-4 p-4">
