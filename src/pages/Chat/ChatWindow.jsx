@@ -30,6 +30,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const isFetchingRef = useRef(false);
   const paginationStateRef = useRef(null);
   const initialLoadRef = useRef(true);
+  const initialFetchCompleteRef = useRef(false);
   const deleteTargetRef = useRef(null);
   const messagesRef = useRef([]);
   messagesRef.current = messages;
@@ -42,10 +43,16 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       try {
         const res = await getMessages(chat.cuid, limit, offset);
         const newMessages = (res.messages || []).filter((msg) => msg.muid);
-        const reversed = [...newMessages].reverse();
-        setMessages((prev) =>
-          replace ? reversed : [...reversed, ...prev]
+        const sorted = [...newMessages].reverse().sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
         );
+        setMessages((prev) => {
+          if (replace) {
+            initialFetchCompleteRef.current = true;
+            return sorted;
+          }
+          return [...sorted, ...prev];
+        });
         setHasMore(newMessages.length === limit);
       } catch {
         addToast("Failed to load messages", "error");
@@ -63,15 +70,22 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       socketRef.current.close();
     }
     socketRef.current = connectToChatSocket(chat.cuid, null, (data) => {
+      if (data.type !== "message" || !data.muid) return;
+
       setMessages((prev) => {
+        if (!initialFetchCompleteRef.current) return prev;
+
         const tempMsg = prev.find((m) => m.muid?.startsWith("temp-") && m.content === data.content && m.sender_id === data.sender_id);
         if (tempMsg) {
           return prev.map((m) => (m.muid === tempMsg.muid ? { ...m, muid: data.muid } : m));
         }
-        if (data.muid) {
-          return [...prev, data];
-        }
-        return prev;
+
+        const msgDate = new Date(data.created_at).getTime();
+        const idx = prev.findIndex((m) => new Date(m.created_at).getTime() > msgDate);
+        if (idx === -1) return [...prev, data];
+        const copy = [...prev];
+        copy.splice(idx, 0, data);
+        return copy;
       });
     });
   }, [chat?.cuid]);

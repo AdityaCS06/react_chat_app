@@ -152,8 +152,8 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
             </div>
           </div>
         ) : (
-          <div className="pr-10 sm:pr-12 pb-4 min-w-0">
-            <div className="break-words whitespace-pre-wrap text-sm leading-relaxed max-w-full">{displayContent}</div>
+          <div className="pr-10 sm:pr-12 pb-4 min-w-0 max-w-full">
+            <div className="[overflow-wrap:break-word] [word-break:break-word] whitespace-pre-wrap text-sm leading-relaxed max-w-full">{displayContent}</div>
             {isLongMsg && !expanded && (
               <span className="text-slate-400 dark:text-slate-500">...</span>
             )}
