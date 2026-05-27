@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Trash2, Ban, Pencil } from "lucide-react";
+import { Trash2, Ban, Pencil, MessageSquare } from "lucide-react";
 
 const MessageOptionsMenu = ({
   isOpen,
@@ -8,6 +8,7 @@ const MessageOptionsMenu = ({
   onDeleteForMe,
   onDeleteForEveryone,
   onEdit,
+  onReply,
   isSender,
   position,
 }) => {
@@ -50,6 +51,17 @@ const MessageOptionsMenu = ({
         }}
       >
         <div className="py-1.5">
+          <button
+            onClick={() => {
+              onReply?.();
+              onClose();
+            }}
+            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-gray-700 transition-all duration-150"
+          >
+            <MessageSquare size={16} className="text-slate-400 dark:text-slate-500" />
+            <span className="font-medium">Reply</span>
+          </button>
+
           {isSender && (
             <button
               onClick={() => {

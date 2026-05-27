@@ -19,6 +19,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [menuState, setMenuState] = useState({ isOpen: false, message: null, position: { x: 0, y: 0 } });
+  const [replyTo, setReplyTo] = useState(null);
   const [editingMessage, setEditingMessage] = useState(null);
   const [editContent, setEditContent] = useState("");
   const [deleteDialog, setDeleteDialog] = useState({ open: false, type: null });
@@ -127,7 +128,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       await Promise.all(
         unseen.map((msg) => updateMessageStatus(chat.cuid, msg.muid, "seen"))
       );
-    } catch {}
+    } catch { /* silent */ }
   }, [messages, user.public_id, chat?.cuid]);
 
   const handleContextMenu = useCallback((e, msg) => {
@@ -149,6 +150,14 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       message: msg,
       position: { x: adjustedX, y: adjustedY },
     });
+  }, []);
+
+  const handleReply = useCallback((msg) => {
+    setReplyTo(msg);
+  }, []);
+
+  const clearReply = useCallback(() => {
+    setReplyTo(null);
   }, []);
 
   const handleCloseMenu = useCallback(() => {
@@ -290,7 +299,6 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           const prevMsg = idx > 0 ? messages[idx - 1] : null;
           const sameSender = prevMsg?.sender_id === msg.sender_id;
           const isFirstInGroup = !sameSender;
-          const isConsecutive = !!sameSender;
           const showSender = chat?.is_group && isFirstInGroup;
           const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
           const senderName = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
@@ -303,7 +311,6 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
               isMine={msg.sender_id === user.public_id}
               isGroup={chat?.is_group}
               isFirstInGroup={isFirstInGroup}
-              isConsecutive={isConsecutive}
               showSender={showSender}
               senderName={senderName}
               senderAvatar={senderAvatar}
@@ -323,6 +330,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           onDeleteForMe={handleDeleteForMe}
           onDeleteForEveryone={handleDeleteForEveryone}
           onEdit={handleEdit}
+          onReply={() => handleReply(menuState.message)}
           isSender={menuState.message?.sender_id === user.public_id}
           position={menuState.position}
         />
@@ -332,6 +340,8 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         chat={chat}
         socketRef={socketRef}
         setMessages={setMessages}
+        replyTo={replyTo}
+        clearReply={clearReply}
         onMessageSent={() => requestAnimationFrame(() => {
           scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
         })}

@@ -11,7 +11,7 @@ const getRadius = (isMine, isFirstInGroup) => {
   return isFirstInGroup ? "rounded-[10px] rounded-tl-[2px]" : "rounded-[10px]";
 };
 
-const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, showSender, senderName, senderAvatar, onContextMenu, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit }) => {
+const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, senderName, senderAvatar, onContextMenu, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit }) => {
   const [expanded, setExpanded] = useState(false);
 
   const formatTime = (dateStr) => {
@@ -60,6 +60,27 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, sh
         {isGroup && showSender && !isMine && (
           <div className="text-xs font-bold mb-1 text-indigo-500 dark:text-indigo-400">
             {senderName || "Unknown"}
+          </div>
+        )}
+
+        {msg.reply_to && (
+          <div
+            className={`mb-2 pl-2.5 border-l-[3px] rounded-sm ${
+              isMine
+                ? "border-blue-300 bg-blue-400/20"
+                : "border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-gray-700/50"
+            }`}
+          >
+            <div className={`text-xs font-semibold truncate ${
+              isMine ? "text-blue-100" : "text-indigo-500 dark:text-indigo-400"
+            }`}>
+              {msg.reply_to.sender_name || msg.reply_to.sender_username || "Unknown"}
+            </div>
+            <div className={`text-xs truncate mt-0.5 ${
+              isMine ? "text-blue-200" : "text-slate-500 dark:text-slate-400"
+            }`}>
+              {msg.reply_to.content}
+            </div>
           </div>
         )}
 
