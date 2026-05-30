@@ -184,6 +184,8 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
           chatId={chat?.cuid}
           isOpen={showChatInfo}
           onClose={() => setShowChatInfo(false)}
+          onAddMember={onAddMember}
+          onRemoveMember={onRemoveMember}
         />
       </div>
     </div>

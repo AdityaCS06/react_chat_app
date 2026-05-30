@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, Users, Calendar, Shield, Crown } from "lucide-react";
+import { X, Users, Calendar, Shield, Crown, UserPlus, UserMinus } from "lucide-react";
 import { getChatDetails } from "../../api/chat";
 import { useAuth } from "../../context/AuthContext";
-import { hasProfilePhoto } from "../../utils/permissions";
+import { isGroupAdmin, hasProfilePhoto } from "../../utils/permissions";
 import Avatar from "../ui/Avatar";
 
-const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
+const ChatInfoModal = ({ chatId, isOpen, onClose, onAddMember, onRemoveMember }) => {
   const { user: currentUser } = useAuth();
   const [chat, setChat] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -134,6 +134,25 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
                 </div>
               )}
             </div>
+
+            {chat.is_group && isGroupAdmin(chat, currentUser?.public_id) && (
+              <div className="flex items-center gap-2 mb-6">
+                <button
+                  onClick={() => { onClose(); onAddMember?.(); }}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-xl transition-all"
+                >
+                  <UserPlus size={16} />
+                  Add
+                </button>
+                <button
+                  onClick={() => { onClose(); onRemoveMember?.(); }}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all"
+                >
+                  <UserMinus size={16} />
+                  Remove
+                </button>
+              </div>
+            )}
 
             <div className="flex items-center gap-2 mb-4">
               <Users size={16} className="text-slate-400" />
