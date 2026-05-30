@@ -8,7 +8,7 @@ import { useToast } from "../ui/ToastContainer";
 import { hasProfilePhoto } from "../../utils/permissions";
 import Avatar from "../ui/Avatar";
 
-const MAX_SELECTION = 2;
+const MAX_SELECTION = 10;
 
 const RemoveMemberModal = ({ chat, isOpen, onClose, onGroupUpdated }) => {
   const { user } = useAuth();
