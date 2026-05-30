@@ -9,6 +9,8 @@ import { useToast } from "../ui/ToastContainer";
 import { hasProfilePhoto } from "../../utils/permissions";
 import Avatar from "../ui/Avatar";
 
+const MAX_SELECTION = 2;
+
 const AddMemberModal = ({ chat, isOpen, onClose, onGroupUpdated }) => {
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -61,12 +63,20 @@ const AddMemberModal = ({ chat, isOpen, onClose, onGroupUpdated }) => {
 
   const toggleUser = useCallback((publicId) => {
     setSelectedIds((prev) => {
+      if (prev.has(publicId)) {
+        const next = new Set(prev);
+        next.delete(publicId);
+        return next;
+      }
+      if (prev.size >= MAX_SELECTION) {
+        addToast(`You can only select up to ${MAX_SELECTION} members at a time`, "warning");
+        return prev;
+      }
       const next = new Set(prev);
-      if (next.has(publicId)) next.delete(publicId);
-      else next.add(publicId);
+      next.add(publicId);
       return next;
     });
-  }, []);
+  }, [addToast]);
 
   const handleAdd = async () => {
     if (selectedIds.size === 0 || !chat?.cuid) return;
@@ -186,26 +196,33 @@ const AddMemberModal = ({ chat, isOpen, onClose, onGroupUpdated }) => {
             </div>
 
             {selectedIds.size > 0 && (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {users
-                  .filter((u) => selectedIds.has(u.public_id))
-                  .map((u) => (
-                    <span
-                      key={u.public_id}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-lg"
-                    >
-                      {u.full_name || u.username}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleUser(u.public_id);
-                        }}
-                        className="hover:text-red-500 transition-colors"
+              <div className="mt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {selectedIds.size} selected {selectedIds.size >= MAX_SELECTION && "(max)"}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {users
+                    .filter((u) => selectedIds.has(u.public_id))
+                    .map((u) => (
+                      <span
+                        key={u.public_id}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-lg"
                       >
-                        <X size={12} />
-                      </button>
-                    </span>
-                  ))}
+                        {u.full_name || u.username}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleUser(u.public_id);
+                          }}
+                          className="hover:text-red-500 transition-colors"
+                        >
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                </div>
               </div>
             )}
           </div>

@@ -23,7 +23,7 @@ export const ToastProvider = ({ children }) => {
     <ToastContext.Provider value={contextValue}>
       {children}
 
-      <div className="fixed top-4 right-4 flex flex-col gap-2 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl z-50">
+      <div className="fixed top-4 right-4 flex flex-col gap-2 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl z-[60]">
         {toasts.map((toast) => (
           <Toast
             key={toast.id}
