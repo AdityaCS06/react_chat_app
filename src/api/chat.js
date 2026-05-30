@@ -44,3 +44,21 @@ export const leaveGroup = async (cuid) => {
     throw error.response?.data || error;
   }
 };
+
+export const addMembers = async (cuid, userIds) => {
+  try {
+    const response = await api.post(`${BASE_URL}/${cuid}/members/add`, { user_ids: userIds });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};
+
+export const removeMembers = async (cuid, userIds) => {
+  try {
+    const response = await api.post(`${BASE_URL}/${cuid}/members/remove`, { user_ids: userIds });
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error;
+  }
+};

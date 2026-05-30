@@ -37,7 +37,7 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const getRoleBadge = (member) => {
-    if (member.role === "owner") {
+    if (member.user.public_id === chat?.created_by?.public_id) {
       return (
         <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
           <Crown size={12} />

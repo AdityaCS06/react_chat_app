@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import ChatSidebar from "./ChatSidebar";
 import ChatWindow from "./ChatWindow";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import AddMemberModal from "../../components/chat/AddMemberModal";
+import RemoveMemberModal from "../../components/chat/RemoveMemberModal";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { getChatDetails, deleteChat, leaveGroup } from "../../api/chat";
@@ -17,6 +19,8 @@ const ChatLayout = () => {
   const [loadingChat, setLoadingChat] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState({ open: false, type: null, loading: false });
+  const [showAddMember, setShowAddMember] = useState(false);
+  const [showRemoveMember, setShowRemoveMember] = useState(false);
   const [refreshSidebar, setRefreshSidebar] = useState(0);
 
   useEffect(() => {
@@ -103,11 +107,11 @@ const ChatLayout = () => {
   };
 
   const handleAddMember = () => {
-    console.log("Add member -", activeChat?.cuid);
+    setShowAddMember(true);
   };
 
   const handleRemoveMember = () => {
-    console.log("Remove member -", activeChat?.cuid);
+    setShowRemoveMember(true);
   };
 
   const handleLogout = () => {
@@ -179,6 +183,20 @@ const ChatLayout = () => {
           </div>
         )}
       </div>
+
+      <AddMemberModal
+        chat={activeChat}
+        isOpen={showAddMember}
+        onClose={() => setShowAddMember(false)}
+        onGroupUpdated={handleGroupUpdated}
+      />
+
+      <RemoveMemberModal
+        chat={activeChat}
+        isOpen={showRemoveMember}
+        onClose={() => setShowRemoveMember(false)}
+        onGroupUpdated={handleGroupUpdated}
+      />
 
       <ConfirmDialog
         open={confirmDialog.open}
