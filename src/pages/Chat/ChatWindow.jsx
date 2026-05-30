@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback, useLayoutEffect } from "react";
+import { ChevronDown } from "lucide-react";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
 import MessageBubble from "../../components/chat/MessageBubble";
@@ -24,6 +25,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const [editContent, setEditContent] = useState("");
   const [deleteDialog, setDeleteDialog] = useState({ open: false, type: null });
   const [deleting, setDeleting] = useState(false);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   const socketRef = useRef(null);
   const scrollRef = useRef(null);
@@ -34,6 +36,20 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const deleteTargetRef = useRef(null);
   const messagesRef = useRef([]);
   messagesRef.current = messages;
+
+  const scrollToBottom = useCallback((behavior = "smooth") => {
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior,
+    });
+  }, []);
+
+  const updateScrollButtonVisibility = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setShowScrollToBottom(distanceFromBottom > 180);
+  }, []);
 
   const fetchMessages = useCallback(
     async (replace = false, limit = 50, offset = 0) => {
@@ -120,10 +136,13 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     if (isAtBottom) {
       el.scrollTop = el.scrollHeight;
     }
-  }, [messages.length]);
+    updateScrollButtonVisibility();
+  }, [messages.length, updateScrollButtonVisibility]);
 
   const handleScroll = (e) => {
     const el = e.target;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setShowScrollToBottom(distanceFromBottom > 180);
 
     if (el.scrollTop < 80 && hasMore && !loading && !isFetchingRef.current) {
       paginationStateRef.current = {
@@ -283,7 +302,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   }, [messages, loading, markMessagesAsSeen]);
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-gradient-to-br from-slate-100 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="relative flex h-full min-h-0 flex-col bg-gradient-to-br from-slate-100 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <ChatHeader
         chat={chat}
         currentUser={user}
@@ -354,6 +373,17 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         />
       </div>
 
+      {showScrollToBottom && (
+        <button
+          type="button"
+          onClick={() => scrollToBottom("smooth")}
+          aria-label="Scroll to latest messages"
+          className="absolute bottom-24 right-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-slate-200/80 bg-white/95 text-slate-600 shadow-lg shadow-slate-300/30 backdrop-blur-md transition-all hover:-translate-y-0.5 hover:bg-white hover:text-indigo-600 dark:border-gray-700 dark:bg-gray-800/95 dark:text-slate-200 dark:shadow-black/30 dark:hover:bg-gray-800 dark:hover:text-indigo-300 sm:bottom-24 sm:right-6"
+        >
+          <ChevronDown size={20} strokeWidth={2.5} />
+        </button>
+      )}
+
       <ChatInput
         chat={chat}
         socketRef={socketRef}
@@ -361,7 +391,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         replyTo={replyTo}
         clearReply={clearReply}
         onMessageSent={() => requestAnimationFrame(() => {
-          scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+          scrollToBottom("smooth");
         })}
       />
 
