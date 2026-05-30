@@ -90,7 +90,7 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchMove={handleTouchMove}
-        className={`relative group max-w-[90%] sm:max-w-[75%] px-4 pt-2.5 pb-1.5 transition-all duration-200 ${
+        className={`relative group min-w-0 max-w-[90%] overflow-hidden sm:max-w-[75%] px-4 pt-2.5 pb-1.5 transition-all duration-200 ${
           isMine
             ? `bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25 ${getRadius(isMine, isFirstInGroup)}`
             : `bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-slate-700 dark:text-slate-200 shadow-lg shadow-slate-200/50 dark:shadow-gray-900/50 hover:shadow-xl hover:shadow-slate-300/40 dark:hover:shadow-gray-800/40 ${getRadius(isMine, isFirstInGroup)}`
@@ -105,18 +105,18 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
         {msg.reply_to && (
           <div
             onClick={() => scrollToMessage(msg.reply_to.muid)}
-            className={`mb-2.5 pl-3 pr-4 py-1.5 border-l-4 rounded-md cursor-pointer hover:brightness-95 dark:hover:brightness-110 transition-all ${
+            className={`mb-2.5 min-w-0 max-w-full pl-3 pr-4 py-1.5 border-l-4 rounded-md cursor-pointer hover:brightness-95 dark:hover:brightness-110 transition-all ${
               isMine
                 ? "border-blue-300 bg-blue-400/20"
                 : "border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-gray-700/50"
             }`}
           >
-            <div className={`text-xs font-semibold truncate max-w-full ${
+            <div className={`max-w-full text-xs font-semibold [overflow-wrap:anywhere] whitespace-pre-wrap ${
               isMine ? "text-blue-100" : "text-indigo-500 dark:text-indigo-400"
             }`}>
               {msg.reply_to.sender_id === currentUserId ? "You" : (msg.reply_to.sender_name || msg.reply_to.sender_username || "Unknown")}
             </div>
-            <div className={`text-xs truncate max-w-full mt-0.5 ${
+            <div className={`mt-0.5 max-w-full text-xs [overflow-wrap:anywhere] whitespace-pre-wrap ${
               isMine ? "text-blue-200" : "text-slate-500 dark:text-slate-400"
             }`}>
               {msg.reply_to.content.length > REPLY_PREVIEW_MAX
@@ -152,8 +152,10 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
             </div>
           </div>
         ) : (
-          <div className="pr-10 sm:pr-12 pb-4 min-w-0 max-w-full">
-            <div className="[overflow-wrap:break-word] [word-break:break-word] whitespace-pre-wrap text-sm leading-relaxed max-w-full">{displayContent}</div>
+          <div className="min-w-0 max-w-full pb-4 pr-10 sm:pr-12">
+            <div className="max-w-full whitespace-pre-wrap text-sm leading-relaxed [overflow-wrap:anywhere]">
+              {displayContent}
+            </div>
             {isLongMsg && !expanded && (
               <span className="text-slate-400 dark:text-slate-500">...</span>
             )}

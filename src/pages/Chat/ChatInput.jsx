@@ -84,12 +84,12 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
       className="sticky bottom-0 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-t border-slate-200/40 dark:border-gray-700 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-none"
     >
       {replyTo && (
-        <div className="flex items-center gap-3 px-4 pt-3 pb-1 bg-blue-50/80 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800/30">
+        <div className="flex items-start gap-3 px-4 pt-3 pb-1 bg-blue-50/80 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800/30">
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 truncate">
+            <div className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 [overflow-wrap:anywhere] whitespace-pre-wrap">
               Replying to {getReplySenderName()}
             </div>
-            <div className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+            <div className="mt-0.5 text-xs text-slate-500 dark:text-slate-400 [overflow-wrap:anywhere] whitespace-pre-wrap">
               {replyTo.content.length > 100
                 ? replyTo.content.slice(0, 100) + "..."
                 : replyTo.content}
