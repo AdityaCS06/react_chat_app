@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { X, Search, User as UserIcon, Check, Loader2 } from "lucide-react";
 import { getAllUsers } from "../../api/user";
@@ -17,8 +17,9 @@ const AddMemberModal = ({ chat, isOpen, onClose, onGroupUpdated }) => {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [adding, setAdding] = useState(false);
 
-  const existingMemberIds = new Set(
-    chat?.members?.map((m) => m.user.public_id) || []
+  const existingMemberIds = useMemo(
+    () => new Set(chat?.members?.map((m) => m.user.public_id) || []),
+    [chat?.members]
   );
 
   useEffect(() => {
