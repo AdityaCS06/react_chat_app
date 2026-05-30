@@ -1,13 +1,15 @@
-import React, { useEffect, useState, useRef, useCallback, useLayoutEffect } from "react";
+import React, { useEffect, useState, useRef, useCallback, useLayoutEffect, useMemo } from "react";
 import { ChevronDown } from "lucide-react";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
+import DateSeparator from "../../components/chat/DateSeparator";
 import MessageBubble from "../../components/chat/MessageBubble";
 import MessageOptionsMenu from "../../components/chat/MessageOptionsMenu";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
 import { getMessages, updateMessageStatus, deleteMessageForEveryone, deleteMessageForMe, editMessage } from "../../api/message";
 import { connectToChatSocket } from "../../api/socket";
 import { getErrorMessage } from "../../api/utils";
+import { formatDateSeparator, isSameDay } from "../../utils/chatDates";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../components/ui/ToastContainer";
 import { hasProfilePhoto } from "../../utils/permissions";
@@ -301,6 +303,55 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     }
   }, [messages, loading, markMessagesAsSeen]);
 
+  const renderedMessages = useMemo(() => {
+    return messages.map((msg, idx) => {
+      const prevMsg = idx > 0 ? messages[idx - 1] : null;
+      const showDateSeparator = !prevMsg || !isSameDay(prevMsg.created_at, msg.created_at);
+      const sameSender = prevMsg?.sender_id === msg.sender_id;
+      const isFirstInGroup = !sameSender;
+      const showSender = chat?.is_group && isFirstInGroup;
+      const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
+      const senderName = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
+      const senderAvatar = hasProfilePhoto(member?.user) ? member.user.profile_photo : null;
+
+      return (
+        <React.Fragment key={msg.muid}>
+          {showDateSeparator && (
+            <DateSeparator label={formatDateSeparator(msg.created_at)} />
+          )}
+          <MessageBubble
+            msg={msg}
+            isMine={msg.sender_id === user.public_id}
+            isGroup={chat?.is_group}
+            isFirstInGroup={isFirstInGroup}
+            showSender={showSender}
+            senderName={senderName}
+            senderAvatar={senderAvatar}
+            onContextMenu={handleContextMenu}
+            onDoubleClick={handleReply}
+            isEditing={editingMessage === msg.muid}
+            editContent={editContent}
+            onEditChange={setEditContent}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
+            currentUserId={user.public_id}
+          />
+        </React.Fragment>
+      );
+    });
+  }, [
+    messages,
+    chat?.is_group,
+    chat?.members,
+    user.public_id,
+    handleContextMenu,
+    handleReply,
+    editingMessage,
+    editContent,
+    handleSaveEdit,
+    handleCancelEdit,
+  ]);
+
   return (
     <div className="relative flex h-full min-h-0 flex-col bg-gradient-to-br from-slate-100 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <ChatHeader
@@ -330,36 +381,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           </div>
         )}
 
-        {messages.map((msg, idx) => {
-          const prevMsg = idx > 0 ? messages[idx - 1] : null;
-          const sameSender = prevMsg?.sender_id === msg.sender_id;
-          const isFirstInGroup = !sameSender;
-          const showSender = chat?.is_group && isFirstInGroup;
-          const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
-          const senderName = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
-          const senderAvatar = hasProfilePhoto(member?.user) ? member.user.profile_photo : null;
-
-          return (
-            <MessageBubble
-              key={msg.muid}
-              msg={msg}
-              isMine={msg.sender_id === user.public_id}
-              isGroup={chat?.is_group}
-              isFirstInGroup={isFirstInGroup}
-              showSender={showSender}
-              senderName={senderName}
-              senderAvatar={senderAvatar}
-              onContextMenu={handleContextMenu}
-              onDoubleClick={handleReply}
-              isEditing={editingMessage === msg.muid}
-              editContent={editContent}
-              onEditChange={setEditContent}
-              onSaveEdit={handleSaveEdit}
-              onCancelEdit={handleCancelEdit}
-              currentUserId={user.public_id}
-            />
-          );
-        })}
+        {renderedMessages}
 
         <MessageOptionsMenu
           isOpen={menuState.isOpen}
