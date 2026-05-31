@@ -101,6 +101,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
         }
 
         const msgDate = new Date(data.created_at).getTime();
+        if (isNaN(msgDate)) return [...prev, data];
         const idx = prev.findIndex((m) => new Date(m.created_at).getTime() > msgDate);
         if (idx === -1) return [...prev, data];
         const copy = [...prev];
