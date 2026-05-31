@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { X, Users, Calendar, Shield, User, Crown } from "lucide-react";
+import { X, Users, Calendar, Shield, Crown, UserPlus, UserMinus } from "lucide-react";
 import { getChatDetails } from "../../api/chat";
 import { useAuth } from "../../context/AuthContext";
-import { hasProfilePhoto } from "../../utils/permissions";
+import { isGroupAdmin, hasProfilePhoto } from "../../utils/permissions";
+import Avatar from "../ui/Avatar";
 
-const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
+const ChatInfoModal = ({ chatId, isOpen, onClose, onAddMember, onRemoveMember }) => {
   const { user: currentUser } = useAuth();
   const [chat, setChat] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,7 +37,7 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const getRoleBadge = (member) => {
-    if (member.role === "owner") {
+    if (member.user.public_id === chat?.created_by?.public_id) {
       return (
         <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
           <Crown size={12} />
@@ -55,24 +56,6 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
     return null;
   };
 
-  const getInitials = (name) => {
-    if (!name) return "?";
-    return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
-  };
-
-  const getAvatarColor = (name) => {
-    const colors = [
-      "from-violet-500 to-purple-600",
-      "from-blue-500 to-cyan-500",
-      "from-pink-500 to-rose-500",
-      "from-emerald-500 to-teal-500",
-      "from-orange-500 to-amber-500",
-      "from-indigo-500 to-blue-500",
-    ];
-    if (!name) return colors[0];
-    return colors[name.charCodeAt(0) % colors.length];
-  };
-
   const formatDate = (dateStr) => {
     if (!dateStr) return "Unknown";
     const d = new Date(dateStr);
@@ -89,12 +72,12 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
       <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white dark:bg-gray-900 shadow-2xl overflow-y-auto animate-slide-in">
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-slate-200/40 dark:border-gray-700">
           <h2 className="text-lg font-bold text-slate-800 dark:text-white">Chat Info</h2>
-          <button
-            onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
-          >
-            <X size={20} />
-          </button>
+        <button
+          onClick={onClose}
+          className="p-3 min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+        >
+          <X size={20} />
+        </button>
         </div>
 
         {loading ? (
@@ -112,11 +95,12 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
         ) : chat ? (
           <div className="p-6">
             <div className="flex flex-col items-center mb-8">
-              <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${getAvatarColor(chat.name || "G")} flex items-center justify-center shadow-lg mb-4`}>
-                <span className="text-2xl font-bold text-white">
-                  {getInitials(chat.name || (chat.is_group ? "G" : "U"))}
-                </span>
-              </div>
+              <Avatar
+                src={null}
+                name={chat.name || (chat.is_group ? "Group" : "Chat")}
+                className="w-20 h-20 rounded-3xl shadow-lg mb-4"
+                textClassName="text-2xl font-bold"
+              />
               <h3 className="text-xl font-bold text-slate-800 dark:text-white text-center">
                 {chat.name || (chat.is_group ? "Group" : "Chat")}
               </h3>
@@ -151,6 +135,25 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
               )}
             </div>
 
+            {chat.is_group && isGroupAdmin(chat, currentUser?.public_id) && (
+              <div className="flex items-center gap-2 mb-6">
+                <button
+                  onClick={() => { onClose(); onAddMember?.(); }}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-xl transition-all"
+                >
+                  <UserPlus size={16} />
+                  Add
+                </button>
+                <button
+                  onClick={() => { onClose(); onRemoveMember?.(); }}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all"
+                >
+                  <UserMinus size={16} />
+                  Remove
+                </button>
+              </div>
+            )}
+
             <div className="flex items-center gap-2 mb-4">
               <Users size={16} className="text-slate-400" />
               <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">
@@ -168,19 +171,12 @@ const ChatInfoModal = ({ chatId, isOpen, onClose }) => {
                     key={mu?.public_id}
                     className="flex items-center gap-3 p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-all"
                   >
-                    {hasProfilePhoto(mu) ? (
-                      <img
-                        src={mu.profile_photo}
-                        alt=""
-                        className="w-11 h-11 rounded-2xl object-cover shadow-sm"
-                      />
-                    ) : (
-                      <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${getAvatarColor(mu?.username || mu?.full_name)} flex items-center justify-center shadow-sm flex-shrink-0`}>
-                        <span className="text-sm font-bold text-white">
-                          {getInitials(mu?.username || mu?.full_name)}
-                        </span>
-                      </div>
-                    )}
+                    <Avatar
+                      src={hasProfilePhoto(mu) ? mu.profile_photo : null}
+                      name={mu?.username || mu?.full_name}
+                      className="w-11 h-11 rounded-2xl shadow-sm flex-shrink-0"
+                      textClassName="text-sm font-bold"
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">

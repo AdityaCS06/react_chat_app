@@ -2,13 +2,14 @@ import api from "./axios";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL + "/chats";
 
-export const sendMessage = async (chatId, content, messageType = "text") => {
+export const sendMessage = async (chatId, content, messageType = "text", replyTo = null) => {
   try {
     const payload = {
       chat_id: chatId,
       content,
       message_type: messageType,
     };
+    if (replyTo) payload.reply_to = replyTo;
 
     const response = await api.post(`${BASE_URL}/${chatId}/message`, payload);
     return response.data;

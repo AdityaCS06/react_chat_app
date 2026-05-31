@@ -8,6 +8,7 @@ import { getErrorMessage } from "../../api/utils";
 import { useToast } from "../../components/ui/ToastContainer";
 import { useTheme } from "../../context/ThemeContext";
 import { hasProfilePhoto } from "../../utils/permissions";
+import Avatar from "../../components/ui/Avatar";
 
 const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup, onAddMember, onRemoveMember, onGroupUpdated }) => {
   const { theme, toggleTheme } = useTheme();
@@ -50,24 +51,6 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
 
   const displayName = getDisplayName();
 
-  const getInitials = (name) => {
-    return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
-  };
-
-  const getAvatarColor = (name) => {
-    const colors = [
-      "from-violet-500 to-purple-600",
-      "from-blue-500 to-cyan-500",
-      "from-pink-500 to-rose-500",
-      "from-emerald-500 to-teal-500",
-      "from-orange-500 to-amber-500",
-      "from-indigo-500 to-blue-500",
-    ];
-    return colors[name.charCodeAt(0) % colors.length];
-  };
-
-  const avatarColor = getAvatarColor(displayName);
-
   const handleSaveGroupName = async () => {
     const name = groupName.trim();
     if (!name || !chat?.cuid) return;
@@ -98,18 +81,17 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
   };
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-slate-200/40 dark:border-gray-700 shadow-sm relative z-10">
+    <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border-b border-slate-200/40 dark:border-gray-700 shadow-sm relative z-10">
       <div
         className={`flex items-center gap-4 ${chat.is_group ? "cursor-pointer" : ""}`}
         onClick={() => { if (chat.is_group) setShowChatInfo(true); }}
       >
-        {!chat.is_group && hasProfilePhoto(getOtherUser()) ? (
-          <img src={getOtherUser().profile_photo} alt="" className="w-12 h-12 rounded-2xl object-cover shadow-lg" />
-        ) : (
-          <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white font-bold shadow-lg`}>
-            {getInitials(displayName)}
-          </div>
-        )}
+        <Avatar
+          src={!chat.is_group && hasProfilePhoto(getOtherUser()) ? getOtherUser().profile_photo : null}
+          name={displayName}
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl shadow-lg"
+          textClassName="text-base font-bold"
+        />
 
         <div>
           <h3 className="text-base font-bold text-slate-800 dark:text-white truncate">
@@ -132,10 +114,10 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1 sm:gap-1.5">
         <button
           onClick={toggleTheme}
-          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+          className="p-3 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
           title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
         >
           {theme === "dark" ? (
@@ -147,14 +129,14 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
         <button
           aria-label="Search"
           onClick={() => setShowSearch(!showSearch)}
-          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+          className="p-3 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
         >
           <Search size={20} />
         </button>
         <button
           aria-label="More options"
           onClick={() => setShowMenu(!showMenu)}
-          className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+          className="p-3 sm:p-2.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 rounded-xl transition-all"
         >
           <MoreVertical size={20} />
         </button>
@@ -202,6 +184,8 @@ const ChatHeader = ({ chat, currentUser, onCloseChat, onDeleteChat, onExitGroup,
           chatId={chat?.cuid}
           isOpen={showChatInfo}
           onClose={() => setShowChatInfo(false)}
+          onAddMember={onAddMember}
+          onRemoveMember={onRemoveMember}
         />
       </div>
     </div>

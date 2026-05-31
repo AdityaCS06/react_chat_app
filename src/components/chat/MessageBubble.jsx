@@ -1,21 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Check, X } from "lucide-react";
+import Avatar from "../ui/Avatar";
 
 const MAX_CHARS = 250;
-
-const AVATAR_COLORS = [
-  "#6366f1", "#8b5cf6", "#a855f7", "#d946ef",
-  "#ec4899", "#f43f5e", "#ef4444", "#f97316",
-  "#eab308", "#22c55e", "#14b8a6", "#06b6d4",
-];
-
-const getAvatarColor = (name) => {
-  let hash = 0;
-  for (let i = 0; i < (name?.length || 0); i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-};
+const REPLY_PREVIEW_MAX = 100;
 
 const getRadius = (isMine, isFirstInGroup) => {
   if (isMine) {
@@ -24,7 +12,18 @@ const getRadius = (isMine, isFirstInGroup) => {
   return isFirstInGroup ? "rounded-[10px] rounded-tl-[2px]" : "rounded-[10px]";
 };
 
-const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, showSender, senderName, senderAvatar, onContextMenu, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit }) => {
+const scrollToMessage = (muid) => {
+  const el = document.getElementById(`msg-${muid}`);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("animate-reply-highlight");
+    setTimeout(() => {
+      el.classList.remove("animate-reply-highlight");
+    }, 1500);
+  }
+};
+
+const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, senderName, senderAvatar, onContextMenu, onDoubleClick, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit, currentUserId, status }) => {
   const [expanded, setExpanded] = useState(false);
 
   const formatTime = (dateStr) => {
@@ -35,6 +34,28 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, sh
   const handleContextMenu = (e) => {
     e.preventDefault();
     onContextMenu?.(e, msg);
+  };
+
+  const longPressTimer = useRef(null);
+
+  const handleTouchStart = (e) => {
+    longPressTimer.current = setTimeout(() => {
+      handleContextMenu(e);
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleTouchMove = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -51,28 +72,25 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, sh
   const displayContent = isLongMsg && !expanded ? content.slice(0, MAX_CHARS) : content;
 
   return (
-    <div className={`flex ${isMine ? "justify-end" : "justify-start"} items-start gap-2 ${isFirstInGroup ? "mt-3 first:mt-0" : "mt-1"}`}>
+    <div className={`flex ${isMine ? "justify-end" : "justify-start"} items-start gap-1.5 sm:gap-2 ${isFirstInGroup ? "mt-3 first:mt-0" : "mt-1"}`}>
       {isGroup && !isMine && (
         <div className={`w-7 h-7 rounded-full flex-shrink-0 overflow-hidden mt-1.5 ${showSender ? "" : "invisible"}`} title={senderName}>
-          {senderAvatar ? (
-            <img
-              src={senderAvatar}
-              alt={senderName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div
-              className="w-full h-full flex items-center justify-center text-xs font-bold text-white"
-              style={{ backgroundColor: getAvatarColor(senderName) }}
-            >
-              {(senderName || "?")[0].toUpperCase()}
-            </div>
-          )}
+          <Avatar
+            src={senderAvatar}
+            name={senderName}
+            className="w-full h-full rounded-full"
+            textClassName="text-[10px] font-bold"
+          />
         </div>
       )}
       <div
+        id={`msg-${msg.muid}`}
         onContextMenu={handleContextMenu}
-        className={`relative group max-w-[75%] px-4 pt-2.5 pb-1.5 transition-all duration-200 ${
+        onDoubleClick={() => onDoubleClick?.(msg)}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onTouchMove={handleTouchMove}
+        className={`relative group min-w-0 max-w-[90%] overflow-hidden sm:max-w-[75%] px-4 pt-2.5 pb-1.5 transition-all duration-200 ${
           isMine
             ? `bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/25 ${getRadius(isMine, isFirstInGroup)}`
             : `bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-slate-700 dark:text-slate-200 shadow-lg shadow-slate-200/50 dark:shadow-gray-900/50 hover:shadow-xl hover:shadow-slate-300/40 dark:hover:shadow-gray-800/40 ${getRadius(isMine, isFirstInGroup)}`
@@ -84,6 +102,30 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, sh
           </div>
         )}
 
+        {msg.reply_to && (
+          <div
+            onClick={() => scrollToMessage(msg.reply_to.muid)}
+            className={`mb-2.5 min-w-0 max-w-full pl-3 pr-4 py-1.5 border-l-4 rounded-md cursor-pointer hover:brightness-95 dark:hover:brightness-110 transition-all ${
+              isMine
+                ? "border-blue-300 bg-blue-400/20"
+                : "border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-gray-700/50"
+            }`}
+          >
+            <div className={`max-w-full text-xs font-semibold [overflow-wrap:anywhere] whitespace-pre-wrap ${
+              isMine ? "text-blue-100" : "text-indigo-500 dark:text-indigo-400"
+            }`}>
+              {(msg.reply_to.sender?.public_id ?? msg.reply_to.sender_id) === currentUserId ? "You" : (msg.reply_to.sender_name || msg.reply_to.sender_username || "Unknown")}
+            </div>
+            <div className={`mt-0.5 max-w-full text-xs [overflow-wrap:anywhere] whitespace-pre-wrap ${
+              isMine ? "text-blue-200" : "text-slate-500 dark:text-slate-400"
+            }`}>
+              {msg.reply_to.content.length > REPLY_PREVIEW_MAX
+                ? msg.reply_to.content.slice(0, REPLY_PREVIEW_MAX) + "..."
+                : msg.reply_to.content}
+            </div>
+          </div>
+        )}
+
         {isEditing ? (
           <div className="space-y-2">
             <input
@@ -91,34 +133,36 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, sh
               value={editContent}
               onChange={(e) => onEditChange?.(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full px-3 py-1.5 text-sm bg-black/10 dark:bg-white/10 rounded-lg text-white placeholder-white/50 outline-none"
+              className="w-full px-3 py-2.5 text-sm bg-black/10 dark:bg-white/10 rounded-lg text-white placeholder-white/50 outline-none"
               autoFocus
             />
             <div className="flex justify-end gap-2">
               <button
                 onClick={onCancelEdit}
-                className="p-1.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20"
+                className="p-2.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center"
               >
-                <X size={14} />
+                <X size={18} />
               </button>
               <button
                 onClick={onSaveEdit}
-                className="p-1.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20"
+                className="p-2.5 rounded-full hover:bg-black/20 dark:hover:bg-white/20 flex items-center justify-center"
               >
-                <Check size={14} />
+                <Check size={18} />
               </button>
             </div>
           </div>
         ) : (
-          <div className="pr-12 pb-6">
-            <div className="break-all whitespace-pre-wrap text-sm leading-relaxed">{displayContent}</div>
+          <div className="min-w-0 max-w-full pb-4 pr-10 sm:pr-12">
+            <div className="max-w-full whitespace-pre-wrap text-sm leading-relaxed [overflow-wrap:anywhere]">
+              {displayContent}
+            </div>
             {isLongMsg && !expanded && (
               <span className="text-slate-400 dark:text-slate-500">...</span>
             )}
             {isLongMsg && (
               <button
                 onClick={() => setExpanded(!expanded)}
-                className={`text-xs font-semibold mt-1 transition-colors ${
+                className={`text-xs font-semibold mt-1 py-1 px-1 -ml-1 transition-colors ${
                   isMine
                     ? "text-blue-200 hover:text-white"
                     : "text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300"
@@ -139,19 +183,24 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, isConsecutive, sh
             {msg.is_edited && (
               <span className="italic">edited</span>
             )}
-            {msg.status === "seen" && isMine && (
+            {status === "seen" && isMine && (
               <div className="flex -space-x-1.5">
-                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
-                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="none">
+                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
-                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="none">
+                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
             )}
-            {msg.status === "sent" && isMine && (
-              <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
-                <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+            {status === "delivered" && isMine && (
+              <svg className="w-3 h-3" viewBox="0 0 16 11" fill="none">
+                <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+            {status === "sent" && isMine && (
+              <svg className="w-3 h-3 opacity-40" viewBox="0 0 16 11" fill="none">
+                <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             )}
             {formatTime(msg.created_at)}

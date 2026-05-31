@@ -1,13 +1,25 @@
 const MAX_RETRIES = 5;
 const BASE_DELAY = 1000;
 
-export const connectToChatSocket = (chatId, token, onMessage) => {
+const getToken = () => {
+  return localStorage.getItem("access_token");
+};
+
+export const connectToChatSocket = (chatId, _token, onMessage) => {
   const SOCKET_BASE_URL = import.meta.env.VITE_SOCKET_URL;
   let socket = null;
   let retries = 0;
   let disconnected = false;
 
   const connect = () => {
+    const token = getToken();
+    if (!token) {
+      if (!disconnected && retries < MAX_RETRIES) {
+        retries++;
+        setTimeout(connect, BASE_DELAY * Math.pow(2, retries - 1));
+      }
+      return;
+    }
     const socketUrl = `${SOCKET_BASE_URL}/chat/${chatId}?token=${token}`;
     socket = new WebSocket(socketUrl);
 
@@ -23,7 +35,9 @@ export const connectToChatSocket = (chatId, token, onMessage) => {
       }
     };
 
-    socket.onerror = () => {};
+    socket.onerror = (err) => {
+      console.error("WebSocket error:", err);
+    };
 
     socket.onmessage = (event) => {
       try {
