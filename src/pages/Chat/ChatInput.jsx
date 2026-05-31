@@ -24,7 +24,7 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
 
   const getReplySenderName = () => {
     if (!replyTo) return "";
-    if (replyTo.sender_id === user.public_id) return "You";
+    if ((replyTo.sender?.public_id ?? replyTo.sender_id) === user.public_id) return "You";
     return replyTo.sender_name || replyTo.sender_username || "Unknown";
   };
 
@@ -36,9 +36,12 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
     const tempMuid = `temp-${Date.now()}`;
     const tempMsg = {
       muid: tempMuid,
-      sender_id: user.public_id,
-      sender_name: user.full_name || user.username,
-      sender_username: user.username,
+      sender: {
+        public_id: user.public_id,
+        username: user.username,
+        full_name: user.full_name || user.username,
+        profile_photo: user.profile_photo,
+      },
       content,
       message_type: "text",
       created_at: new Date().toISOString(),
@@ -47,9 +50,9 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
     if (replyTo) {
       tempMsg.reply_to = {
         muid: replyTo.muid,
-        sender_id: replyTo.sender_id,
-        sender_name: replyTo.sender_name || replyTo.sender_username,
-        sender_username: replyTo.sender_username,
+        sender: replyTo.sender || { public_id: replyTo.sender_id },
+        sender_name: replyTo.sender_name || replyTo.sender?.username,
+        sender_username: replyTo.sender_username || replyTo.sender?.username,
         content: replyTo.content,
       };
     }

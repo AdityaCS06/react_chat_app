@@ -39,6 +39,8 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const messagesRef = useRef([]);
   messagesRef.current = messages;
 
+  const getSenderId = (msg) => msg?.sender?.public_id ?? msg?.sender_id;
+
   const scrollToBottom = useCallback((behavior = "smooth") => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
@@ -93,7 +95,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       setMessages((prev) => {
         if (!initialFetchCompleteRef.current) return prev;
 
-        const tempMsg = prev.find((m) => m.muid?.startsWith("temp-") && m.content === data.content && m.sender_id === data.sender_id);
+        const tempMsg = prev.find((m) => m.muid?.startsWith("temp-") && m.content === data.content && m.sender?.public_id === data.sender?.public_id);
         if (tempMsg) {
           return prev.map((m) => (m.muid === tempMsg.muid ? { ...m, muid: data.muid } : m));
         }
@@ -158,7 +160,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const markMessagesAsSeen = useCallback(async () => {
     try {
       const unseen = messages.filter(
-        (msg) => msg.muid && msg.sender_id !== user.public_id && msg.status !== "seen"
+        (msg) => msg.muid && getSenderId(msg) !== user.public_id && msg.status !== "seen"
       );
       await Promise.all(
         unseen.map((msg) => updateMessageStatus(chat.cuid, msg.muid, "seen"))
@@ -188,8 +190,8 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   }, []);
 
   const handleReply = useCallback((msg) => {
-    const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
-    const name = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
+    const member = chat?.members?.find((m) => m.user.public_id === getSenderId(msg));
+    const name = msg.sender?.full_name || msg.sender?.username || member?.user?.full_name || member?.user?.username || "Unknown";
     setReplyTo({ ...msg, sender_name: name });
   }, [chat]);
 
@@ -205,7 +207,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     const msg = menuState.message;
     if (!msg?.muid) return;
     const latest = messagesRef.current.find(
-      (m) => m.content === msg.content && m.sender_id === msg.sender_id
+      (m) => m.content === msg.content && getSenderId(m) === getSenderId(msg)
     );
     deleteTargetRef.current = { muid: latest?.muid || msg.muid };
     setDeleteDialog({ open: true, type: "me" });
@@ -232,7 +234,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     const msg = menuState.message;
     if (!msg?.muid) return;
     const latest = messagesRef.current.find(
-      (m) => m.content === msg.content && m.sender_id === msg.sender_id
+      (m) => m.content === msg.content && getSenderId(m) === getSenderId(msg)
     );
     deleteTargetRef.current = { muid: latest?.muid || msg.muid };
     setDeleteDialog({ open: true, type: "everyone" });
@@ -307,12 +309,13 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     return messages.map((msg, idx) => {
       const prevMsg = idx > 0 ? messages[idx - 1] : null;
       const showDateSeparator = !prevMsg || !isSameDay(prevMsg.created_at, msg.created_at);
-      const sameSender = prevMsg?.sender_id === msg.sender_id;
+      const msgSenderId = getSenderId(msg);
+      const sameSender = getSenderId(prevMsg) === msgSenderId;
       const isFirstInGroup = !sameSender;
       const showSender = chat?.is_group && isFirstInGroup;
-      const member = chat?.members?.find((m) => m.user.public_id === msg.sender_id);
-      const senderName = msg.sender_name || msg.sender_username || member?.user?.full_name || member?.user?.username || "Unknown";
-      const senderAvatar = hasProfilePhoto(member?.user) ? member.user.profile_photo : null;
+      const member = chat?.members?.find((m) => m.user.public_id === msgSenderId);
+      const senderName = msg.sender?.full_name || msg.sender?.username || member?.user?.full_name || member?.user?.username || "Unknown";
+      const senderAvatar = msg.sender?.profile_photo || (hasProfilePhoto(member?.user) ? member.user.profile_photo : null);
 
       return (
         <React.Fragment key={msg.muid}>
@@ -321,7 +324,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           )}
           <MessageBubble
             msg={msg}
-            isMine={msg.sender_id === user.public_id}
+            isMine={getSenderId(msg) === user.public_id}
             isGroup={chat?.is_group}
             isFirstInGroup={isFirstInGroup}
             showSender={showSender}
@@ -390,7 +393,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
           onDeleteForEveryone={handleDeleteForEveryone}
           onEdit={handleEdit}
           onReply={() => handleReply(menuState.message)}
-          isSender={menuState.message?.sender_id === user.public_id}
+          isSender={getSenderId(menuState.message) === user.public_id}
           position={menuState.position}
         />
       </div>

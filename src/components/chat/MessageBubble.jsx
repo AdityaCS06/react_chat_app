@@ -114,7 +114,7 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
             <div className={`max-w-full text-xs font-semibold [overflow-wrap:anywhere] whitespace-pre-wrap ${
               isMine ? "text-blue-100" : "text-indigo-500 dark:text-indigo-400"
             }`}>
-              {msg.reply_to.sender_id === currentUserId ? "You" : (msg.reply_to.sender_name || msg.reply_to.sender_username || "Unknown")}
+              {(msg.reply_to.sender?.public_id ?? msg.reply_to.sender_id) === currentUserId ? "You" : (msg.reply_to.sender_name || msg.reply_to.sender_username || "Unknown")}
             </div>
             <div className={`mt-0.5 max-w-full text-xs [overflow-wrap:anywhere] whitespace-pre-wrap ${
               isMine ? "text-blue-200" : "text-slate-500 dark:text-slate-400"
