@@ -61,7 +61,7 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
     setMessage("");
     clearReply?.();
 
-    const wsPayload = { content, message_type: "text" };
+    const wsPayload = { type: "message", content, message_type: "text" };
     if (replyTo) wsPayload.reply_to = replyTo.muid;
 
     const sent = socketRef.current?.send?.(JSON.stringify(wsPayload));

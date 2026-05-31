@@ -41,6 +41,21 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
 
   const getSenderId = (msg) => msg?.sender?.public_id ?? msg?.sender_id;
 
+  const computeDisplayStatus = useCallback((msg) => {
+    if (!msg.statuses || msg.statuses.length === 0) return msg.status || "sent";
+    const otherStatuses = msg.statuses.filter(
+      (s) => s.user?.public_id !== user?.public_id
+    );
+    if (otherStatuses.length === 0) return msg.status || "sent";
+    const allSeen = otherStatuses.every((s) => s.status === "seen");
+    const allDelivered = otherStatuses.every(
+      (s) => s.status === "delivered" || s.status === "seen"
+    );
+    if (allSeen) return "seen";
+    if (allDelivered) return "delivered";
+    return "sent";
+  }, [user?.public_id]);
+
   const scrollToBottom = useCallback((behavior = "smooth") => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
@@ -90,26 +105,65 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       socketRef.current.close();
     }
     socketRef.current = connectToChatSocket(chat.cuid, null, (data) => {
-      if (data.type !== "message" || !data.muid) return;
+      if (data.type === "message" && data.muid) {
+        setMessages((prev) => {
+          if (!initialFetchCompleteRef.current) return prev;
 
-      setMessages((prev) => {
-        if (!initialFetchCompleteRef.current) return prev;
+          const tempMsg = prev.find((m) => m.muid?.startsWith("temp-") && m.content === data.content && m.sender?.public_id === data.sender?.public_id);
+          if (tempMsg) {
+            return prev.map((m) =>
+              m.muid === tempMsg.muid
+                ? { ...data, status: computeDisplayStatus(data) }
+                : m
+            );
+          }
 
-        const tempMsg = prev.find((m) => m.muid?.startsWith("temp-") && m.content === data.content && m.sender?.public_id === data.sender?.public_id);
-        if (tempMsg) {
-          return prev.map((m) => (m.muid === tempMsg.muid ? { ...m, muid: data.muid } : m));
-        }
+          const msgWithStatus = { ...data, status: computeDisplayStatus(data) };
+          const msgDate = new Date(data.created_at).getTime();
+          if (isNaN(msgDate)) return [...prev, msgWithStatus];
+          const idx = prev.findIndex((m) => new Date(m.created_at).getTime() > msgDate);
+          if (idx === -1) return [...prev, msgWithStatus];
+          const copy = [...prev];
+          copy.splice(idx, 0, msgWithStatus);
+          return copy;
+        });
+      }
 
-        const msgDate = new Date(data.created_at).getTime();
-        if (isNaN(msgDate)) return [...prev, data];
-        const idx = prev.findIndex((m) => new Date(m.created_at).getTime() > msgDate);
-        if (idx === -1) return [...prev, data];
-        const copy = [...prev];
-        copy.splice(idx, 0, data);
-        return copy;
-      });
+      if (data.type === "status" && data.message_id && data.status) {
+        setMessages((prev) =>
+          prev.map((m) => {
+            if (m.muid !== data.message_id) return m;
+            const existing = m.statuses || [];
+            const idx = existing.findIndex(
+              (s) => s.user?.public_id === data.user_id
+            );
+            let updatedStatuses;
+            if (idx >= 0) {
+              updatedStatuses = existing.map((s) =>
+                s.user?.public_id === data.user_id
+                  ? { ...s, status: data.status, updated_at: data.updated_at || new Date().toISOString() }
+                  : s
+              );
+            } else {
+              updatedStatuses = [
+                ...existing,
+                {
+                  user: { public_id: data.user_id },
+                  status: data.status,
+                  updated_at: data.updated_at || new Date().toISOString(),
+                },
+              ];
+            }
+            return {
+              ...m,
+              statuses: updatedStatuses,
+              status: computeDisplayStatus({ ...m, statuses: updatedStatuses }),
+            };
+          })
+        );
+      }
     });
-  }, [chat?.cuid]);
+  }, [chat?.cuid, computeDisplayStatus]);
 
   useEffect(() => {
     if (!chat) return;
@@ -161,11 +215,46 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const markMessagesAsSeen = useCallback(async () => {
     try {
       const unseen = messages.filter(
-        (msg) => msg.muid && getSenderId(msg) !== user.public_id && msg.status !== "seen"
+        (msg) => msg.muid && getSenderId(msg) !== user.public_id && (msg.status !== "seen" || !msg.status)
       );
-      await Promise.all(
-        unseen.map((msg) => updateMessageStatus(chat.cuid, msg.muid, "seen"))
+      if (unseen.length === 0) return;
+
+      const unseenMuids = unseen.map((m) => m.muid);
+
+      setMessages((prev) =>
+        prev.map((m) =>
+          unseenMuids.includes(m.muid)
+            ? {
+                ...m,
+                status: "seen",
+                statuses: [
+                  ...(m.statuses || []).filter(
+                    (s) => s.user?.public_id !== user.public_id
+                  ),
+                  {
+                    user: { public_id: user.public_id },
+                    status: "seen",
+                    updated_at: new Date().toISOString(),
+                  },
+                ],
+              }
+            : m
+        )
       );
+
+      const wsSent = socketRef.current?.send?.(
+        JSON.stringify({
+          type: "status",
+          message_ids: unseenMuids,
+          status: "seen",
+        })
+      );
+
+      if (!wsSent) {
+        await Promise.all(
+          unseen.map((msg) => updateMessageStatus(chat.cuid, msg.muid, "seen"))
+        );
+      }
     } catch { /* silent */ }
   }, [messages, user.public_id, chat?.cuid]);
 
@@ -317,6 +406,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       const member = chat?.members?.find((m) => m.user.public_id === msgSenderId);
       const senderName = msg.sender?.full_name || msg.sender?.username || member?.user?.full_name || member?.user?.username || "Unknown";
       const senderAvatar = msg.sender?.profile_photo || (hasProfilePhoto(member?.user) ? member.user.profile_photo : null);
+      const displayStatus = msg.status || computeDisplayStatus(msg);
 
       return (
         <React.Fragment key={msg.muid}>
@@ -339,6 +429,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
             onSaveEdit={handleSaveEdit}
             onCancelEdit={handleCancelEdit}
             currentUserId={user.public_id}
+            status={displayStatus}
           />
         </React.Fragment>
       );
@@ -354,6 +445,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     editContent,
     handleSaveEdit,
     handleCancelEdit,
+    computeDisplayStatus,
   ]);
 
   return (

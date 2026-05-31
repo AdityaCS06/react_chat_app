@@ -23,7 +23,7 @@ const scrollToMessage = (muid) => {
   }
 };
 
-const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, senderName, senderAvatar, onContextMenu, onDoubleClick, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit, currentUserId }) => {
+const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, senderName, senderAvatar, onContextMenu, onDoubleClick, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit, currentUserId, status }) => {
   const [expanded, setExpanded] = useState(false);
 
   const formatTime = (dateStr) => {
@@ -183,19 +183,24 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
             {msg.is_edited && (
               <span className="italic">edited</span>
             )}
-            {msg.status === "seen" && isMine && (
+            {status === "seen" && isMine && (
               <div className="flex -space-x-1.5">
-                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
-                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="none">
+                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
-                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                <svg className="w-3 h-3" viewBox="0 0 16 11" fill="none">
+                  <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
             )}
-            {msg.status === "sent" && isMine && (
-              <svg className="w-3 h-3" viewBox="0 0 16 11" fill="currentColor">
-                <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+            {status === "delivered" && isMine && (
+              <svg className="w-3 h-3" viewBox="0 0 16 11" fill="none">
+                <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+            {status === "sent" && isMine && (
+              <svg className="w-3 h-3 opacity-40" viewBox="0 0 16 11" fill="none">
+                <path d="M1 5.5L4 8.5L15 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             )}
             {formatTime(msg.created_at)}
