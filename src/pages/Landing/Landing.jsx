@@ -7,16 +7,16 @@ import dashboardPreview from "../../assets/images/dashboard-preview.png";
 
 const FeatureCard = ({ icon, title, desc, index }) => (
   <div
-    className="group relative p-8 rounded-3xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm border border-white/50 dark:border-gray-700/50 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white/90 dark:hover:bg-gray-800/90"
+    className="group relative p-8 rounded-3xl bg-white/70 backdrop-blur-sm border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-white/90"
     style={{ animationDelay: `${index * 150}ms` }}
   >
-    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
     <div className="relative z-10 text-center">
-      <div className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-200 dark:shadow-blue-900/30 group-hover:scale-110 transition-transform duration-300">
+      <div className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-200 group-hover:scale-110 transition-transform duration-300">
         {icon}
       </div>
-      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">{title}</h3>
-      <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
+      <h3 className="text-lg font-bold text-gray-900 mb-3">{title}</h3>
+      <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
     </div>
   </div>
 );
@@ -32,23 +32,23 @@ const Landing = () => {
   }, [user, loading, navigate]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 flex flex-col overflow-x-hidden">
+    <div className="min-h-screen bg-white flex flex-col overflow-x-hidden">
       {/* Animated Background Blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/30 dark:bg-blue-500/5 rounded-full blur-3xl animate-blob" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200/30 dark:bg-indigo-500/5 rounded-full blur-3xl animate-blob-delayed" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-100/20 dark:bg-blue-500/5 rounded-full blur-3xl animate-float" />
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/30 rounded-full blur-3xl animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200/30 rounded-full blur-3xl animate-blob-delayed" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-100/20 rounded-full blur-3xl animate-float" />
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/70 dark:bg-gray-950/70 backdrop-blur-xl border-b border-gray-100/50 dark:border-gray-800/50">
+      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-gray-100/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => navigate("/")}>
             <div className="relative">
               <img src={logo} alt="Convo" className="w-10 h-10 sm:w-11 sm:h-11 object-contain transition-transform duration-300 group-hover:scale-105" />
               <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-md group-hover:bg-blue-500/30 transition-all duration-300" />
             </div>
-            <span className="text-2xl sm:text-3xl font-extrabold text-gray-800 dark:text-white tracking-tight">
+            <span className="text-2xl sm:text-3xl font-extrabold text-gray-800 tracking-tight">
               <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Convo</span>
             </span>
           </div>
@@ -56,13 +56,13 @@ const Landing = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate("/login")}
-              className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition px-5 py-2.5 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800"
+              className="text-sm font-semibold text-gray-600 hover:text-blue-600 transition px-5 py-2.5 rounded-full hover:bg-gray-50"
             >
               Log in
             </button>
             <button
               onClick={() => navigate("/signup")}
-              className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md shadow-blue-200 dark:shadow-blue-900/30 hover:shadow-lg hover:-translate-y-0.5"
+              className="text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md shadow-blue-200 hover:shadow-lg hover:-translate-y-0.5"
             >
               Sign Up
             </button>
@@ -74,18 +74,18 @@ const Landing = () => {
         {/* Hero Section */}
         <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-24 pb-20 sm:pb-32 flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
           <div className="flex-1 text-center lg:text-left z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium mb-6 animate-fade-in-up">
-              <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-600 text-sm font-medium mb-6 animate-fade-in-up">
+              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
               Real-time messaging app
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-gray-900 dark:text-white leading-[1.1] tracking-tight animate-fade-in-up" style={{ animationDelay: "100ms", animationFillMode: "both" }}>
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-gray-900 leading-[1.1] tracking-tight animate-fade-in-up" style={{ animationDelay: "100ms", animationFillMode: "both" }}>
               Chat{" "}
               <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">freely.</span>
               <br />
               Connect{" "}
-              <span className="text-gray-800 dark:text-gray-200">instantly.</span>
+              <span className="text-gray-800">instantly.</span>
             </h1>
-            <p className="mt-6 text-lg sm:text-xl text-gray-500 dark:text-gray-400 max-w-lg lg:mx-0 mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "200ms", animationFillMode: "both" }}>
+            <p className="mt-6 text-lg sm:text-xl text-gray-500 max-w-lg lg:mx-0 mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: "200ms", animationFillMode: "both" }}>
               Simple, reliable messaging for everyone, everywhere.
               Stay connected with your friends and teams in real-time.
             </p>
@@ -93,14 +93,14 @@ const Landing = () => {
             <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: "300ms", animationFillMode: "both" }}>
               <button
                 onClick={() => navigate("/signup")}
-                className="group relative w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-10 py-3.5 rounded-full text-base font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl shadow-blue-200 dark:shadow-blue-900/30 hover:shadow-2xl hover:-translate-y-0.5 animate-pulse-glow"
+                className="group relative w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-10 py-3.5 rounded-full text-base font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl shadow-blue-200 hover:shadow-2xl hover:-translate-y-0.5 animate-pulse-glow"
               >
                 <span className="relative z-10">Get Started Free</span>
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
               </button>
               <button
                 onClick={() => navigate("/login")}
-                className="w-full sm:w-auto border-2 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-10 py-3.5 rounded-full text-base font-semibold hover:border-blue-600 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:bg-blue-50/50 dark:hover:bg-blue-900/10"
+                className="w-full sm:w-auto border-2 border-gray-200 text-gray-700 px-10 py-3.5 rounded-full text-base font-semibold hover:border-blue-600 hover:text-blue-600 transition-all duration-300 hover:bg-blue-50/50"
               >
                 Log In
               </button>
@@ -109,14 +109,14 @@ const Landing = () => {
 
           {/* Hero Image - Chat Window Screenshot */}
           <div className="flex-1 w-full max-w-xl lg:max-w-none z-10 animate-fade-in-up" style={{ animationDelay: "400ms", animationFillMode: "both" }}>
-            <div className="relative group">
+            <div className="relative group animate-float">
               <div className="absolute -inset-2 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-              <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl ring-1 ring-gray-200/50 dark:ring-gray-700/50 overflow-hidden">
-                <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+              <div className="relative bg-white rounded-2xl shadow-2xl ring-1 ring-gray-200/50 overflow-hidden">
+                <div className="flex items-center gap-2 px-5 py-3 bg-gray-50 border-b border-gray-100">
                   <div className="w-3 h-3 rounded-full bg-red-400" />
                   <div className="w-3 h-3 rounded-full bg-yellow-400" />
                   <div className="w-3 h-3 rounded-full bg-green-400" />
-                  <span className="ml-3 text-xs text-gray-400 dark:text-gray-500 font-medium">Convo Chat</span>
+                  <span className="ml-3 text-xs text-gray-400 font-medium">Convo Chat</span>
                 </div>
                 <img
                   src={chatPreview}
@@ -144,16 +144,16 @@ const Landing = () => {
         </section>
 
         {/* Features Section */}
-        <section className="relative border-t border-gray-100 dark:border-gray-800 bg-gray-50/30 dark:bg-gray-900/30">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-50/20 dark:via-blue-900/5 to-transparent pointer-events-none" />
+        <section className="relative border-t border-gray-100 bg-gray-50/30">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-50/20 to-transparent pointer-events-none" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
             <div className="text-center mb-16 animate-fade-in-up">
-              <span className="inline-block px-4 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-4">Why Convo?</span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-blue-100 text-blue-600 text-sm font-semibold mb-4">Why Convo?</span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900">
                 Everything you need to{" "}
                 <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">stay connected</span>
               </h2>
-              <p className="mt-4 text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+              <p className="mt-4 text-gray-500 text-lg max-w-2xl mx-auto">
                 Powerful features designed for seamless communication.
               </p>
             </div>
@@ -197,12 +197,12 @@ const Landing = () => {
         <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
             <div className="flex-1 z-10">
-              <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-sm font-semibold mb-4">Dashboard</span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+              <span className="inline-block px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-600 text-sm font-semibold mb-4">Dashboard</span>
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 leading-tight mb-6">
                 Your control center,{" "}
                 <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">at a glance.</span>
               </h2>
-              <p className="text-lg text-gray-500 dark:text-gray-400 mb-8 max-w-lg">
+              <p className="text-lg text-gray-500 mb-8 max-w-lg">
                 Track your message activity, manage conversations, view statistics, and stay on top of unread messages — all from one beautiful dashboard.
               </p>
               <ul className="space-y-4 mb-8">
@@ -212,18 +212,18 @@ const Landing = () => {
                   { icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z", text: "Recent chats and quick actions at your fingertips" },
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <div className="mt-0.5 w-6 h-6 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <div className="mt-0.5 w-6 h-6 rounded-lg bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                       </svg>
                     </div>
-                    <span className="text-gray-600 dark:text-gray-300">{item.text}</span>
+                    <span className="text-gray-600">{item.text}</span>
                   </li>
                 ))}
               </ul>
               <button
                 onClick={() => navigate("/signup")}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3.5 rounded-full text-base font-bold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30 hover:shadow-xl hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3.5 rounded-full text-base font-bold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5"
               >
                 Explore Dashboard
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -234,14 +234,14 @@ const Landing = () => {
 
             {/* Dashboard Screenshot */}
             <div className="flex-1 w-full max-w-xl lg:max-w-none z-10">
-              <div className="relative group">
+              <div className="relative group animate-float-delayed">
                 <div className="absolute -inset-2 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl ring-1 ring-gray-200/50 dark:ring-gray-700/50 overflow-hidden">
-                  <div className="flex items-center gap-2 px-5 py-3.5 bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+                <div className="relative bg-white rounded-2xl shadow-2xl ring-1 ring-gray-200/50 overflow-hidden">
+                  <div className="flex items-center gap-2 px-5 py-3 bg-gray-50 border-b border-gray-100">
                     <div className="w-3 h-3 rounded-full bg-red-400" />
                     <div className="w-3 h-3 rounded-full bg-yellow-400" />
                     <div className="w-3 h-3 rounded-full bg-green-400" />
-                    <span className="ml-3 text-xs text-gray-400 dark:text-gray-500 font-medium">Convo Dashboard</span>
+                    <span className="ml-3 text-xs text-gray-400 font-medium">Convo Dashboard</span>
                   </div>
                   <img
                     src={dashboardPreview}
@@ -270,8 +270,8 @@ const Landing = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="relative border-t border-gray-100 dark:border-gray-800">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-50/20 dark:via-blue-900/5 to-transparent pointer-events-none" />
+        <section className="relative border-t border-gray-100">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-50/20 to-transparent pointer-events-none" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 p-8 sm:p-12 lg:p-16 text-center text-white">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
@@ -304,18 +304,18 @@ const Landing = () => {
       </main>
 
       {/* Footer */}
-      <footer className="relative border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400 dark:text-gray-500">
+      <footer className="relative border-t border-gray-100 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
           <div className="flex items-center gap-2">
             <img src={logo} alt="Convo" className="w-6 h-6 object-contain" />
-            <span className="font-semibold text-gray-600 dark:text-gray-400">Convo</span>
+            <span className="font-semibold text-gray-600">Convo</span>
             <span className="mx-2">•</span>
             <span>&copy; 2026 All rights reserved.</span>
           </div>
           <div className="flex items-center gap-6">
-            <span className="hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition">Privacy Policy</span>
-            <span className="hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition">Terms of Service</span>
-            <span className="hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer transition">Contact</span>
+            <span className="hover:text-gray-600 cursor-pointer transition">Privacy Policy</span>
+            <span className="hover:text-gray-600 cursor-pointer transition">Terms of Service</span>
+            <span className="hover:text-gray-600 cursor-pointer transition">Contact</span>
           </div>
         </div>
       </footer>
