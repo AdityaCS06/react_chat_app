@@ -31,16 +31,23 @@ const MessageBubble = React.memo(({ msg, isMine, isGroup, isFirstInGroup, showSe
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
+  const longPressTimer = useRef(null);
+  const touchPosRef = useRef({ x: 0, y: 0 });
+
   const handleContextMenu = (e) => {
     e.preventDefault();
     onContextMenu?.(e, msg);
   };
 
-  const longPressTimer = useRef(null);
-
   const handleTouchStart = (e) => {
+    const touch = e.touches[0];
+    touchPosRef.current = { x: touch.clientX, y: touch.clientY };
     longPressTimer.current = setTimeout(() => {
-      handleContextMenu(e);
+      onContextMenu?.({
+        clientX: touchPosRef.current.x,
+        clientY: touchPosRef.current.y,
+        preventDefault: () => {},
+      }, msg);
     }, 500);
   };
 
