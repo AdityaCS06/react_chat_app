@@ -10,4 +10,4 @@ const DateSeparator = ({ label }) => {
   );
 };
 
-export default DateSeparator;
+export default React.memo(DateSeparator);

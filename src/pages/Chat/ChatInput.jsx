@@ -74,6 +74,7 @@ const ChatInput = ({ chat, socketRef, setMessages, replyTo, clearReply, onMessag
           )
         );
       } catch (err) {
+        setMessages((prev) => prev.filter((msg) => msg.muid !== tempMuid));
         addToast(getErrorMessage(err), "error");
       }
     }

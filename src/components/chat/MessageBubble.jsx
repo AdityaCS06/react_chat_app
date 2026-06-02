@@ -23,7 +23,7 @@ const scrollToMessage = (muid) => {
   }
 };
 
-const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, senderName, senderAvatar, onContextMenu, onDoubleClick, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit, currentUserId, status }) => {
+const MessageBubble = React.memo(({ msg, isMine, isGroup, isFirstInGroup, showSender, senderName, senderAvatar, onContextMenu, onDoubleClick, isEditing, editContent, onEditChange, onSaveEdit, onCancelEdit, currentUserId, status }) => {
   const [expanded, setExpanded] = useState(false);
 
   const formatTime = (dateStr) => {
@@ -209,6 +209,24 @@ const MessageBubble = ({ msg, isMine, isGroup, isFirstInGroup, showSender, sende
       </div>
     </div>
   );
-};
+}, (prevProps, nextProps) => {
+  const prev = prevProps.msg;
+  const next = nextProps.msg;
+  return (
+    prev.muid === next.muid &&
+    prev.content === next.content &&
+    prevProps.status === nextProps.status &&
+    prev.is_edited === next.is_edited &&
+    prev.is_deleted === next.is_deleted &&
+    (prev.reply_to?.muid ?? null) === (next.reply_to?.muid ?? null) &&
+    prevProps.isMine === nextProps.isMine &&
+    prevProps.isFirstInGroup === nextProps.isFirstInGroup &&
+    prevProps.showSender === nextProps.showSender &&
+    prevProps.senderName === nextProps.senderName &&
+    prevProps.senderAvatar === nextProps.senderAvatar &&
+    prevProps.isEditing === nextProps.isEditing &&
+    prevProps.editContent === nextProps.editContent
+  );
+});
 
 export default MessageBubble;
