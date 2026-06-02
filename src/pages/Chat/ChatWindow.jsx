@@ -37,6 +37,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const initialFetchCompleteRef = useRef(false);
   const deleteTargetRef = useRef(null);
   const messagesRef = useRef([]);
+  const seenMuidsRef = useRef(new Set());
   messagesRef.current = messages;
 
   const getSenderId = (msg) => msg?.sender?.public_id ?? msg?.sender_id;
@@ -55,6 +56,17 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
     if (allDelivered) return "delivered";
     return "sent";
   }, [user?.public_id]);
+
+  const memberMap = useMemo(() => {
+    if (!chat?.members) return {};
+    const map = {};
+    for (const m of chat.members) {
+      if (m?.user?.public_id) {
+        map[m.user.public_id] = m;
+      }
+    }
+    return map;
+  }, [chat?.members]);
 
   const scrollToBottom = useCallback((behavior = "smooth") => {
     scrollRef.current?.scrollTo({
@@ -215,9 +227,11 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   const markMessagesAsSeen = useCallback(async () => {
     try {
       const unseen = messages.filter(
-        (msg) => msg.muid && getSenderId(msg) !== user.public_id && (msg.status !== "seen" || !msg.status)
+        (msg) => msg.muid && !msg.muid.startsWith("temp-") && getSenderId(msg) !== user.public_id && (msg.status !== "seen" || !msg.status) && !seenMuidsRef.current.has(msg.muid)
       );
       if (unseen.length === 0) return;
+
+      unseen.forEach((m) => seenMuidsRef.current.add(m.muid));
 
       const unseenMuids = unseen.map((m) => m.muid);
 
@@ -403,7 +417,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
       const sameSender = getSenderId(prevMsg) === msgSenderId;
       const isFirstInGroup = !sameSender;
       const showSender = chat?.is_group && isFirstInGroup;
-      const member = chat?.members?.find((m) => m.user.public_id === msgSenderId);
+      const member = memberMap[msgSenderId];
       const senderName = msg.sender?.full_name || msg.sender?.username || member?.user?.full_name || member?.user?.username || "Unknown";
       const senderAvatar = msg.sender?.profile_photo || (hasProfilePhoto(member?.user) ? member.user.profile_photo : null);
       const displayStatus = msg.status || computeDisplayStatus(msg);
@@ -437,7 +451,7 @@ const ChatWindow = ({ chat, onCloseChat, onDeleteChat, onExitGroup, onAddMember,
   }, [
     messages,
     chat?.is_group,
-    chat?.members,
+    memberMap,
     user.public_id,
     handleContextMenu,
     handleReply,
