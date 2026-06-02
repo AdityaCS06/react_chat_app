@@ -11,12 +11,15 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     const root = document.documentElement;
+    root.classList.add("disable-transitions");
     if (theme === "dark") {
       root.classList.add("dark");
     } else {
       root.classList.remove("dark");
     }
     localStorage.setItem("theme", theme);
+    root.offsetHeight;
+    root.classList.remove("disable-transitions");
   }, [theme]);
 
   const toggleTheme = () => {
